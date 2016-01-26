@@ -15,14 +15,15 @@
  */
 package org.livespark.formmodeler.editor.client.editor.service;
 
-import org.jboss.errai.ioc.client.container.IOC;
-import org.jboss.errai.ioc.client.container.IOCBeanDef;
-import org.livespark.formmodeler.editor.model.FieldDefinition;
-import org.livespark.formmodeler.editor.service.AbstractFieldManager;
+import java.util.Collection;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
-import java.util.Collection;
+
+import org.jboss.errai.ioc.client.container.IOC;
+import org.jboss.errai.ioc.client.container.SyncBeanDef;
+import org.livespark.formmodeler.editor.model.FieldDefinition;
+import org.livespark.formmodeler.editor.service.AbstractFieldManager;
 
 /**
  * Created by pefernan on 9/25/15.
@@ -32,8 +33,8 @@ public class ClientFieldManagerImpl extends AbstractFieldManager {
 
     @PostConstruct
     protected void init() {
-        Collection<IOCBeanDef<FieldDefinition>> fields = IOC.getBeanManager().lookupBeans(FieldDefinition.class);
-        for (IOCBeanDef<FieldDefinition> field : fields) {
+        Collection<SyncBeanDef<FieldDefinition>> fields = IOC.getBeanManager().lookupBeans(FieldDefinition.class);
+        for (SyncBeanDef<FieldDefinition> field : fields) {
             registerFieldDefinition( field.getInstance() );
         }
     }

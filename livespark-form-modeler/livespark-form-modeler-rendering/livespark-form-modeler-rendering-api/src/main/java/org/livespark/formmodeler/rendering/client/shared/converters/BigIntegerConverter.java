@@ -39,4 +39,14 @@ public class BigIntegerConverter implements Converter<BigInteger, String> {
         if (integer == null) return null;
         return integer.toString();
     }
+
+    @Override
+    public Class<BigInteger> getModelType() {
+        return BigInteger.class;
+    }
+
+    @Override
+    public Class<String> getWidgetType() {
+        return String.class;
+    }
 }

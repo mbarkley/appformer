@@ -37,4 +37,14 @@ public class IntegerConverter implements Converter<Integer, String> {
         if (aFloat == null) return null;
         return aFloat.toString();
     }
+
+    @Override
+    public Class<Integer> getModelType() {
+        return Integer.class;
+    }
+
+    @Override
+    public Class<String> getWidgetType() {
+        return String.class;
+    }
 }

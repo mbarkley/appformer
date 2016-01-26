@@ -15,15 +15,25 @@
  */
 package org.livespark.formmodeler.editor.client.editor;
 
-import com.google.gwtmockito.GwtMock;
-import com.google.gwtmockito.GwtMockitoTestRunner;
-import junit.framework.TestCase;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+
 import org.guvnor.common.services.shared.metadata.model.Metadata;
 import org.guvnor.common.services.shared.metadata.model.Overview;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jboss.errai.ioc.client.container.IOCBeanDef;
+import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,13 +67,10 @@ import org.uberfire.ext.widgets.common.client.common.BusyIndicatorView;
 import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.mvp.PlaceRequest;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import com.google.gwtmockito.GwtMock;
+import com.google.gwtmockito.GwtMockitoTestRunner;
 
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.*;
+import junit.framework.TestCase;
 
 @RunWith(GwtMockitoTestRunner.class)
 public class FormEditorPresenterTest extends TestCase {
@@ -113,7 +120,7 @@ public class FormEditorPresenterTest extends TestCase {
     private SyncBeanManager beanManager;
 
     @Mock
-    private IOCBeanDef<DraggableFieldComponent> draggableFieldDef;
+    private SyncBeanDef<DraggableFieldComponent> draggableFieldDef;
 
     @Mock
     protected EventSourceMock<FormContextResponse> eventMock;
@@ -122,6 +129,7 @@ public class FormEditorPresenterTest extends TestCase {
     private FormModelerContent content;
 
 
+    @Override
     @Before
     public void setUp() throws Exception {
         initFields();
@@ -155,9 +163,11 @@ public class FormEditorPresenterTest extends TestCase {
                 htmlLayoutDragComponent = FormEditorPresenterTest.this.htmlLayoutDragComponent;
             }
 
+            @Override
             protected void makeMenuBar() {
             }
 
+            @Override
             protected void addSourcePage() {
             }
         };

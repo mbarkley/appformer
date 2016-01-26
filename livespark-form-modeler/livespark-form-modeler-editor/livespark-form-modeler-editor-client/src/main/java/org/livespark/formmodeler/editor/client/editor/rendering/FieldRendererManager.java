@@ -15,17 +15,18 @@
  */
 package org.livespark.formmodeler.editor.client.editor.rendering;
 
-import org.jboss.errai.ioc.client.container.IOCBeanDef;
-import org.jboss.errai.ioc.client.container.SyncBeanManager;
-import org.livespark.formmodeler.editor.client.editor.rendering.renderers.FieldRenderer;
-import org.livespark.formmodeler.editor.model.FieldDefinition;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+
+import org.jboss.errai.ioc.client.container.SyncBeanDef;
+import org.jboss.errai.ioc.client.container.SyncBeanManager;
+import org.livespark.formmodeler.editor.client.editor.rendering.renderers.FieldRenderer;
+import org.livespark.formmodeler.editor.model.FieldDefinition;
 
 /**
  * Created by pefernan on 9/22/15.
@@ -40,8 +41,8 @@ public class FieldRendererManager {
 
     @PostConstruct
     protected void init() {
-        Collection<IOCBeanDef<FieldRenderer>> renderers = iocBeanManager.lookupBeans(FieldRenderer.class);
-        for (IOCBeanDef<FieldRenderer> rendererDef : renderers) {
+        Collection<SyncBeanDef<FieldRenderer>> renderers = iocBeanManager.lookupBeans(FieldRenderer.class);
+        for (SyncBeanDef<FieldRenderer> rendererDef : renderers) {
             FieldRenderer renderer = rendererDef.getInstance();
             if ( renderer != null ) {
                 availableRenderers.put(renderer.getSupportedFieldDefinitionCode(), renderer);

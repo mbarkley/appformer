@@ -37,4 +37,14 @@ public class ShortConverter implements Converter<Short, String> {
         if (aShort == null) return null;
         return aShort.toString();
     }
+
+    @Override
+    public Class<Short> getModelType() {
+        return Short.class;
+    }
+
+    @Override
+    public Class<String> getWidgetType() {
+        return String.class;
+    }
 }

@@ -16,7 +16,10 @@
 package org.livespark.formmodeler.rendering.test;
 
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.List;
@@ -32,16 +35,14 @@ import org.livespark.formmodeler.rendering.client.view.display.modal.ModalFormDi
 import org.livespark.formmodeler.rendering.client.view.util.ListViewActionsHelper;
 import org.livespark.formmodeler.rendering.test.res.TestFormModel;
 import org.livespark.formmodeler.rendering.test.res.TestListView;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwtmockito.GwtMock;
-import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwtmockito.GwtMock;
+import com.google.gwtmockito.GwtMockitoTestRunner;
 
 @RunWith( GwtMockitoTestRunner.class )
 public class ListViewTest {
@@ -112,7 +113,7 @@ public class ListViewTest {
             assertNotNull( listView.lastLoadDataCallback );
 
             when( listWidget.getValue() ).thenReturn( response );
-            when( listWidget.getWidget( formModel ) ).thenReturn( listItemView );
+            when( listWidget.getComponent( formModel ) ).thenReturn( listItemView );
         } catch ( RuntimeException e ) {
             failedPrecondition( e );
         }
@@ -191,7 +192,7 @@ public class ListViewTest {
 
 
             when( listWidget.getValue() ).thenReturn( models );
-            when( listWidget.getWidget( differentModel ) ).thenReturn( listItemView );
+            when( listWidget.getComponent( differentModel ) ).thenReturn( listItemView );
         } catch ( RuntimeException e ) {
             failedPrecondition( e );
         }

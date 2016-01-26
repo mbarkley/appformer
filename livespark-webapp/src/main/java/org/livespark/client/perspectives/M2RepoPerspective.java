@@ -16,7 +16,7 @@
 package org.livespark.client.perspectives;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
@@ -30,7 +30,6 @@ import org.livespark.client.resources.i18n.AppConstants;
 import org.uberfire.client.annotations.WorkbenchMenu;
 import org.uberfire.client.annotations.WorkbenchPanel;
 import org.uberfire.client.annotations.WorkbenchPerspective;
-import org.uberfire.client.mvp.PlaceManager;
 import org.uberfire.client.util.Layouts;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.Command;
@@ -42,12 +41,13 @@ import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 
 /**
  * A Perspective to show M2_REPO related screen
  */
 @Roles({ "admin" })
-@ApplicationScoped
+@Dependent
 @WorkbenchPerspective(identifier = "org.guvnor.m2repo.client.perspectives.GuvnorM2RepoPerspective")
 public class M2RepoPerspective extends FlowPanel {
 
@@ -61,14 +61,10 @@ public class M2RepoPerspective extends FlowPanel {
     private Event<M2RepoRefreshEvent> refreshEvents;
 
     @Inject
-    private PlaceManager placeManager;
-
-    @Inject
     private SyncBeanManager iocManager;
 
-    @Inject
     @WorkbenchPanel(parts = "M2RepoEditor")
-    FlowPanel m2RepoEditor;
+    SimplePanel m2RepoEditor = new SimplePanel();
 
     @PostConstruct
     private void init() {
@@ -109,7 +105,7 @@ public class M2RepoPerspective extends FlowPanel {
 
     @OnStartup
     public void onStartup() {
-        contextualSearch.setSearchBehavior( new SearchBehavior() {
+        contextualSearch.setDefaultSearchBehavior( new SearchBehavior() {
             @Override
             public void execute( String searchFilter ) {
                 searchEvents.fire( new M2RepoSearchEvent( searchFilter ) );

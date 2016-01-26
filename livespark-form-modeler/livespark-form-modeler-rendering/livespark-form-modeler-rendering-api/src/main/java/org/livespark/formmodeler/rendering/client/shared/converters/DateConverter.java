@@ -39,4 +39,14 @@ public class DateConverter implements Converter<Date, String> {
         return DateTimeFormat.getFormat( FORMAT ).format( modelValue );
     }
 
+    @Override
+    public Class<Date> getModelType() {
+        return Date.class;
+    }
+
+    @Override
+    public Class<String> getWidgetType() {
+        return String.class;
+    }
+
 }

@@ -15,6 +15,17 @@
  */
 package org.livespark.formmodeler.editor.backend.service.impl;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.guvnor.common.services.backend.exceptions.ExceptionUtilities;
 import org.guvnor.common.services.shared.metadata.model.Metadata;
 import org.guvnor.common.services.shared.metadata.model.Overview;
@@ -41,18 +52,10 @@ import org.slf4j.LoggerFactory;
 import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.io.IOService;
+import org.uberfire.java.nio.base.options.CommentedOption;
 import org.uberfire.java.nio.file.FileAlreadyExistsException;
 import org.uberfire.rpc.SessionInfo;
 import org.uberfire.workbench.events.ResourceOpenedEvent;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
-import javax.inject.Named;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by pefernan on 7/7/15.
@@ -244,5 +247,16 @@ public class FormEditorServiceImpl extends KieService<FormModelerContent> implem
             return fieldGenerator.resetFieldDefinition(field, model.getDataObject(holder.getType()));
         }
         return null;
+    }
+
+    public CommentedOption makeCommentedOption( String commitMessage ) {
+        final String name = identity.getIdentifier();
+        final Date when = new Date();
+
+        final CommentedOption option = new CommentedOption( name,
+                null,
+                commitMessage,
+                when );
+        return option;
     }
 }

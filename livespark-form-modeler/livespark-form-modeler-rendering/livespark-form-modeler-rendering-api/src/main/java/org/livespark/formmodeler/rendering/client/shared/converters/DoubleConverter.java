@@ -37,4 +37,14 @@ public class DoubleConverter implements Converter<Double, String> {
         if (aFloat == null) return null;
         return aFloat.toString();
     }
+
+    @Override
+    public Class<Double> getModelType() {
+        return Double.class;
+    }
+
+    @Override
+    public Class<String> getWidgetType() {
+        return String.class;
+    }
 }

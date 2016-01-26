@@ -19,8 +19,6 @@ package org.livespark.formmodeler.rendering.client.shared.converters;
 import org.jboss.errai.databinding.client.api.Converter;
 import org.jboss.errai.databinding.client.api.DefaultConverter;
 
-import java.math.BigDecimal;
-
 /**
  * Created by pefernan on 9/8/15.
  */
@@ -38,5 +36,15 @@ public class LongConverter implements Converter<Long, String> {
     public String toWidgetValue( Long aLong ) {
         if (aLong == null) return null;
         return aLong.toString();
+    }
+
+    @Override
+    public Class<Long> getModelType() {
+        return Long.class;
+    }
+
+    @Override
+    public Class<String> getWidgetType() {
+        return String.class;
     }
 }

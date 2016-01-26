@@ -37,4 +37,14 @@ public class FloatConverter implements Converter<Float, String> {
         if (aFloat == null) return null;
         return aFloat.toString();
     }
+
+    @Override
+    public Class<Float> getModelType() {
+        return Float.class;
+    }
+
+    @Override
+    public Class<String> getWidgetType() {
+        return String.class;
+    }
 }
