@@ -15,18 +15,9 @@
  */
 package org.livespark.formmodeler.editor.client.editor.rendering.renderers;
 
-import java.util.HashMap;
-import java.util.Map;
 import javax.enterprise.context.Dependent;
 
-import com.google.gwt.user.client.ui.IsWidget;
-import org.gwtbootstrap3.client.ui.FormGroup;
-import org.gwtbootstrap3.client.ui.FormLabel;
-import org.gwtbootstrap3.client.ui.HelpBlock;
-import org.gwtbootstrap3.client.ui.ValueListBox;
 import org.livespark.formmodeler.model.impl.basic.selectors.ListBoxFieldDefinition;
-import org.livespark.formmodeler.model.impl.basic.selectors.SelectorOption;
-import org.livespark.formmodeler.rendering.client.view.util.StringListBoxRenderer;
 
 @Dependent
 public class ListBoxFieldPropertiesGenerator extends SelectorFieldPropertiesGenerator<ListBoxFieldDefinition> {

@@ -15,21 +15,14 @@
  */
 package org.livespark.formmodeler.editor.client.editor.rendering.renderers;
 
-import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.Widget;
-import org.gwtbootstrap3.client.ui.FormGroup;
-import org.gwtbootstrap3.client.ui.FormLabel;
-import org.gwtbootstrap3.client.ui.HelpBlock;
-import org.gwtbootstrap3.extras.datepicker.client.ui.DatePicker;
-import org.gwtbootstrap3.extras.datetimepicker.client.ui.DateTimePicker;
+import java.util.ArrayList;
+import java.util.List;
+import javax.enterprise.context.Dependent;
+
 import org.livespark.formmodeler.editor.client.resources.i18n.FieldProperties;
 import org.livespark.formmodeler.model.impl.basic.DateBoxFieldDefinition;
 import org.uberfire.ext.properties.editor.model.PropertyEditorFieldInfo;
 import org.uberfire.ext.properties.editor.model.PropertyEditorType;
-
-import javax.enterprise.context.Dependent;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by pefernan on 9/21/15.

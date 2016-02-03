@@ -38,7 +38,7 @@ import org.gwtbootstrap3.client.ui.ModalFooter;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
 import org.livespark.formmodeler.editor.client.resources.i18n.Constants;
 import org.livespark.formmodeler.editor.client.resources.i18n.FieldProperties;
-import org.livespark.formmodeler.editor.service.FormEditorFormRenderingContext;
+import org.livespark.formmodeler.editor.service.FormEditorRenderingContext;
 import org.livespark.formmodeler.renderer.client.DynamicFormRenderer;
 import org.uberfire.ext.widgets.common.client.common.popups.BaseModal;
 
@@ -94,7 +94,7 @@ public class FieldPropertiesRendererViewImpl extends BaseModal implements FieldP
     }
 
     protected void closeModal() {
-        if ( formRenderer.validate() ) {
+        if ( formRenderer.isValid() ) {
             helper.onClose();
         }
     }
@@ -110,7 +110,7 @@ public class FieldPropertiesRendererViewImpl extends BaseModal implements FieldP
     }
 
     @Override
-    public void render( FieldPropertiesRendererHelper helper, FormEditorFormRenderingContext renderingContext ) {
+    public void render( FieldPropertiesRendererHelper helper, FormEditorRenderingContext renderingContext ) {
         this.helper = helper;
         formRenderer.render( renderingContext );
         initFieldTypeList();

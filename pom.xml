@@ -75,6 +75,7 @@
 
   <modules>
     <module>livespark-commons</module>
+    <module>livespark-common-widgets</module>
     <module>livespark-form-modeler</module>
     <module>livespark-deployment</module>
     <module>livespark-webapp</module>
@@ -131,6 +132,11 @@
       </dependency>
       <dependency>
         <groupId>org.livespark</groupId>
+        <artifactId>livespark-crud-component</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.livespark</groupId>
         <artifactId>livespark-form-modeler-api</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -138,6 +144,12 @@
         <groupId>org.livespark</groupId>
         <artifactId>livespark-form-modeler-dynamic-renderer-api</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.livespark</groupId>
+        <artifactId>livespark-form-modeler-dynamic-renderer-api</artifactId>
+        <version>${project.version}</version>
+        <classifier>tests</classifier>
       </dependency>
       <dependency>
         <groupId>org.livespark</groupId>

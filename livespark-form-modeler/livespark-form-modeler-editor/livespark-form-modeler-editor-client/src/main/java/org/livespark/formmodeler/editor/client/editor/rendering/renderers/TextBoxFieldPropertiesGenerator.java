@@ -15,19 +15,14 @@
  */
 package org.livespark.formmodeler.editor.client.editor.rendering.renderers;
 
-import com.google.gwt.user.client.ui.IsWidget;
-import org.gwtbootstrap3.client.ui.FormGroup;
-import org.gwtbootstrap3.client.ui.FormLabel;
-import org.gwtbootstrap3.client.ui.HelpBlock;
-import org.gwtbootstrap3.client.ui.TextBox;
+import java.util.ArrayList;
+import java.util.List;
+import javax.enterprise.context.Dependent;
+
 import org.livespark.formmodeler.editor.client.resources.i18n.FieldProperties;
 import org.livespark.formmodeler.model.impl.basic.TextBoxFieldDefinition;
 import org.uberfire.ext.properties.editor.model.PropertyEditorFieldInfo;
 import org.uberfire.ext.properties.editor.model.PropertyEditorType;
-
-import javax.enterprise.context.Dependent;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by pefernan on 9/21/15.

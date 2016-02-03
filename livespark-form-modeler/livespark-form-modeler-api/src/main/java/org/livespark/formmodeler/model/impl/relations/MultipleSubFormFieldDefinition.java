@@ -15,12 +15,16 @@
  */
 package org.livespark.formmodeler.model.impl.relations;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jboss.errai.databinding.client.api.Bindable;
+import org.livespark.formmodeler.metaModel.ListBox;
+import org.livespark.formmodeler.metaModel.ListBoxDataProvider;
 import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.model.MultipleField;
+import org.livespark.formmodeler.metaModel.FieldDef;
 
 /**
  * Created by pefernan on 7/1/15.
@@ -31,6 +35,21 @@ public class MultipleSubFormFieldDefinition extends FieldDefinition implements E
     public static final String _CODE = "MultipleSubForm";
 
     private String code = _CODE;
+
+    @FieldDef( label = "Create Form")
+    @ListBox( provider = @ListBoxDataProvider(
+            type = ListBoxDataProvider.ProviderType.REMOTE,
+            className = "org.livespark.formmodeler.editor.backend.dataProviders.VFSSelectorFormProvider"))
+    protected String creationForm = "";
+
+    @FieldDef( label = "Edit Form")
+    @ListBox( provider = @ListBoxDataProvider(
+            type = ListBoxDataProvider.ProviderType.REMOTE,
+            className = "org.livespark.formmodeler.editor.backend.dataProviders.VFSSelectorFormProvider"))
+    protected String editionForm = "";
+
+    @FieldDef( label = "Table Columns")
+    private List<TableColumnMeta> columnMetas = new ArrayList<TableColumnMeta>();
 
     protected String embeddedFormView = "";
     protected String embeddedModel = "";
@@ -45,6 +64,30 @@ public class MultipleSubFormFieldDefinition extends FieldDefinition implements E
         return new String[] {
                 List.class.getName()
         };
+    }
+
+    public List<TableColumnMeta> getColumnMetas() {
+        return columnMetas;
+    }
+
+    public void setColumnMetas( List<TableColumnMeta> columnMetas ) {
+        this.columnMetas = columnMetas;
+    }
+
+    public String getCreationForm() {
+        return creationForm;
+    }
+
+    public void setCreationForm( String creationForm ) {
+        this.creationForm = creationForm;
+    }
+
+    public String getEditionForm() {
+        return editionForm;
+    }
+
+    public void setEditionForm( String editionForm ) {
+        this.editionForm = editionForm;
     }
 
     public String getEmbeddedFormView() {

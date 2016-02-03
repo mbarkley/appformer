@@ -22,7 +22,7 @@ import java.math.BigInteger;
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jboss.errai.databinding.client.api.Bindable;
 import org.livespark.formmodeler.model.FieldDefinition;
-import org.livespark.formmodeler.model.annotation.FieldDef;
+import org.livespark.formmodeler.metaModel.FieldDef;
 
 /**
  * Created by pefernan on 3/19/15.

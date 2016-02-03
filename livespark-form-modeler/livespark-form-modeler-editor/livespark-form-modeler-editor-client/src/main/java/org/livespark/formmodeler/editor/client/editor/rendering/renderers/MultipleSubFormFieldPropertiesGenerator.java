@@ -20,20 +20,14 @@ import java.util.List;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import com.google.gwt.safehtml.shared.SafeHtml;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.SimplePanel;
-import org.gwtbootstrap3.client.ui.FormGroup;
-import org.gwtbootstrap3.client.ui.FormLabel;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.livespark.formmodeler.editor.client.editor.rendering.FieldDefinitionPropertiesModal;
 import org.livespark.formmodeler.editor.client.resources.i18n.FieldProperties;
-import org.livespark.formmodeler.model.impl.relations.MultipleSubFormFieldDefinition;
 import org.livespark.formmodeler.editor.service.FormFinderSerivce;
 import org.livespark.formmodeler.editor.service.SubFormData;
-import org.livespark.formmodeler.renderer.client.rendering.renderers.MultipleSubFormFieldRenderer;
+import org.livespark.formmodeler.model.impl.relations.MultipleSubFormFieldDefinition;
+import org.livespark.formmodeler.renderer.client.rendering.renderers.relations.multipleSubform.MultipleSubFormFieldRenderer;
 import org.uberfire.ext.properties.editor.model.PropertyEditorFieldInfo;
 import org.uberfire.ext.properties.editor.model.PropertyEditorType;
 

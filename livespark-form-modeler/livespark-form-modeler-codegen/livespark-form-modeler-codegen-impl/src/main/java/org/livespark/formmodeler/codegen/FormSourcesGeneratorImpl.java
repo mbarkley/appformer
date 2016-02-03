@@ -33,6 +33,7 @@ import org.kie.workbench.common.services.datamodeller.core.DataObject;
 import org.kie.workbench.common.services.shared.project.KieProject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.livespark.formmodeler.codegen.layout.FormLayoutTemplateGenerator;
+import org.livespark.formmodeler.codegen.layout.Static;
 import org.livespark.formmodeler.codegen.model.FormModelSourceGenerator;
 import org.livespark.formmodeler.codegen.rest.EntityService;
 import org.livespark.formmodeler.codegen.rest.RestApi;
@@ -83,6 +84,7 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
     private FormDefinitionSerializer formDefinitionSerializer;
 
     @Inject
+    @Static
     private FormLayoutTemplateGenerator formLayoutTemplateGenerator;
 
     @Inject

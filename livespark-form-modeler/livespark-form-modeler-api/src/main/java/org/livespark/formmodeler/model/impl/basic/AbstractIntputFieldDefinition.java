@@ -17,7 +17,7 @@
 package org.livespark.formmodeler.model.impl.basic;
 
 import org.livespark.formmodeler.model.FieldDefinition;
-import org.livespark.formmodeler.model.annotation.FieldDef;
+import org.livespark.formmodeler.metaModel.FieldDef;
 
 /**
  * Created by pefernan on 4/29/15.

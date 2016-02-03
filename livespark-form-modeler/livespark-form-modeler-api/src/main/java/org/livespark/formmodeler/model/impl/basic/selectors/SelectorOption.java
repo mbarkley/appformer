@@ -18,6 +18,7 @@ package org.livespark.formmodeler.model.impl.basic.selectors;
 import org.jboss.errai.common.client.api.annotations.MapsTo;
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jboss.errai.databinding.client.api.Bindable;
+import org.livespark.formmodeler.metaModel.FieldDef;
 
 /**
  * Created by pefernan on 10/5/15.
@@ -25,8 +26,13 @@ import org.jboss.errai.databinding.client.api.Bindable;
 @Portable
 @Bindable
 public class SelectorOption {
+    @FieldDef( label = "Value", position = 0)
     private String value;
+
+    @FieldDef( label = "Text", position = 1)
     private String text;
+
+    @FieldDef( label = "Is default", position = 2)
     private Boolean defaultValue = Boolean.FALSE;
 
     public SelectorOption() {

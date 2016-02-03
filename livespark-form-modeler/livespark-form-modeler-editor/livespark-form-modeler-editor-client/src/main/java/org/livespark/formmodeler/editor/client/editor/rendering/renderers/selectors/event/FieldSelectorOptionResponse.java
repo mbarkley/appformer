@@ -16,9 +16,9 @@
 
 package org.livespark.formmodeler.editor.client.editor.rendering.renderers.selectors.event;
 
-import org.livespark.formmodeler.model.impl.basic.selectors.SelectorOption;
-
 import java.util.List;
+
+import org.livespark.formmodeler.model.impl.basic.selectors.SelectorOption;
 
 public class FieldSelectorOptionResponse extends FieldSelectorEvent {
 

@@ -37,6 +37,7 @@ import org.guvnor.common.services.project.builder.model.BuildMessage;
 import org.guvnor.common.services.project.builder.model.BuildResults;
 import org.guvnor.common.services.project.builder.model.IncrementalBuildResults;
 import org.guvnor.common.services.project.model.Project;
+import org.guvnor.common.services.project.service.DeploymentMode;
 import org.guvnor.common.services.shared.message.Level;
 import org.jboss.errai.bus.server.annotations.Service;
 import org.jboss.errai.bus.server.api.RpcContext;
@@ -198,6 +199,11 @@ public class GwtWarBuildServiceImpl implements GwtWarBuildService {
     }
 
     @Override
+    public BuildResults buildAndDeploy( Project project, DeploymentMode mode ) {
+        return buildAndDeploy( project, false );
+    }
+
+    @Override
     public BuildResults buildAndDeploy( Project project,
                                         boolean suppressHandlers ) {
         final String queueSessionId = RpcContext.getQueueSession().getSessionId();
@@ -212,6 +218,11 @@ public class GwtWarBuildServiceImpl implements GwtWarBuildService {
                                     return callableFactory.createProductionDeploymentCallable( project, pomXml, session, queueSessionId, sreq );
                                 }
                             } );
+    }
+
+    @Override
+    public BuildResults buildAndDeploy( Project project, boolean suppressHandlers, DeploymentMode mode ) {
+        return buildAndDeploy( project, suppressHandlers );
     }
 
     @Override

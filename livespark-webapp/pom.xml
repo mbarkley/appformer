@@ -686,6 +686,11 @@
     <!-- Start LiveSpark Modules -->
     <dependency>
       <groupId>org.livespark</groupId>
+      <artifactId>livespark-crud-component</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.livespark</groupId>
       <artifactId>livespark-form-modeler-api</artifactId>
     </dependency>
 
@@ -857,6 +862,9 @@
             <compileSourcesArtifact>org.uberfire:uberfire-workbench-client-backend</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-backend-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-workbench-client-views-patternfly</compileSourcesArtifact>
+
+            <!-- LiveSpark -->
+            <compileSourcesArtifact>org.livespark:livespark-crud-component</compileSourcesArtifact>
 
             <!-- Form Modeler -->
             <compileSourcesArtifact>org.livespark:livespark-form-modeler-api</compileSourcesArtifact>

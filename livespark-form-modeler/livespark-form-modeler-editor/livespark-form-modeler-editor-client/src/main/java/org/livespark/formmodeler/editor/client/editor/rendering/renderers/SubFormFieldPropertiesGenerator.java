@@ -15,21 +15,21 @@
  */
 package org.livespark.formmodeler.editor.client.editor.rendering.renderers;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.enterprise.context.Dependent;
+import javax.inject.Inject;
+
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.livespark.formmodeler.editor.client.editor.rendering.FieldDefinitionPropertiesModal;
 import org.livespark.formmodeler.editor.client.resources.i18n.FieldProperties;
-import org.livespark.formmodeler.model.impl.relations.SubFormFieldDefinition;
 import org.livespark.formmodeler.editor.service.FormFinderSerivce;
 import org.livespark.formmodeler.editor.service.SubFormData;
+import org.livespark.formmodeler.model.impl.relations.SubFormFieldDefinition;
 import org.livespark.formmodeler.renderer.client.rendering.renderers.relations.subform.SubFormFieldRenderer;
 import org.uberfire.ext.properties.editor.model.PropertyEditorFieldInfo;
 import org.uberfire.ext.properties.editor.model.PropertyEditorType;
-
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by pefernan on 9/21/15.

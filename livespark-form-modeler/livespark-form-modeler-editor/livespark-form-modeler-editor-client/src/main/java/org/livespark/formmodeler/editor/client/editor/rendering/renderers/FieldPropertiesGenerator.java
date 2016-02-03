@@ -15,23 +15,19 @@
  */
 package org.livespark.formmodeler.editor.client.editor.rendering.renderers;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.ui.IsWidget;
-import org.gwtbootstrap3.client.ui.TextBox;
+import java.util.ArrayList;
+import java.util.List;
+import javax.inject.Inject;
+
 import org.livespark.formmodeler.editor.client.editor.rendering.DraggableFieldComponent;
 import org.livespark.formmodeler.editor.client.editor.rendering.FieldDefinitionPropertiesModal;
 import org.livespark.formmodeler.editor.client.resources.i18n.FieldProperties;
 import org.livespark.formmodeler.model.FieldDefinition;
-import org.uberfire.backend.vfs.Path;
 import org.uberfire.ext.properties.editor.client.PropertyEditorWidget;
 import org.uberfire.ext.properties.editor.model.PropertyEditorCategory;
 import org.uberfire.ext.properties.editor.model.PropertyEditorEvent;
 import org.uberfire.ext.properties.editor.model.PropertyEditorFieldInfo;
 import org.uberfire.ext.properties.editor.model.PropertyEditorType;
-
-import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by pefernan on 9/21/15.

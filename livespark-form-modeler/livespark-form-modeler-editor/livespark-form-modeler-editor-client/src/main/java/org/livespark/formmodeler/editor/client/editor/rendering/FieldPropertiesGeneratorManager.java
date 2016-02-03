@@ -15,17 +15,17 @@
  */
 package org.livespark.formmodeler.editor.client.editor.rendering;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.livespark.formmodeler.editor.client.editor.rendering.renderers.FieldPropertiesGenerator;
 import org.livespark.formmodeler.model.FieldDefinition;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by pefernan on 9/22/15.
