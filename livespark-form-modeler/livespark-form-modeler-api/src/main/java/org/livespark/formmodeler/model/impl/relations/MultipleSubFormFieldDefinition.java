@@ -21,7 +21,7 @@ import java.util.List;
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jboss.errai.databinding.client.api.Bindable;
 import org.livespark.formmodeler.metaModel.ListBox;
-import org.livespark.formmodeler.metaModel.ListBoxDataProvider;
+import org.livespark.formmodeler.metaModel.SelectorDataProvider;
 import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.model.MultipleField;
 import org.livespark.formmodeler.metaModel.FieldDef;
@@ -37,14 +37,14 @@ public class MultipleSubFormFieldDefinition extends FieldDefinition implements E
     private String code = _CODE;
 
     @FieldDef( label = "Create Form")
-    @ListBox( provider = @ListBoxDataProvider(
-            type = ListBoxDataProvider.ProviderType.REMOTE,
+    @ListBox( provider = @SelectorDataProvider(
+            type = SelectorDataProvider.ProviderType.REMOTE,
             className = "org.livespark.formmodeler.editor.backend.dataProviders.VFSSelectorFormProvider"))
     protected String creationForm = "";
 
     @FieldDef( label = "Edit Form")
-    @ListBox( provider = @ListBoxDataProvider(
-            type = ListBoxDataProvider.ProviderType.REMOTE,
+    @ListBox( provider = @SelectorDataProvider(
+            type = SelectorDataProvider.ProviderType.REMOTE,
             className = "org.livespark.formmodeler.editor.backend.dataProviders.VFSSelectorFormProvider"))
     protected String editionForm = "";
 

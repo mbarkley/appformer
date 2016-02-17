@@ -21,7 +21,7 @@ import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jboss.errai.databinding.client.api.Bindable;
 import org.livespark.formmodeler.metaModel.FieldDef;
 import org.livespark.formmodeler.metaModel.ListBox;
-import org.livespark.formmodeler.metaModel.ListBoxDataProvider;
+import org.livespark.formmodeler.metaModel.SelectorDataProvider;
 
 @Bindable
 @Portable
@@ -30,8 +30,8 @@ public class TableColumnMeta {
     private String label;
 
     @FieldDef( label = "Property" )
-    @ListBox( provider = @ListBoxDataProvider(
-            type = ListBoxDataProvider.ProviderType.REMOTE,
+    @ListBox( provider = @SelectorDataProvider(
+            type = SelectorDataProvider.ProviderType.REMOTE,
             className = "org.livespark.formmodeler.editor.backend.dataProviders.BeanPropertiesProvider"))
     private String property;
 

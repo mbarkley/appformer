@@ -16,8 +16,13 @@
 
 package org.livespark.formmodeler.metaModel;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.RetentionPolicy;
+
+@java.lang.annotation.Retention( RetentionPolicy.RUNTIME )
+@java.lang.annotation.Target({ ElementType.TYPE, ElementType.FIELD })
 public @interface RadioGroup {
-    String label();
-    String[] options();
-    String defaultValue() default "";
+    Option[] options() default {};
+    SelectorDataProvider provider() default @SelectorDataProvider( className = "");
+    boolean inline() default false;
 }

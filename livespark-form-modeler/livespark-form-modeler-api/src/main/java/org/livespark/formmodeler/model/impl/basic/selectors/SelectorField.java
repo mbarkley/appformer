@@ -18,8 +18,6 @@ package org.livespark.formmodeler.model.impl.basic.selectors;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.livespark.formmodeler.metaModel.ListBox;
-import org.livespark.formmodeler.metaModel.ListBoxDataProvider;
 import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.metaModel.FieldDef;
 

@@ -23,5 +23,5 @@ import java.lang.annotation.RetentionPolicy;
 @java.lang.annotation.Target({ ElementType.TYPE, ElementType.FIELD })
 public @interface ListBox {
     Option[] options() default {};
-    ListBoxDataProvider provider() default @ListBoxDataProvider( className = "");
+    SelectorDataProvider provider() default @SelectorDataProvider( className = "");
 }

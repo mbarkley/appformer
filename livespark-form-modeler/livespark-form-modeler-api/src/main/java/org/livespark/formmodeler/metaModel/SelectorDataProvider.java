@@ -21,7 +21,7 @@ import java.lang.annotation.RetentionPolicy;
 
 @java.lang.annotation.Retention( RetentionPolicy.RUNTIME )
 @java.lang.annotation.Target({ ElementType.PARAMETER })
-public @interface ListBoxDataProvider {
+public @interface SelectorDataProvider {
 
     public enum ProviderType {
         LOCAL( "local" ), REMOTE( "remote" );

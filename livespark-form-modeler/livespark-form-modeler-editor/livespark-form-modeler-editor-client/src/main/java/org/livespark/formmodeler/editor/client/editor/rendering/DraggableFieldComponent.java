@@ -34,6 +34,7 @@ import org.livespark.formmodeler.editor.client.editor.properties.FieldProperties
 import org.livespark.formmodeler.editor.service.FormEditorRenderingContext;
 import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.renderer.client.rendering.FieldLayoutComponent;
+import org.livespark.formmodeler.renderer.service.FormRenderingContext;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.ext.layout.editor.client.components.HasDragAndDropSettings;
 import org.uberfire.ext.layout.editor.client.components.HasModalConfiguration;
@@ -88,6 +89,12 @@ public class DraggableFieldComponent extends FieldLayoutComponent<FormEditorRend
 
     protected void initPropertiesConfig() {
         propertiesRendererHelper = new FieldPropertiesRendererHelper() {
+
+            @Override
+            public FormRenderingContext getCurrentRenderingContext() {
+                return renderingContext;
+            }
+
             @Override
             public FieldDefinition getCurrentField() {
                 return field;

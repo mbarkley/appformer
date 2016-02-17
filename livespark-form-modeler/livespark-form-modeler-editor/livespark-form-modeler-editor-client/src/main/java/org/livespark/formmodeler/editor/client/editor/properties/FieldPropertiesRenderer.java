@@ -52,6 +52,7 @@ public class FieldPropertiesRenderer implements IsWidget {
             @Override
             public void callback( FormEditorRenderingContext renderingContext ) {
                 renderingContext.setModel( helper.getCurrentField() );
+                renderingContext.setParentContext( helper.getCurrentRenderingContext() );
                 view.render( helper, renderingContext );
             }
         } ).getFieldPropertiesRenderingContext( helper.getCurrentField(), helper.getPath() );
