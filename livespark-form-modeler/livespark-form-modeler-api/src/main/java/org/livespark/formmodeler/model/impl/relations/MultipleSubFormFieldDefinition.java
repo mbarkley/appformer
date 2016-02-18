@@ -36,7 +36,7 @@ public class MultipleSubFormFieldDefinition extends FieldDefinition implements E
 
     private String code = _CODE;
 
-    @FieldDef( label = "Create Form")
+    @FieldDef( label = "Create Form" )
     @ListBox( provider = @SelectorDataProvider(
             type = SelectorDataProvider.ProviderType.REMOTE,
             className = "org.livespark.formmodeler.editor.backend.dataProviders.VFSSelectorFormProvider"))

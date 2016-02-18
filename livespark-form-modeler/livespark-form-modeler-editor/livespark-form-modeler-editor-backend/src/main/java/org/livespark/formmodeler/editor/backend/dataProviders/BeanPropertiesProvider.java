@@ -67,7 +67,7 @@ public class BeanPropertiesProvider implements SystemSelectorDataProvider {
 
                     for ( int i = 0; i < subForm.getColumnMetas().size() && add == true; i++ ) {
                         TableColumnMeta meta = subForm.getColumnMetas().get( i );
-                        if ( model != null && model.getProperty().equals( property.getName() ) ) {
+                        if ( model != null && property.getName().equals( model.getProperty() ) ) {
                             break;
                         }
                         if ( meta.getProperty().equals( property.getName() ) ) {
