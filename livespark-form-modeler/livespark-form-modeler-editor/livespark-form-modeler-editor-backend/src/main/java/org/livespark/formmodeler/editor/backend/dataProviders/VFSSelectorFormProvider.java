@@ -35,6 +35,7 @@ import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.model.FormDefinition;
 import org.livespark.formmodeler.model.config.SelectorData;
 import org.livespark.formmodeler.model.config.SystemSelectorDataProvider;
+import org.livespark.formmodeler.model.impl.relations.EmbeddedFormField;
 import org.livespark.formmodeler.model.impl.relations.MultipleSubFormFieldDefinition;
 import org.livespark.formmodeler.renderer.service.FormRenderingContext;
 import org.uberfire.backend.server.util.Paths;
@@ -62,7 +63,7 @@ public class VFSSelectorFormProvider implements SystemSelectorDataProvider {
     public SelectorData getSelectorData( FormRenderingContext context ) {
         Map<String, String> values = new TreeMap<>();
 
-        if ( context.getModel() instanceof MultipleSubFormFieldDefinition ) {
+        if ( context.getModel() instanceof EmbeddedFormField ) {
             FormEditorRenderingContext editorContext = (FormEditorRenderingContext) context;
 
             Project project = projectService.resolveProject( editorContext.getFormPath() );

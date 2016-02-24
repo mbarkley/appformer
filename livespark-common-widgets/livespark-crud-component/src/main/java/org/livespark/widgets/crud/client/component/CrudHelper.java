@@ -24,7 +24,7 @@ import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 
 public interface CrudHelper<T> {
 
-    public List<ColumnMeta<HasProperties>> getGridColumns();
+    public List<ColumnMeta> getGridColumns();
 
     public IsFormView<T> getCreateInstanceForm();
 

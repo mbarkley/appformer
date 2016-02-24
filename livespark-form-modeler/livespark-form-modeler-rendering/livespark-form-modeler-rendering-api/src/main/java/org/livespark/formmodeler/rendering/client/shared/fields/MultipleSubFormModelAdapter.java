@@ -17,14 +17,25 @@ package org.livespark.formmodeler.rendering.client.shared.fields;
 
 import java.util.List;
 
+import org.jboss.errai.databinding.client.HasProperties;
 import org.livespark.formmodeler.rendering.client.shared.FormModel;
+import org.livespark.formmodeler.rendering.client.view.FormView;
 import org.livespark.formmodeler.rendering.client.view.ListItemView;
 import org.livespark.formmodeler.rendering.client.view.ListView;
+import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 
 /**
  * Created by pefernan on 7/2/15.
  */
 public interface MultipleSubFormModelAdapter <L extends List<?>, F extends FormModel> {
     public List<F> getListModelsForModel(L model);
+
+    public abstract List<ColumnMeta<HasProperties>> getCrudColumns();
+
+    public FormView<F> getForm();
+
     public Class<? extends ListView<F, ? extends ListItemView<F>>> getListViewType();
+
+    public F getEditionFormModel( Object model );
+
 }

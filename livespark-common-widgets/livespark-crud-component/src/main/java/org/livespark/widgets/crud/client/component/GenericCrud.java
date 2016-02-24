@@ -92,7 +92,6 @@ public class GenericCrud extends Composite implements CrudUpdater {
 
         modalDisplayer = IOC.getBeanManager().lookupBean( ModalFormDisplayer.class ).newInstance();
 
-
         content.add( table );
     }
 
@@ -106,15 +105,15 @@ public class GenericCrud extends Composite implements CrudUpdater {
             List<ColumnMeta<HasProperties>> columns = new ArrayList<>( helper.getGridColumns() );
 
             if ( allowEdit ) {
-                Column<HasProperties, String> column = new Column<HasProperties, String>( new ButtonCell( IconType.EDIT, ButtonType.PRIMARY, ButtonSize.SMALL ) ) {
+                Column<Object, String> column = new Column<Object, String>( new ButtonCell( IconType.EDIT, ButtonType.PRIMARY, ButtonSize.SMALL ) ) {
                     @Override
-                    public String getValue( HasProperties properties ) {
+                    public String getValue( Object model ) {
                         return CrudConstants.INSTANCE.editInstanceButton();
                     }
                 };
-                column.setFieldUpdater( new FieldUpdater<HasProperties, String>() {
+                column.setFieldUpdater( new FieldUpdater<Object, String>() {
                     @Override
-                    public void update( int i, HasProperties hasProperties, String s ) {
+                    public void update( int i, Object model, String s ) {
                         renderNestedForm( CrudConstants.INSTANCE.editInstanceTitle(), helper.getEditInstanceForm( i ), new FormDisplayer.FormDisplayerCallback() {
                             @Override
                             public void onAccept() {
@@ -133,15 +132,15 @@ public class GenericCrud extends Composite implements CrudUpdater {
             }
 
             if ( allowDelete ) {
-                Column<HasProperties, String> column = new Column<HasProperties, String>( new ButtonCell( IconType.TRASH, ButtonType.DANGER, ButtonSize.SMALL ) ) {
+                Column<Object, String> column = new Column<Object, String>( new ButtonCell( IconType.TRASH, ButtonType.DANGER, ButtonSize.SMALL ) ) {
                     @Override
-                    public String getValue( HasProperties properties ) {
+                    public String getValue( Object model ) {
                         return CrudConstants.INSTANCE.deleteInstance();
                     }
                 };
-                column.setFieldUpdater( new FieldUpdater<HasProperties, String>() {
+                column.setFieldUpdater( new FieldUpdater<Object, String>() {
                     @Override
-                    public void update( final int i, HasProperties hasProperties, String s ) {
+                    public void update( final int i, Object model, String s ) {
                         YesNoCancelPopup.newYesNoCancelPopup( CrudConstants.INSTANCE.deleteTitle(), CrudConstants.INSTANCE.deleteBody(),
                                 new Command() {
                                     @Override
@@ -260,7 +259,7 @@ public class GenericCrud extends Composite implements CrudUpdater {
     }
 
     @Override
-    public void updateCrudContent( AsyncDataProvider<HasProperties> provider ) {
+    public void updateCrudContent( AsyncDataProvider provider ) {
         if ( provider == null ) {
             return;
         }

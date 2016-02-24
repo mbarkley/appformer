@@ -21,17 +21,14 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.SimplePanel;
-import org.jboss.errai.ioc.client.container.IOC;
-import org.jboss.errai.ioc.client.container.SyncBeanDef;
+import org.jboss.errai.databinding.client.HasProperties;
 import org.jboss.errai.ui.client.widget.HasModel;
 import org.livespark.formmodeler.rendering.client.shared.FormModel;
 import org.livespark.formmodeler.rendering.client.view.FormView;
-import org.livespark.formmodeler.rendering.client.view.ListItemView;
-import org.livespark.formmodeler.rendering.client.view.ListView;
-import org.livespark.formmodeler.rendering.client.view.display.FormDisplayer;
-import org.livespark.formmodeler.rendering.client.view.display.FormDisplayerConfig;
-import org.livespark.formmodeler.rendering.client.view.display.embedded.EmbeddedFormDisplayer;
-import org.livespark.formmodeler.rendering.client.view.util.ListViewActionsHelper;
+import org.livespark.widgets.crud.client.component.CrudHelper;
+import org.livespark.widgets.crud.client.component.GenericCrud;
+import org.livespark.widgets.crud.client.component.formDisplay.IsFormView;
+import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 
 /**
  * Created by pefernan on 6/18/15.
@@ -39,13 +36,22 @@ import org.livespark.formmodeler.rendering.client.view.util.ListViewActionsHelpe
 
 public class MultipleSubForm<L extends List<M>, M, F extends FormModel> extends SimplePanel implements HasModel<L> {
 
+    private GenericCrud crudComponent;
+
     private MultipleSubFormModelAdapter<L, F> multipleSubFormModelAdapter;
-    private ListView<F, ? extends ListItemView<F>> listView;
+
+    private FormView<F> currentForm;
+
     private L model;
 
     public MultipleSubForm( MultipleSubFormModelAdapter<L, F> adapter ) {
         super();
         if (adapter == null) throw new IllegalArgumentException( "FormModelProvider cannot be null" );
+
+        crudComponent = new GenericCrud( 5 );
+
+        add( crudComponent );
+
         multipleSubFormModelAdapter = adapter;
     }
 
@@ -57,86 +63,51 @@ public class MultipleSubForm<L extends List<M>, M, F extends FormModel> extends 
     @Override
     public void setModel( L model ) {
         this.model = model;
-        if (listView == null) {
-            initView();
-        }
-        if (model != null) {
-            listView.loadItems( multipleSubFormModelAdapter.getListModelsForModel( model ) );
-        }
+        initView();
     }
 
     protected void initView() {
-        SyncBeanDef<? extends ListView<F, ? extends ListItemView<F>>> beanDef = IOC.getBeanManager().lookupBean( multipleSubFormModelAdapter.getListViewType() );
-        listView = beanDef.getInstance();
-        add( listView );
-        listView.setActionsHelper( new ListViewActionsHelper<F>() {
+        currentForm = null;
+        crudComponent.config( new CrudHelper() {
             @Override
-            public void startCreate( ListView<F, ?> listView ) {
-                final FormView<F> form = listView.getForm();
-                FormDisplayer displayer = getFormDisplayer();
-                displayer.display( new FormDisplayerConfig( form, listView.getFormTitle(), new FormDisplayer.FormDisplayerCallback() {
-                    @Override
-                    public void onSubmit() {
-                        create( form.getModel() );
-                        reset();
-                    }
-
-                    @Override
-                    public void onCancel() {
-                        reset();
-                    }
-                } ) );
-                remove( listView );
-                add( displayer );
+            public List<ColumnMeta<HasProperties>> getGridColumns() {
+                return multipleSubFormModelAdapter.getCrudColumns();
             }
 
             @Override
-            public void startEdit( ListView listView, final F model ) {
-                final FormView<F> form = listView.getForm();
-                FormDisplayer displayer = getFormDisplayer();
-                displayer.display( new FormDisplayerConfig( form, listView.getFormTitle(), new FormDisplayer.FormDisplayerCallback() {
-                    @Override
-                    public void onSubmit() {
-                        update( model );
-                        reset();
-                    }
-
-                    @Override
-                    public void onCancel() {
-                        reset();
-                    }
-                } ) );
-                form.setModel( model );
-                remove( listView );
-                add( displayer );
+            public IsFormView getCreateInstanceForm() {
+                currentForm = multipleSubFormModelAdapter.getForm();
+                return currentForm;
             }
 
             @Override
-            public void create( F formModel ) {
-                model.add( (M) formModel.getDataModels().get( 0 ) );
-                listView.loadItems( multipleSubFormModelAdapter.getListModelsForModel( model ) );
+            public void createInstance() {
+                model.add( (M) currentForm.getModel().getDataModels().get( 0 ) );
+                initView();
             }
 
             @Override
-            public void update( FormModel formModel ) {
+            public IsFormView getEditInstanceForm( Integer index ) {
+                currentForm = multipleSubFormModelAdapter.getForm();
+
+                M formModel = model.get( index );
+
+                currentForm.setModel( multipleSubFormModelAdapter.getEditionFormModel( formModel ) );
+
+                return currentForm;
             }
 
             @Override
-            public void delete( FormModel formModel ) {
-                model.remove( formModel.getDataModels().get( 0 ) );
-                listView.loadItems( multipleSubFormModelAdapter.getListModelsForModel( model ) );
-            }
+            public void editInstance() {
+                currentForm = multipleSubFormModelAdapter.getForm();
 
-            protected void reset() {
-                clear();
-                add( listView );
+                model.add( (M)currentForm.getModel().getDataModels().get( 0 ) );
+                initView();
             }
 
             @Override
-            public FormDisplayer getFormDisplayer() {
-                SyncBeanDef<EmbeddedFormDisplayer> displayerDef = IOC.getBeanManager().lookupBean( EmbeddedFormDisplayer.class );
-                if ( displayerDef != null ) return displayerDef.getInstance();
-                return null;
+            public void deleteInstance( int index ) {
+
             }
         } );
     }

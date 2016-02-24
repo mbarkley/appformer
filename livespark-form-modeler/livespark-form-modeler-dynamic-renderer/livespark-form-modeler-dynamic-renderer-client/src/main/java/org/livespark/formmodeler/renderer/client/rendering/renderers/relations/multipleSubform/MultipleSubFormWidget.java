@@ -101,7 +101,7 @@ public class MultipleSubFormWidget extends Composite implements TakesValue<List<
 
         this.renderingContext = renderingContext;
 
-        final List<ColumnMeta<HasProperties>> metas = new ArrayList<ColumnMeta<HasProperties>>();
+        final List<ColumnMeta> metas = new ArrayList<ColumnMeta>();
 
         BindableProxy<?> proxy = null;
 
@@ -134,7 +134,7 @@ public class MultipleSubFormWidget extends Composite implements TakesValue<List<
             private Integer position;
 
             @Override
-            public List<ColumnMeta<HasProperties>> getGridColumns() {
+            public List<ColumnMeta> getGridColumns() {
                 return metas;
             }
 

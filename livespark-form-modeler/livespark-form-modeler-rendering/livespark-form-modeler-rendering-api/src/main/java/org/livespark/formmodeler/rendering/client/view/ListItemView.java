@@ -44,12 +44,12 @@ public abstract class ListItemView<M extends FormModel> extends BaseView<M> {
 
     @EventHandler("edit")
     protected void onEdit( ClickEvent e ) {
-        parentView.onEdit( getModel() );
+        //parentView.onEdit( getModel() );
     }
 
     @EventHandler("delete")
     protected void onDelete( ClickEvent e ) {
-        parentView.onDelete( getModel() );
+        //parentView.onDelete( getModel() );
     }
 
     public void setParentView(ListView<M, ? extends ListItemView<M>> parentView) {

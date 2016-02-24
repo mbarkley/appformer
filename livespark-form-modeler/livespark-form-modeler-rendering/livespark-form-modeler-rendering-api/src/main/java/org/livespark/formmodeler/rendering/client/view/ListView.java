@@ -16,121 +16,100 @@
 
 package org.livespark.formmodeler.rendering.client.view;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.Composite;
-import org.gwtbootstrap3.client.ui.Button;
+import com.google.gwt.view.client.AsyncDataProvider;
+import com.google.gwt.view.client.HasData;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ioc.client.container.SyncBeanDef;
 import org.jboss.errai.ioc.client.container.SyncBeanManager;
-import org.jboss.errai.ui.client.widget.ListWidget;
-import org.jboss.errai.ui.client.widget.Table;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
-import org.jboss.errai.ui.shared.api.annotations.EventHandler;
 import org.livespark.formmodeler.rendering.client.shared.FormModel;
 import org.livespark.formmodeler.rendering.client.shared.LiveSparkRestService;
-import org.livespark.formmodeler.rendering.client.view.display.FormDisplayer;
-import org.livespark.formmodeler.rendering.client.view.display.FormDisplayerConfig;
-import org.livespark.formmodeler.rendering.client.view.display.modal.ModalFormDisplayer;
-import org.livespark.formmodeler.rendering.client.view.util.ListViewActionsHelper;
+import org.livespark.widgets.crud.client.component.CrudHelper;
+import org.livespark.widgets.crud.client.component.GenericCrud;
+import org.livespark.widgets.crud.client.component.formDisplay.IsFormView;
+import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 
 public abstract class ListView<M extends FormModel, W extends ListItemView<M>> extends Composite {
 
     @Inject
-    @DataField
-    protected Button create;
-
-    @Inject
-    @DataField
-    @Table(root = "tbody")
-    protected ListWidget<M, W> items;
-
-    @Inject
     protected SyncBeanManager beanManager;
 
-    protected ListViewActionsHelper<M> helper = new ListViewActionsHelper<M>() {
+    @DataField
+    protected GenericCrud crudComponent = new GenericCrud( 10 );
+
+    protected List<M> crudItems;
+
+    protected FormView<M> currentForm;
+
+    private AsyncDataProvider<M> dataProvider;
+
+    protected CrudHelper crudHelper = new CrudHelper() {
         @Override
-        public void startCreate( ListView listView ) {
-            final FormView<M> form = getForm();
-            FormDisplayer displayer = getFormDisplayer();
-            displayer.display( new FormDisplayerConfig( form, getFormTitle(), new FormDisplayer.FormDisplayerCallback() {
-                @Override
-                public void onSubmit() {
-                    create( form.getModel() );
-                }
-
-                @Override
-                public void onCancel() {
-
-                }
-            } ) );
+        public List<ColumnMeta> getGridColumns() {
+            return getCrudColumns();
         }
 
         @Override
-        public void startEdit( ListView listView, M model ) {
-            final FormView<M> form = getForm();
-            FormDisplayer displayer = getFormDisplayer();
-            displayer.display( new FormDisplayerConfig( form, getFormTitle(), new FormDisplayer.FormDisplayerCallback() {
-                @Override
-                public void onSubmit() {
-                    update( form.getModel() );
-                }
-
-                @Override
-                public void onCancel() {
-
-                }
-            } ) );
-            form.setModel( model );
+        public IsFormView getCreateInstanceForm() {
+            currentForm = getForm();
+            return currentForm;
         }
 
         @Override
-        public void create( M model ) {
+        public void createInstance() {
             createRestCaller(
                     new RemoteCallback<M>() {
                         @Override
                         public void callback( M response ) {
-                            items.getValue().add( response );
-                            items.getComponent( response ).setParentView( ListView.this );
+                            crudItems.add( response );
+                            updateCrudContent();
                         }
-                    } ).create( model );
+                    } ).create( currentForm.getModel() );
         }
 
         @Override
-        public void update( M model ) {
+        public IsFormView getEditInstanceForm( Integer index ) {
+            currentForm = getForm();
+            currentForm.setModel( crudItems.get( index ) );
+            return currentForm;
+        }
+
+        @Override
+        public void editInstance() {
             createRestCaller(
                     new RemoteCallback<Boolean>() {
                         @Override
                         public void callback( Boolean response ) {
+                            updateCrudContent();
                         }
-                    } ).update( model );
+                    } ).update( currentForm.getModel() );
         }
 
         @Override
-        public void delete( final M model ) {
+        public void deleteInstance( int index ) {
+            final M model = crudItems.get( index );
             createRestCaller(
                     new RemoteCallback<Boolean>() {
                         @Override
                         public void callback( Boolean response ) {
                             if ( response ) {
-                                items.getValue().remove( model );
+                                crudItems.remove( model );
+                                updateCrudContent();
                             }
                         }
                     } ).delete( model );
         }
-
-        @Override
-        public FormDisplayer getFormDisplayer() {
-            SyncBeanDef<ModalFormDisplayer> displayerDef = IOC.getBeanManager().lookupBean( ModalFormDisplayer.class );
-            if ( displayerDef != null ) return displayerDef.getInstance();
-            return null;
-        }
     };
 
     public void init() {
+        crudComponent.config( getCrudHelper() );
+        crudComponent.setEmbedded( false );
+
         loadData( new RemoteCallback<List<M>>() {
 
             @Override
@@ -138,10 +117,6 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
                 loadItems( response );
             }
         } );
-    }
-
-    public void setActionsHelper( ListViewActionsHelper<M> helper ) {
-        this.helper = helper;
     }
 
     /*
@@ -156,19 +131,33 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
     }
 
     public void loadItems(List<M> itemsToLoad) {
-        items.setValue( itemsToLoad );
-        syncListWidgets();
+        this.crudItems = itemsToLoad;
+        updateCrudContent();
     }
 
-    public void syncListWidgets() {
-        for (M model : items.getValue()) {
-            syncListWidget( model );
-        }
+    protected void updateCrudContent() {
+        dataProvider = new AsyncDataProvider<M>() {
+            @Override
+            protected void onRangeChanged( HasData<M> hasData ) {
+                if ( crudItems != null ) {
+                    updateRowCount( crudItems.size(), true );
+                    updateRowData( 0, crudItems );
+                } else {
+                    updateRowCount( 0, true );
+                    updateRowData( 0, new ArrayList<M>() );
+                }
+            }
+        };
+
+        crudComponent.updateCrudContent( dataProvider );
     }
 
-    public  void syncListWidget (M model) {
-        ListItemView<M> widget = items.getComponent( model );
-        widget.setParentView( this );
+    public CrudHelper getCrudHelper() {
+        return crudHelper;
+    }
+
+    public void setCrudHelper( CrudHelper crudHelper ) {
+        this.crudHelper = crudHelper;
     }
 
     public FormView<M> getForm() {
@@ -186,20 +175,5 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
 
     protected abstract <S extends LiveSparkRestService<M>> Class<S> getRemoteServiceClass();
 
-    @EventHandler( "create" )
-    public void onCreateClick( ClickEvent event ) {
-        onCreate();
-    }
-
-    public void onCreate() {
-        helper.startCreate( this );
-    }
-
-    public void onEdit( M model ) {
-        helper.startEdit( this, model );
-    }
-
-    public void onDelete( M model ) {
-        helper.delete( model );
-    }
+    public abstract List<ColumnMeta> getCrudColumns();
 }
