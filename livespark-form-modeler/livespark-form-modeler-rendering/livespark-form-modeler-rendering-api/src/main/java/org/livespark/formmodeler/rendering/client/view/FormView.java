@@ -45,7 +45,6 @@ public abstract class FormView<M extends FormModel> extends Composite implements
     public void setModel( M model ) {
         binder.setModel( model );
         newModel = false;
-        beforeDisplay();
         validator.clearFieldErrors();
     }
 

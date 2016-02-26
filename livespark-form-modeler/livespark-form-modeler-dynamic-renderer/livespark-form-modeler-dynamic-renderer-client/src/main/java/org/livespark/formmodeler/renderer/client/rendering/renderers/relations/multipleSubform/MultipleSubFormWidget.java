@@ -93,7 +93,7 @@ public class MultipleSubFormWidget extends Composite implements TakesValue<List<
                 }
             }
         };
-        crudComponent.updateCrudContent( dataProvider );
+        crudComponent.setDataProvider( dataProvider );
     }
 
     public void config( final MultipleSubFormFieldDefinition field, final FormRenderingContext renderingContext ) {

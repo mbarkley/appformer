@@ -15,13 +15,16 @@
  */
 package org.livespark.formmodeler.rendering.client.shared.fields;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.SimplePanel;
-import org.jboss.errai.databinding.client.HasProperties;
+import com.google.gwt.view.client.AsyncDataProvider;
+import com.google.gwt.view.client.HasData;
+import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ui.client.widget.HasModel;
 import org.livespark.formmodeler.rendering.client.shared.FormModel;
 import org.livespark.formmodeler.rendering.client.view.FormView;
@@ -38,13 +41,13 @@ public class MultipleSubForm<L extends List<M>, M, F extends FormModel> extends 
 
     private GenericCrud crudComponent;
 
-    private MultipleSubFormModelAdapter<L, F> multipleSubFormModelAdapter;
+    private MultipleSubFormModelAdapter<L, M, F> multipleSubFormModelAdapter;
 
     private FormView<F> currentForm;
 
     private L model;
 
-    public MultipleSubForm( MultipleSubFormModelAdapter<L, F> adapter ) {
+    public MultipleSubForm( MultipleSubFormModelAdapter<L, M, F> adapter ) {
         super();
         if (adapter == null) throw new IllegalArgumentException( "FormModelProvider cannot be null" );
 
@@ -66,50 +69,67 @@ public class MultipleSubForm<L extends List<M>, M, F extends FormModel> extends 
         initView();
     }
 
+    protected void initCrudComponent() {
+        AsyncDataProvider<M> dataProvider = new AsyncDataProvider<M>() {
+            @Override
+            protected void onRangeChanged( HasData<M> hasData ) {
+                if ( model != null ) {
+                    updateRowCount( model.size(), true );
+                    updateRowData( 0, model );
+                } else {
+                    updateRowCount( 0, true );
+                    updateRowData( 0, new ArrayList<M>() );
+                }
+            }
+        };
+
+        crudComponent.setDataProvider( dataProvider );
+    }
+
     protected void initView() {
         currentForm = null;
         crudComponent.config( new CrudHelper() {
             @Override
-            public List<ColumnMeta<HasProperties>> getGridColumns() {
+            public List<ColumnMeta> getGridColumns() {
                 return multipleSubFormModelAdapter.getCrudColumns();
             }
 
             @Override
             public IsFormView getCreateInstanceForm() {
-                currentForm = multipleSubFormModelAdapter.getForm();
+                currentForm = IOC.getBeanManager().lookupBean( multipleSubFormModelAdapter.getCreationForm() ).newInstance();
                 return currentForm;
             }
 
             @Override
             public void createInstance() {
                 model.add( (M) currentForm.getModel().getDataModels().get( 0 ) );
-                initView();
+                crudComponent.refresh();
             }
 
             @Override
             public IsFormView getEditInstanceForm( Integer index ) {
-                currentForm = multipleSubFormModelAdapter.getForm();
+                currentForm = IOC.getBeanManager().lookupBean( multipleSubFormModelAdapter.getEditionForm() ).newInstance();
 
-                M formModel = model.get( index );
+                M model = MultipleSubForm.this.model.get( index );
 
-                currentForm.setModel( multipleSubFormModelAdapter.getEditionFormModel( formModel ) );
+                currentForm.setModel( multipleSubFormModelAdapter.getEditionFormModel( model ) );
 
                 return currentForm;
             }
 
             @Override
             public void editInstance() {
-                currentForm = multipleSubFormModelAdapter.getForm();
-
                 model.add( (M)currentForm.getModel().getDataModels().get( 0 ) );
-                initView();
+                crudComponent.refresh();
             }
 
             @Override
             public void deleteInstance( int index ) {
-
+                model.remove( index );
+                crudComponent.refresh();
             }
         } );
+        initCrudComponent();
     }
 
     public HandlerRegistration addValueChangeHandler( ValueChangeHandler<L> valueChangeHandler ) {

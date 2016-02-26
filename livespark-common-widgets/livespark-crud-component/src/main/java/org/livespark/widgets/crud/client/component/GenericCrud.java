@@ -30,6 +30,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.view.client.AsyncDataProvider;
+import com.google.gwt.view.client.HasData;
 import org.gwtbootstrap3.client.ui.Button;
 import org.gwtbootstrap3.client.ui.constants.ButtonSize;
 import org.gwtbootstrap3.client.ui.constants.ButtonType;
@@ -45,9 +46,12 @@ import org.uberfire.ext.widgets.common.client.common.popups.YesNoCancelPopup;
 import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 import org.uberfire.ext.widgets.common.client.tables.PagedTable;
 import org.livespark.widgets.crud.client.resources.i18n.CrudConstants;
+import org.uberfire.ext.widgets.common.client.tables.popup.DataGridFilterSummary;
 import org.uberfire.mvp.Command;
 
-public class GenericCrud extends Composite implements CrudUpdater {
+public class GenericCrud extends Composite {
+
+
     interface GenericCrudBinder
             extends
             UiBinder<Widget, GenericCrud> {
@@ -258,13 +262,22 @@ public class GenericCrud extends Composite implements CrudUpdater {
         this.allowDelete = allowDelete;
     }
 
-    @Override
-    public void updateCrudContent( AsyncDataProvider provider ) {
+    public void setDataProvider( AsyncDataProvider provider ) {
         if ( provider == null ) {
             return;
         }
-        this.dataProvider = provider;
-        table.setDataProvider( dataProvider );
-        table.redraw();
+        if ( dataProvider == null ) {
+            if ( dataProvider != null && dataProvider.getDataDisplays().contains( table ) ) {
+                dataProvider.removeDataDisplay( table );
+            }
+            this.dataProvider = provider;
+            table.setDataProvider( dataProvider );
+        }
+        refresh();
+    }
+
+    public void refresh() {
+        HasData next = dataProvider.getDataDisplays().iterator().next();
+        next.setVisibleRangeAndClearData( next.getVisibleRange(), true );
     }
 }

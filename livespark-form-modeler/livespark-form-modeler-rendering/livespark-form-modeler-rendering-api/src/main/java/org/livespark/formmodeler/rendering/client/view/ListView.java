@@ -34,7 +34,7 @@ import org.livespark.widgets.crud.client.component.GenericCrud;
 import org.livespark.widgets.crud.client.component.formDisplay.IsFormView;
 import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 
-public abstract class ListView<M extends FormModel, W extends ListItemView<M>> extends Composite {
+public abstract class ListView<M, F extends FormModel> extends Composite {
 
     @Inject
     protected SyncBeanManager beanManager;
@@ -44,9 +44,9 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
 
     protected List<M> crudItems;
 
-    protected FormView<M> currentForm;
+    protected FormView<F> currentForm;
 
-    private AsyncDataProvider<M> dataProvider;
+    AsyncDataProvider<M> dataProvider;
 
     protected CrudHelper crudHelper = new CrudHelper() {
         @Override
@@ -67,15 +67,15 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
                         @Override
                         public void callback( M response ) {
                             crudItems.add( response );
-                            updateCrudContent();
+                            crudComponent.refresh();
                         }
-                    } ).create( currentForm.getModel() );
+                    } ).create( getModel( currentForm.getModel() ) );
         }
 
         @Override
         public IsFormView getEditInstanceForm( Integer index ) {
             currentForm = getForm();
-            currentForm.setModel( crudItems.get( index ) );
+            currentForm.setModel( createFormModel( crudItems.get( index ) ) );
             return currentForm;
         }
 
@@ -85,9 +85,9 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
                     new RemoteCallback<Boolean>() {
                         @Override
                         public void callback( Boolean response ) {
-                            updateCrudContent();
+                            crudComponent.refresh();
                         }
-                    } ).update( currentForm.getModel() );
+                    } ).update( getModel( currentForm.getModel() ) );
         }
 
         @Override
@@ -99,7 +99,7 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
                         public void callback( Boolean response ) {
                             if ( response ) {
                                 crudItems.remove( model );
-                                updateCrudContent();
+                                crudComponent.refresh();
                             }
                         }
                     } ).delete( model );
@@ -107,7 +107,7 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
     };
 
     public void init() {
-        crudComponent.config( getCrudHelper() );
+        crudComponent.config( crudHelper );
         crudComponent.setEmbedded( false );
 
         loadData( new RemoteCallback<List<M>>() {
@@ -132,10 +132,10 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
 
     public void loadItems(List<M> itemsToLoad) {
         this.crudItems = itemsToLoad;
-        updateCrudContent();
+        initCrud();
     }
 
-    protected void updateCrudContent() {
+    protected void initCrud() {
         dataProvider = new AsyncDataProvider<M>() {
             @Override
             protected void onRangeChanged( HasData<M> hasData ) {
@@ -149,23 +149,15 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
             }
         };
 
-        crudComponent.updateCrudContent( dataProvider );
+        crudComponent.setDataProvider( dataProvider );
     }
 
-    public CrudHelper getCrudHelper() {
-        return crudHelper;
-    }
-
-    public void setCrudHelper( CrudHelper crudHelper ) {
-        this.crudHelper = crudHelper;
-    }
-
-    public FormView<M> getForm() {
-        SyncBeanDef<? extends FormView<M>> beanDef = beanManager.lookupBean( getFormType() );
+    public FormView<F> getForm() {
+        SyncBeanDef<? extends FormView<F>> beanDef = beanManager.lookupBean( getFormType() );
         return beanDef.getInstance();
     }
 
-    protected abstract Class<? extends FormView<M>> getFormType();
+    protected abstract Class<? extends FormView<F>> getFormType();
 
     public abstract String getListTitle();
 
@@ -176,4 +168,8 @@ public abstract class ListView<M extends FormModel, W extends ListItemView<M>> e
     protected abstract <S extends LiveSparkRestService<M>> Class<S> getRemoteServiceClass();
 
     public abstract List<ColumnMeta> getCrudColumns();
+
+    public abstract M getModel( F formModel );
+
+    public abstract F createFormModel( M model );
 }

@@ -19,18 +19,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jboss.errai.databinding.client.HasProperties;
 import org.livespark.formmodeler.rendering.client.shared.LiveSparkRestService;
 import org.livespark.formmodeler.rendering.client.view.FormView;
-import org.livespark.formmodeler.rendering.client.view.ListItemView;
 import org.livespark.formmodeler.rendering.client.view.ListView;
 import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 
-public class TestListView extends ListView<TestFormModel, ListItemView<TestFormModel>> {
+public class TestListView extends ListView<Object, TestFormModel> {
 
     private FormView<TestFormModel> formView;
 
-    private LiveSparkRestService<TestFormModel> service;
+    private LiveSparkRestService<Object> service;
 
     public RemoteCallback<Object> lastLoadDataCallback;
 
@@ -39,12 +37,22 @@ public class TestListView extends ListView<TestFormModel, ListItemView<TestFormM
         return new ArrayList<>(  );
     }
 
+    @Override
+    public Object getModel( TestFormModel formModel ) {
+        return new Object();
+    }
+
+    @Override
+    public TestFormModel createFormModel( Object model ) {
+        return new TestFormModel();
+    }
+
     /* (non-Javadoc)
          * @see org.livespark.formmodeler.rendering.client.view.ListView#createRestCaller(org.jboss.errai.common.client.api.RemoteCallback)
          */
     @SuppressWarnings( "unchecked" )
     @Override
-    public <S extends LiveSparkRestService<TestFormModel>, R> S createRestCaller( RemoteCallback<R> callback ) {
+    public <S extends LiveSparkRestService<Object>, R> S createRestCaller( RemoteCallback<R> callback ) {
         lastLoadDataCallback = (RemoteCallback<Object>) callback;
         return (S) service;
     }

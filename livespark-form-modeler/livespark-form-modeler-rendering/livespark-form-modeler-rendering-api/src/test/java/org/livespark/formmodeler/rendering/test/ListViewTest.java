@@ -15,33 +15,27 @@
  */
 package org.livespark.formmodeler.rendering.test;
 
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.*;
-
 import java.util.Arrays;
 import java.util.List;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwtmockito.GwtMock;
+import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jboss.errai.common.client.api.RemoteCallback;
-import org.jboss.errai.ui.client.widget.ListWidget;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.livespark.formmodeler.rendering.client.shared.LiveSparkRestService;
 import org.livespark.formmodeler.rendering.client.view.FormView;
-import org.livespark.formmodeler.rendering.client.view.ListItemView;
 import org.livespark.formmodeler.rendering.client.view.display.modal.ModalFormDisplayer;
-import org.livespark.formmodeler.rendering.client.view.util.ListViewActionsHelper;
 import org.livespark.formmodeler.rendering.test.res.TestFormModel;
 import org.livespark.formmodeler.rendering.test.res.TestListView;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwtmockito.GwtMock;
-import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 @RunWith( GwtMockitoTestRunner.class )
 public class ListViewTest {
@@ -50,19 +44,10 @@ public class ListViewTest {
     private TestListView listView;
 
     @GwtMock
-    private ListWidget<TestFormModel, ListItemView<TestFormModel>> listWidget;
-
-    @GwtMock
-    private ListItemView<TestFormModel> listItemView;
-
-    @GwtMock
     private FormView<TestFormModel> formView;
 
     @GwtMock
     private ClickEvent clickEvent;
-
-    @Mock
-    private ListViewActionsHelper listViewActionsHelper;
 
     @GwtMock
     private ModalFormDisplayer modalFormDisplayer;
@@ -100,7 +85,6 @@ public class ListViewTest {
 
         final List<TestFormModel> models = Arrays.asList( formModel );
         listView.lastLoadDataCallback.callback( models );
-        verify( listWidget ).setValue( models );
     }
 
     @Test
@@ -111,14 +95,11 @@ public class ListViewTest {
             initLoadsDataOnce();
             assertNotNull( listView.lastLoadDataCallback );
 
-            when( listWidget.getValue() ).thenReturn( response );
-            when( listWidget.getComponent( formModel ) ).thenReturn( listItemView );
         } catch ( RuntimeException e ) {
             failedPrecondition( e );
         }
 
         listView.lastLoadDataCallback.callback( response );
-        verify( listItemView ).setParentView( listView );
     }
 
     @Test
@@ -136,8 +117,6 @@ public class ListViewTest {
     @Test
     public void createModalSubmitHandlerCallsRestCreateAndModalHide() throws Exception {
         try {
-            //listView.setActionsHelper( listViewActionsHelper );
-            when( listViewActionsHelper.getFormDisplayer() ).thenReturn( modalFormDisplayer );
             doAnswer( new Answer() {
                 @Override
                 public Object answer( InvocationOnMock invocationOnMock ) throws Throwable {
@@ -155,8 +134,6 @@ public class ListViewTest {
             failedPrecondition( e );
         }
 
-        verify( listViewActionsHelper ).startCreate( listView );
-
         modalFormDisplayer.onSubmit();
 
         verify( restService ).create( formModel );
@@ -167,14 +144,11 @@ public class ListViewTest {
     public void createCallbackAddsModelToListAndSetsParentView() throws Exception {
         try {
             //listView.setActionsHelper( listViewActionsHelper );
-
-            when( listViewActionsHelper.getFormDisplayer() ).thenReturn( modalFormDisplayer );
             doAnswer( new Answer() {
                 @Override
                 public Object answer( InvocationOnMock invocationOnMock ) throws Throwable {
                     listView.createRestCaller( callback ).create( formModel );
                     models.add( differentModel );
-                    listItemView.setParentView( listView );
                     return null;
                 }
             } ).when( modalFormDisplayer ).onSubmit();
@@ -189,9 +163,6 @@ public class ListViewTest {
             verifyNoMoreInteractions( restService );
             assertNotNull( listView.lastLoadDataCallback );
 
-
-            when( listWidget.getValue() ).thenReturn( models );
-            when( listWidget.getComponent( differentModel ) ).thenReturn( listItemView );
         } catch ( RuntimeException e ) {
             failedPrecondition( e );
         }
@@ -199,20 +170,18 @@ public class ListViewTest {
         listView.lastLoadDataCallback.callback( differentModel );
 
         verify( models ).add( differentModel );
-        verify( listItemView ).setParentView( listView );
-        verifyNoMoreInteractions( models, listItemView );
     }
 
     @Test
     public void onDeleteCallsRestDelete() throws Exception {
-        doAnswer( new Answer() {
+       /* doAnswer( new Answer() {
             @Override
             public Object answer( InvocationOnMock invocationOnMock ) throws Throwable {
                 listView.createRestCaller( callback ).delete( differentModel );
                 return null;
             }
         } ).when( listViewActionsHelper ).delete(differentModel );
-
+*/
         //listView.onDelete( differentModel );
 
         verify( restService ).delete( differentModel );
@@ -222,16 +191,16 @@ public class ListViewTest {
     @Test
     public void onDeleteCallbackRemovesModelFromList() throws Exception {
         try {
-            doAnswer( new Answer() {
+            /*doAnswer( new Answer() {
                 @Override
                 public TestFormModel answer( InvocationOnMock invocationOnMock ) throws Throwable {
                     models.remove( differentModel );
                     return null;
                 }
             } ).when( listViewActionsHelper ).delete( differentModel );
+            */
             //listView.onDelete( differentModel );
             assertNotNull( listView.lastLoadDataCallback );
-            when( listWidget.getValue() ).thenReturn( models );
 
         } catch ( RuntimeException e ) {
             failedPrecondition( e );
@@ -245,14 +214,14 @@ public class ListViewTest {
 
     @Test
     public void onEditDisplaysModalWithCorrectModel() throws Exception {
-        doAnswer( new Answer() {
+        /*doAnswer( new Answer() {
             @Override
             public Object answer( InvocationOnMock invocationOnMock ) throws Throwable {
                 formView.setModel( formModel );
                 return null;
             }
         } ).when( listViewActionsHelper ).startEdit( listView, formModel );
-
+*/
         //listView.onEdit( formModel );
 
         verify( formView ).setModel( formModel );
@@ -261,6 +230,7 @@ public class ListViewTest {
     @Test
     public void editModalSubmitCallbackCallsRestUpdateAndHidesModal() throws Exception {
         try {
+            /*
             doAnswer( new Answer() {
                 @Override
                 public Object answer( InvocationOnMock invocationOnMock ) throws Throwable {
@@ -268,7 +238,7 @@ public class ListViewTest {
                     return null;
                 }
             } ).when( listViewActionsHelper ).startEdit( listView, formModel );
-
+*/
             //listView.onEdit( formModel );
 
             when( formView.validate() ).thenReturn( true );
@@ -284,7 +254,7 @@ public class ListViewTest {
     public void updateCallbackDoesNotModifyList() throws Exception {
         try {
             //listView.setActionsHelper( listViewActionsHelper );
-            when( listViewActionsHelper.getFormDisplayer() ).thenReturn( modalFormDisplayer );
+
             doAnswer( new Answer() {
                 @Override
                 public Object answer( InvocationOnMock invocationOnMock ) throws Throwable {
@@ -294,8 +264,6 @@ public class ListViewTest {
             } ).when( modalFormDisplayer ).onSubmit();
 
             //listView.onEdit( formModel );
-
-            verify( listViewActionsHelper ).startEdit( listView, formModel );
 
             when( formView.validate() ).thenReturn( true );
             when( formView.getModel() ).thenReturn( formModel );
@@ -310,8 +278,6 @@ public class ListViewTest {
         }
 
         listView.lastLoadDataCallback.callback( true );
-
-        verifyNoMoreInteractions( listWidget, restService );
     }
 
     private void failedPrecondition( final Throwable cause ) {
