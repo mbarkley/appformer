@@ -16,43 +16,24 @@
 
 package org.livespark.formmodeler.editor.backend.dataProviders;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import javax.inject.Inject;
-import javax.inject.Named;
 
-import org.guvnor.common.services.project.model.Project;
-import org.kie.workbench.common.services.datamodeller.util.FileUtils;
-import org.kie.workbench.common.services.shared.project.KieProjectService;
-import org.livespark.formmodeler.codegen.template.FormDefinitionSerializer;
+import org.livespark.formmodeler.editor.service.VFSFormFinderService;
 import org.livespark.formmodeler.editor.service.FormEditorRenderingContext;
-import org.livespark.formmodeler.editor.type.FormResourceTypeDefinition;
-import org.livespark.formmodeler.model.DataHolder;
 import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.model.FormDefinition;
 import org.livespark.formmodeler.model.config.SelectorData;
 import org.livespark.formmodeler.model.config.SystemSelectorDataProvider;
 import org.livespark.formmodeler.model.impl.relations.EmbeddedFormField;
-import org.livespark.formmodeler.model.impl.relations.MultipleSubFormFieldDefinition;
 import org.livespark.formmodeler.renderer.service.FormRenderingContext;
-import org.uberfire.backend.server.util.Paths;
-import org.uberfire.io.IOService;
-import org.uberfire.java.nio.file.Path;
 
 public class VFSSelectorFormProvider implements SystemSelectorDataProvider {
 
     @Inject
-    @Named("ioStrategy")
-    private IOService ioService;
-
-    @Inject
-    private KieProjectService projectService;
-
-    @Inject
-    private FormDefinitionSerializer serializer;
+    private VFSFormFinderService vfsFormFinderService;
 
     @Override
     public String getProviderName() {
@@ -66,37 +47,17 @@ public class VFSSelectorFormProvider implements SystemSelectorDataProvider {
         if ( context.getModel() instanceof EmbeddedFormField ) {
             FormEditorRenderingContext editorContext = (FormEditorRenderingContext) context;
 
-            Project project = projectService.resolveProject( editorContext.getFormPath() );
+            FieldDefinition field = (FieldDefinition) context.getModel();
 
-            FileUtils utils = FileUtils.getInstance();
+            List<FormDefinition> forms;
+            if ( field != null ) {
+                forms = vfsFormFinderService.findFormsForType( field.getStandaloneClassName(), editorContext.getFormPath());
+            } else {
+                forms = vfsFormFinderService.findAllForms( editorContext.getFormPath() );
+            }
 
-            List<Path> nioPaths = new ArrayList<Path>();
-
-            nioPaths.add( Paths.convert( project.getRootPath() ) );
-
-            Collection<FileUtils.ScanResult> forms = utils.scan( ioService, nioPaths, FormResourceTypeDefinition.EXTENSION, true );
-
-            for ( FileUtils.ScanResult form : forms ) {
-                org.uberfire.java.nio.file.Path formPath = form.getFile();
-
-                FormDefinition formDefinition = serializer.deserialize( ioService.readAllString( formPath ).trim() );
-
-                FieldDefinition field = (FieldDefinition) context.getModel();
-
-                if ( formDefinition.getDataHolders() == null ||
-                        formDefinition.getDataHolders().size() != 1 ) {
-                    continue;
-                }
-
-                if ( field != null ) {
-
-                    DataHolder holder = formDefinition.getDataHolders().get( 0 );
-
-                    if ( !field.getStandaloneClassName().isEmpty() && !holder.getType().equals( field.getStandaloneClassName() ) ) {
-                        continue;
-                    }
-                }
-                values.put( formDefinition.getId(), formDefinition.getName() );
+            for ( FormDefinition form : forms ) {
+                values.put( form.getId(), form.getName() );
             }
         }
         return  new SelectorData( values, null );

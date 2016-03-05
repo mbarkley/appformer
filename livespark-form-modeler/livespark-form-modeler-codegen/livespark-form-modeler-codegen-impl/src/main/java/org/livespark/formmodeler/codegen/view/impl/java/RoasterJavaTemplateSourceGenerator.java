@@ -24,6 +24,7 @@ import org.jboss.forge.roaster.model.source.FieldSource;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
+import org.livespark.formmodeler.codegen.view.impl.java.inputs.InputCreatorHelper;
 import org.livespark.formmodeler.model.DataHolder;
 import org.livespark.formmodeler.model.FieldDefinition;
 import org.livespark.formmodeler.model.FormDefinition;
@@ -34,7 +35,7 @@ import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
  * Created by pefernan on 4/28/15.
  */
 @ApplicationScoped
-public class RoasterFormJavaTemplateSourceGenerator extends RoasterClientFormTemplateSourceGenerator {
+public class RoasterJavaTemplateSourceGenerator extends RoasterClientTemplateSourceGenerator {
 
     @Override
     protected void addAdditional( SourceGenerationContext context,
@@ -129,13 +130,13 @@ public class RoasterFormJavaTemplateSourceGenerator extends RoasterClientFormTem
         viewClass.setPackage( packageName )
                 .setPublic()
                 .setName( context.getFormViewName() )
-                .setSuperType( FORM_VIEW_CLASS + "<" + context.getModelName() + ">" );
+                .setSuperType( FORM_VIEW_CLASS + "<" + context.getFormModelName() + ">" );
     }
 
     @Override
     protected void addImports( SourceGenerationContext context,
             JavaClassSource viewClass ) {
-        viewClass.addImport( context.getSharedPackage().getPackageName() + "." + context.getModelName() );
+        viewClass.addImport( context.getSharedPackage().getPackageName() + "." + context.getFormModelName() );
     }
 
     @Override
@@ -143,7 +144,7 @@ public class RoasterFormJavaTemplateSourceGenerator extends RoasterClientFormTem
             JavaClassSource viewClass ) {
         viewClass.addAnnotation( ERRAI_TEMPLATED );
         viewClass.addAnnotation( INJECT_NAMED ).setStringValue( context.getFormViewName() );
-        viewClass.addAnnotation( FORM_MODEL_ANNOTATION ).setStringValue( context.getSharedPackage().getPackageName() + "." + context.getModelName() );
+        viewClass.addAnnotation( FORM_MODEL_ANNOTATION ).setStringValue( context.getSharedPackage().getPackageName() + "." + context.getFormModelName() );
     }
 
     @Override

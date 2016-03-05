@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Red Hat, Inc. and/or its affiliates.
+ * Copyright 2015 JBoss Inc
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.livespark.formmodeler.editor.client.editor.rendering.renderers;
+package org.livespark.formmodeler.editor.service;
 
-import javax.enterprise.context.Dependent;
+import org.jboss.errai.bus.server.annotations.Remote;
+import org.livespark.formmodeler.model.FormDefinition;
+import org.livespark.formmodeler.model.impl.relations.EmbeddedFormField;
+import org.uberfire.backend.vfs.Path;
 
-import org.livespark.formmodeler.model.impl.basic.selectors.ListBoxFieldDefinition;
+import java.util.List;
 
-@Dependent
-public class ListBoxFieldPropertiesGenerator extends SelectorFieldPropertiesGenerator<ListBoxFieldDefinition> {
+/**
+ * Created by pefernan on 9/18/15.
+ */
+@Remote
+public interface FormCreatorService {
 
-    @Override
-    public String getSupportedFieldDefinitionCode() {
-        return ListBoxFieldDefinition._CODE;
-    }
+    FormDefinition getNewFormInstance();
 }

@@ -83,4 +83,14 @@ public abstract class FormView<M extends FormModel> extends Composite implements
     }
 
     public abstract void beforeDisplay();
+
+    @Override
+    public M getModel() {
+        return binder.getModel();
+    }
+
+    @Override
+    public boolean isValid() {
+        return validate();
+    }
 }

@@ -37,17 +37,15 @@ import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
  * Created by pefernan on 6/18/15.
  */
 
-public class MultipleSubForm<L extends List<M>, M, F extends FormModel> extends SimplePanel implements HasModel<L> {
+public class MultipleSubForm<L extends List<M>, M, C extends FormModel, E extends FormModel> extends SimplePanel implements HasModel<L> {
 
     private GenericCrud crudComponent;
 
-    private MultipleSubFormModelAdapter<L, M, F> multipleSubFormModelAdapter;
-
-    private FormView<F> currentForm;
+    private MultipleSubFormModelAdapter<L, M, C, E> multipleSubFormModelAdapter;
 
     private L model;
 
-    public MultipleSubForm( MultipleSubFormModelAdapter<L, M, F> adapter ) {
+    public MultipleSubForm( MultipleSubFormModelAdapter<L, M, C, E> adapter ) {
         super();
         if (adapter == null) throw new IllegalArgumentException( "FormModelProvider cannot be null" );
 
@@ -87,8 +85,14 @@ public class MultipleSubForm<L extends List<M>, M, F extends FormModel> extends 
     }
 
     protected void initView() {
-        currentForm = null;
         crudComponent.config( new CrudHelper() {
+
+            private FormView<C> creationForm;
+            private FormView<E> editionForm;
+
+            private int editionIndex;
+
+
             @Override
             public List<ColumnMeta> getGridColumns() {
                 return multipleSubFormModelAdapter.getCrudColumns();
@@ -96,31 +100,33 @@ public class MultipleSubForm<L extends List<M>, M, F extends FormModel> extends 
 
             @Override
             public IsFormView getCreateInstanceForm() {
-                currentForm = IOC.getBeanManager().lookupBean( multipleSubFormModelAdapter.getCreationForm() ).newInstance();
-                return currentForm;
+                creationForm = IOC.getBeanManager().lookupBean( multipleSubFormModelAdapter.getCreationForm() ).newInstance();
+                return creationForm;
             }
 
             @Override
             public void createInstance() {
-                model.add( (M) currentForm.getModel().getDataModels().get( 0 ) );
+                model.add( (M) creationForm.getModel().getDataModels().get( 0 ) );
+                editionForm = null;
                 crudComponent.refresh();
             }
 
             @Override
             public IsFormView getEditInstanceForm( Integer index ) {
-                currentForm = IOC.getBeanManager().lookupBean( multipleSubFormModelAdapter.getEditionForm() ).newInstance();
+                editionIndex = index;
+                editionForm = IOC.getBeanManager().lookupBean( multipleSubFormModelAdapter.getEditionForm() ).newInstance();
 
                 M model = MultipleSubForm.this.model.get( index );
 
-                currentForm.setModel( multipleSubFormModelAdapter.getEditionFormModel( model ) );
+                editionForm.setModel( multipleSubFormModelAdapter.getEditionFormModel( model ) );
 
-                return currentForm;
+                return editionForm;
             }
 
             @Override
             public void editInstance() {
-                model.add( (M)currentForm.getModel().getDataModels().get( 0 ) );
                 crudComponent.refresh();
+                editionForm = null;
             }
 
             @Override

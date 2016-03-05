@@ -32,6 +32,7 @@ import org.livespark.formmodeler.codegen.FormSourcesGenerator;
 import org.livespark.formmodeler.codegen.template.FormDefinitionSerializer;
 import org.livespark.formmodeler.codegen.util.SourceGenerationUtil;
 import org.livespark.formmodeler.editor.backend.service.util.DataModellerFieldGenerator;
+import org.livespark.formmodeler.editor.service.FormCreatorService;
 import org.livespark.formmodeler.editor.service.FormEditorRenderingContext;
 import org.livespark.formmodeler.editor.type.FormResourceTypeDefinition;
 import org.livespark.formmodeler.model.DataHolder;
@@ -40,7 +41,6 @@ import org.livespark.formmodeler.model.FormDefinition;
 import org.livespark.formmodeler.editor.model.FormModelerContent;
 import org.livespark.formmodeler.service.FieldManager;
 import org.livespark.formmodeler.editor.service.FormEditorService;
-import org.livespark.formmodeler.editor.service.FormFinderSerivce;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.backend.server.util.Paths;
@@ -102,7 +102,7 @@ public class FormEditorServiceImpl extends KieService<FormModelerContent> implem
     protected FormSourcesGenerator formSourcesGenerator;
 
     @Inject
-    protected FormFinderSerivce formFinderSerivce;
+    protected FormCreatorService formCreatorService;
 
     @Override
     public FormModelerContent loadContent( Path path ) {
@@ -119,7 +119,7 @@ public class FormEditorServiceImpl extends KieService<FormModelerContent> implem
             if (ioService.exists(kiePath)) {
                 throw new FileAlreadyExistsException(kiePath.toString());
             }
-            FormDefinition form = formFinderSerivce.getNewFormInstance();
+            FormDefinition form = formCreatorService.getNewFormInstance();
 
             form.setName( formName.substring( 0, formName.lastIndexOf( "." ) ) );
 
@@ -235,7 +235,7 @@ public class FormEditorServiceImpl extends KieService<FormModelerContent> implem
 
         FormDefinition form = formDefinitionSerializer.deserialize( template );
         if ( form == null ) {
-            form = formFinderSerivce.getNewFormInstance();
+            form = formCreatorService.getNewFormInstance();
         }
 
         return form;
@@ -251,7 +251,6 @@ public class FormEditorServiceImpl extends KieService<FormModelerContent> implem
                 if (dataObject.getSuperClassName().equals( SourceGenerationUtil.LIST_VIEW_CLASS )
                         || dataObject.getSuperClassName().equals( SourceGenerationUtil.FORM_VIEW_CLASS )
                         || dataObject.getSuperClassName().equals( SourceGenerationUtil.FORM_MODEL_CLASS )
-                        || dataObject.getSuperClassName().equals( SourceGenerationUtil.LIST_ITEM_VIEW_CLASS )
                         || dataObject.getSuperClassName().equals( SourceGenerationUtil.ENTITY_SERVICE_CLASS )
                         || dataObject.getSuperClassName().equals( SourceGenerationUtil.BASE_REST_SERVICE )
                         || dataObject.getClassName().endsWith( "RestServiceImpl" ))

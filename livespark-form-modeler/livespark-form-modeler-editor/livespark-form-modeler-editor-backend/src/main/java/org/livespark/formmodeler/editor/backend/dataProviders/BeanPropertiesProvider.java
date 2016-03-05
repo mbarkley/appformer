@@ -20,26 +20,22 @@ import java.util.HashMap;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
-import org.kie.workbench.common.screens.datamodeller.service.DataModelerService;
-import org.kie.workbench.common.services.datamodeller.core.DataModel;
-import org.kie.workbench.common.services.datamodeller.core.DataObject;
 import org.kie.workbench.common.services.datamodeller.core.ObjectProperty;
-import org.kie.workbench.common.services.shared.project.KieProjectService;
+import org.livespark.formmodeler.editor.service.DataObjectFinderService;
 import org.livespark.formmodeler.editor.service.FormEditorRenderingContext;
 import org.livespark.formmodeler.model.config.SelectorData;
 import org.livespark.formmodeler.model.config.SystemSelectorDataProvider;
 import org.livespark.formmodeler.model.impl.relations.MultipleSubFormFieldDefinition;
 import org.livespark.formmodeler.model.impl.relations.TableColumnMeta;
 import org.livespark.formmodeler.renderer.service.FormRenderingContext;
+import org.uberfire.backend.vfs.Path;
 
 @Dependent
 public class BeanPropertiesProvider implements SystemSelectorDataProvider {
 
     @Inject
-    private KieProjectService projectService;
+    private DataObjectFinderService dataObjectFinderService;
 
-    @Inject
-    private DataModelerService dataModelerService;
     @Override
     public String getProviderName() {
         return getClass().getSimpleName();
@@ -52,17 +48,17 @@ public class BeanPropertiesProvider implements SystemSelectorDataProvider {
 
         if ( context instanceof FormEditorRenderingContext && context.getParentContext() != null ) {
             if ( context.getParentContext().getModel() instanceof MultipleSubFormFieldDefinition ) {
+
                 FormEditorRenderingContext editorContext = (FormEditorRenderingContext) context;
 
                 MultipleSubFormFieldDefinition subForm = (MultipleSubFormFieldDefinition) context.getParentContext().getModel();
 
-                DataModel dataModel = dataModelerService.loadModel( projectService.resolveProject( editorContext.getFormPath() ) );
-
-                DataObject dataObject = dataModel.getDataObject( subForm.getStandaloneClassName() );
+                Path path = editorContext.getFormPath();
+                String typeName = subForm.getStandaloneClassName();
 
                 TableColumnMeta model = (TableColumnMeta) context.getModel();
 
-                for ( ObjectProperty property : dataObject.getProperties() ) {
+                for ( ObjectProperty property : dataObjectFinderService.getDataObjectProperties( typeName, path ) ) {
                     boolean add = true;
 
                     for ( int i = 0; i < subForm.getColumnMetas().size() && add == true; i++ ) {

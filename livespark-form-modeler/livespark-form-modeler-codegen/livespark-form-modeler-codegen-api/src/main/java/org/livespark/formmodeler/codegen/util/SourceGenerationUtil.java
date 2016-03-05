@@ -56,7 +56,10 @@ public interface SourceGenerationUtil {
     public static final String FORM_MODEL_CLASS = "org.livespark.formmodeler.rendering.client.shared.FormModel";
     public static final String FORM_VIEW_CLASS = "org.livespark.formmodeler.rendering.client.view.FormView";
     public static final String LIST_VIEW_CLASS = "org.livespark.formmodeler.rendering.client.view.ListView";
-    public static final String LIST_ITEM_VIEW_CLASS = "org.livespark.formmodeler.rendering.client.view.ListItemView";
+
+    public static final String COLUMN_META_CLASS_NAME = "org.uberfire.ext.widgets.common.client.tables.ColumnMeta";
+    public static final String COLUMN_METAS_VAR_NAME = "columnMetas";
+    public static final String COLUMN_META_SUFFIX = "_columnMeta";
 
     public static final String LIST_VIEW_DELETE_EXECUTOR = "org.livespark.formmodeler.rendering.client.view.ListView.DeleteExecutor";
 

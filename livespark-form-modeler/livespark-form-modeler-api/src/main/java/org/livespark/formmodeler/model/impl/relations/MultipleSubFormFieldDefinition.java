@@ -90,28 +90,13 @@ public class MultipleSubFormFieldDefinition extends FieldDefinition implements E
         this.editionForm = editionForm;
     }
 
-    public String getEmbeddedFormView() {
-        return embeddedFormView;
-    }
-
-    public void setEmbeddedFormView( String embeddedFormView ) {
-        this.embeddedFormView = embeddedFormView;
-    }
-
-    public String getEmbeddedModel() {
-        return embeddedModel;
-    }
-
-    public void setEmbeddedModel( String embeddedModel ) {
-        this.embeddedModel = embeddedModel;
-    }
-
     @Override
     protected void doCopyFrom(FieldDefinition other) {
-        if ( other instanceof EmbeddedFormField ) {
-            EmbeddedFormField otherForm = (EmbeddedFormField) other;
-            setEmbeddedModel( otherForm.getEmbeddedModel() );
-            setEmbeddedFormView( otherForm.getEmbeddedFormView() );
+        if ( other instanceof MultipleSubFormFieldDefinition ) {
+            MultipleSubFormFieldDefinition otherForm = (MultipleSubFormFieldDefinition) other;
+            otherForm.setCreationForm( creationForm );
+            otherForm.setEditionForm( editionForm );
+            otherForm.setColumnMetas( columnMetas );
         }
         setStandaloneClassName( other.getStandaloneClassName() );
     }

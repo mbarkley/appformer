@@ -24,14 +24,14 @@ import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 /**
  * Created by pefernan on 7/2/15.
  */
-public interface MultipleSubFormModelAdapter <L extends List<M>, M, F extends FormModel> {
+public interface MultipleSubFormModelAdapter <L extends List<M>, M, C extends FormModel, E extends FormModel> {
 
     public List<ColumnMeta> getCrudColumns();
 
-    public Class<? extends FormView<F>> getCreationForm();
+    public Class<? extends FormView<C>> getCreationForm();
 
-    public Class<? extends FormView<F>> getEditionForm();
+    public Class<? extends FormView<E>> getEditionForm();
 
-    public F getEditionFormModel( M model );
+    public E getEditionFormModel( M model );
 
 }

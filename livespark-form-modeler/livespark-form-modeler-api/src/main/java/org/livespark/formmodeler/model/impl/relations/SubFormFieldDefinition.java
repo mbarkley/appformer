@@ -54,22 +54,6 @@ public class SubFormFieldDefinition extends FieldDefinition implements EmbeddedF
         this.nestedForm = nestedForm;
     }
 
-    public String getEmbeddedFormView() {
-        return embeddedFormView;
-    }
-
-    public void setEmbeddedFormView( String embeddedFormView ) {
-        this.embeddedFormView = embeddedFormView;
-    }
-
-    public String getEmbeddedModel() {
-        return embeddedModel;
-    }
-
-    public void setEmbeddedModel( String embeddedModel ) {
-        this.embeddedModel = embeddedModel;
-    }
-
     @Override
     public String[] getSupportedTypes() {
         return new String[] {
@@ -78,11 +62,10 @@ public class SubFormFieldDefinition extends FieldDefinition implements EmbeddedF
     }
 
     @Override
-    protected void doCopyFrom(FieldDefinition other) {
-        if ( other instanceof EmbeddedFormField ) {
-            EmbeddedFormField otherForm = (EmbeddedFormField) other;
-            setEmbeddedModel( otherForm.getEmbeddedModel() );
-            setEmbeddedFormView( otherForm.getEmbeddedFormView() );
+    protected void doCopyFrom( FieldDefinition other ) {
+        if ( other instanceof SubFormFieldDefinition ) {
+            SubFormFieldDefinition otherForm = (SubFormFieldDefinition) other;
+            otherForm.setNestedForm( nestedForm );
         }
         setStandaloneClassName( other.getStandaloneClassName() );
     }

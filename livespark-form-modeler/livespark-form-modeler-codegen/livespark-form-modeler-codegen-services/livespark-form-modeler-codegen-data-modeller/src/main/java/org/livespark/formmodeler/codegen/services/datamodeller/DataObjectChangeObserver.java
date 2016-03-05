@@ -18,7 +18,6 @@ package org.livespark.formmodeler.codegen.services.datamodeller;
 import static org.livespark.formmodeler.codegen.SourceGenerationContext.ENTITY_SERVICE_SUFFIX;
 import static org.livespark.formmodeler.codegen.SourceGenerationContext.FORM_MODEL_SUFFIX;
 import static org.livespark.formmodeler.codegen.SourceGenerationContext.FORM_VIEW_SUFFIX;
-import static org.livespark.formmodeler.codegen.SourceGenerationContext.LIST_ITEM_VIEW_SUFFIX;
 import static org.livespark.formmodeler.codegen.SourceGenerationContext.LIST_VIEW_SUFFIX;
 import static org.livespark.formmodeler.codegen.SourceGenerationContext.REST_IMPL_SUFFIX;
 import static org.livespark.formmodeler.codegen.SourceGenerationContext.REST_SERVICE_SUFFIX;
@@ -122,7 +121,6 @@ public class DataObjectChangeObserver {
                 !path.getFileName().endsWith( ENTITY_SERVICE_SUFFIX ) &&
                 !path.getFileName().endsWith( FORM_MODEL_SUFFIX ) &&
                 !path.getFileName().endsWith( FORM_VIEW_SUFFIX ) &&
-                !path.getFileName().endsWith( LIST_ITEM_VIEW_SUFFIX ) &&
                 !path.getFileName().endsWith( LIST_VIEW_SUFFIX ) &&
                 !path.getFileName().endsWith( REST_IMPL_SUFFIX ) &&
                 !path.getFileName().endsWith( REST_SERVICE_SUFFIX );

@@ -60,9 +60,6 @@ public class DraggableFieldComponent extends FieldLayoutComponent<FormEditorRend
     protected FieldDefinitionPropertiesModal modal;
 
     @Inject
-    protected FieldPropertiesGeneratorManager fieldPropertiesGeneratorManager;
-
-    @Inject
     protected Event<FormEditorContextRequest> fieldRequest;
 
     @Inject

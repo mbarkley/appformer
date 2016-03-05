@@ -40,8 +40,8 @@ import org.livespark.formmodeler.codegen.rest.RestApi;
 import org.livespark.formmodeler.codegen.rest.RestImpl;
 import org.livespark.formmodeler.codegen.template.FormDefinitionSerializer;
 import org.livespark.formmodeler.codegen.view.FormHTMLTemplateSourceGenerator;
-import org.livespark.formmodeler.codegen.view.ListItemView;
 import org.livespark.formmodeler.codegen.view.ListView;
+import org.livespark.formmodeler.editor.service.VFSFormFinderService;
 import org.livespark.formmodeler.model.FormDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,10 +96,6 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
     private FormHTMLTemplateSourceGenerator htmlListTemplateSourceGenerator;
 
     @Inject
-    @ListItemView
-    private FormJavaTemplateSourceGenerator javaListItemTemplateSourceGenerator;
-
-    @Inject
     @RestApi
     private FormJavaTemplateSourceGenerator javaRestTemplateSourceGenerator;
 
@@ -114,6 +110,9 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
     @Inject
     private ErraiAppPropertiesGenerator serializableTypesGenerator;
 
+    @Inject
+    private VFSFormFinderService vfsFormFinderService;
+
     @Override
     public void generateEntityFormSources(FormDefinition form, Path resourcePath) {
         Package resPackage = projectService.resolvePackage(resourcePath);
@@ -126,7 +125,9 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
         Package shared = getOrCreateSharedPackage(client);
         Package server = getOrCreateServerPackage(root);
 
-        SourceGenerationContext context = new SourceGenerationContext( form, resourcePath, root, local, shared, server );
+        SourceGenerationContext context = new SourceGenerationContext( form,
+                resourcePath, root, local, shared, server,
+                vfsFormFinderService.findAllForms( resourcePath ) );
 
         String modelSource = modelSourceGenerator.generateFormModelSource( context );
 
@@ -141,7 +142,6 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
 
         String listJavaTemplate = javaListTemplateSourceGenerator.generateJavaTemplateSource( context );
         String listHtmlTemplate = htmlListTemplateSourceGenerator.generateHTMLTemplateSource( context );
-        String listItemJavaTemplate = javaListItemTemplateSourceGenerator.generateJavaTemplateSource( context );
 
         String restServiceTemplate = javaRestTemplateSourceGenerator.generateJavaTemplateSource( context );
         String restImplTemplate = javaRestImplTemplateSourceGenerator.generateJavaTemplateSource( context );
@@ -156,7 +156,6 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
                 htmlTemplate,
                 listJavaTemplate,
                 listHtmlTemplate,
-                listItemJavaTemplate,
                 restServiceTemplate,
                 restImplTemplate,
                 entityServiceTemplate,
@@ -169,12 +168,11 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
 
         ioService.startBatch( parent.getFileSystem() );
         try {
-            writeJavaSource( resourcePath, context.getModelName(), modelSource, shared );
+            writeJavaSource( resourcePath, context.getFormModelName(), modelSource, shared );
             writeFormTemplate( resourcePath, form.getName(), formTemplateLayout, shared );
 
             writeJavaSource( resourcePath, context.getFormViewName(), javaTemplate, local );
             writeJavaSource( resourcePath, context.getListViewName(), listJavaTemplate, local );
-            writeJavaSource( resourcePath, context.getListItemViewName(), listItemJavaTemplate, local );
             writeJavaSource( resourcePath, context.getRestServiceName(), restServiceTemplate, shared );
             writeJavaSource( resourcePath, context.getRestServiceImplName(), restImplTemplate, server );
             writeJavaSource( resourcePath, context.getEntityServiceName(), entityServiceTemplate, server );
@@ -200,7 +198,8 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
         Package local = getOrCreateLocalPackage( client );
         Package shared = getOrCreateSharedPackage( client );
 
-        SourceGenerationContext context = new SourceGenerationContext( form, resourcePath, root, local, shared, null );
+        SourceGenerationContext context = new SourceGenerationContext( form, resourcePath, root, local, shared, null,
+                vfsFormFinderService.findAllForms( resourcePath ) );
 
         String modelSource = modelSourceGenerator.generateFormModelSource( context );
 
@@ -219,7 +218,7 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
 
         ioService.startBatch( parent.getFileSystem() );
         try {
-            writeJavaSource( resourcePath, context.getModelName(), modelSource, shared );
+            writeJavaSource( resourcePath, context.getFormModelName(), modelSource, shared );
             writeJavaSource( resourcePath, context.getFormViewName(), javaTemplate, local );
             writeHTMLSource( resourcePath, context.getFormViewName(), htmlTemplate, local );
         } catch ( Exception e ) {
@@ -248,7 +247,6 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
         return !( className.endsWith( SourceGenerationContext.ENTITY_SERVICE_SUFFIX )
         || className.endsWith( SourceGenerationContext.FORM_MODEL_SUFFIX )
         || className.endsWith( SourceGenerationContext.FORM_VIEW_SUFFIX )
-        || className.endsWith( SourceGenerationContext.LIST_ITEM_VIEW_SUFFIX )
         || className.endsWith( SourceGenerationContext.LIST_VIEW_SUFFIX )
         || className.endsWith( SourceGenerationContext.REST_IMPL_SUFFIX )
         || className.endsWith( SourceGenerationContext.REST_SERVICE_SUFFIX )
