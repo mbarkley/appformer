@@ -110,12 +110,12 @@ public class AppSetup {
         } else {
             organizationalUnitService.addRepository( defaultOU, repository );
         }
-
+/*
         Set<Project> projects = projectService.getProjects(repository, "master");
 
         for (Project p : projects) {
         	dataModelerService.loadModel((KieProject) p);
-        }
+        }*/
     }
 
     private Repository createRepository( final String alias,

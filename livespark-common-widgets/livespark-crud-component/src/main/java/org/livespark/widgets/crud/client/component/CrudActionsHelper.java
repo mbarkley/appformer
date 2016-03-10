@@ -18,13 +18,24 @@ package org.livespark.widgets.crud.client.component;
 
 import java.util.List;
 
+import com.google.gwt.view.client.AsyncDataProvider;
 import org.jboss.errai.databinding.client.HasProperties;
 import org.livespark.widgets.crud.client.component.formDisplay.IsFormView;
 import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 
-public interface CrudHelper<T> {
+public interface CrudActionsHelper<T> {
+
+    public int getPageSize();
+
+    public boolean isAllowCreate();
+
+    public boolean isAllowEdit();
+
+    public boolean isAllowDelete();
 
     public List<ColumnMeta> getGridColumns();
+
+    public AsyncDataProvider<?> getDataProvider();
 
     public IsFormView<T> getCreateInstanceForm();
 

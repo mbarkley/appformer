@@ -24,19 +24,18 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.guvnor.common.services.backend.metadata.attribute.OtherMetaView;
+import org.guvnor.messageconsole.backend.DefaultIndexEngineObserver;
 import org.jboss.errai.security.shared.api.identity.User;
 import org.jboss.errai.security.shared.api.identity.UserImpl;
 import org.jboss.errai.security.shared.service.AuthenticationService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.uberfire.backend.server.IOWatchServiceNonDotImpl;
 import org.uberfire.commons.cluster.ClusterServiceFactory;
 import org.uberfire.commons.services.cdi.Startup;
 import org.uberfire.commons.services.cdi.StartupType;
 import org.uberfire.ext.metadata.backend.lucene.LuceneConfig;
-import org.uberfire.ext.metadata.io.IOSearchIndex;
+import org.uberfire.ext.metadata.io.IOSearchServiceImpl;
 import org.uberfire.ext.metadata.io.IOServiceIndexedImpl;
-import org.uberfire.io.IOSearchService;
+import org.uberfire.ext.metadata.search.IOSearchService;
 import org.uberfire.io.IOService;
 import org.uberfire.io.attribute.DublinCoreView;
 import org.uberfire.io.impl.cluster.IOServiceClusterImpl;
@@ -47,7 +46,14 @@ import org.uberfire.security.impl.authz.RuntimeAuthorizationManager;
 @Startup(StartupType.BOOTSTRAP)
 @ApplicationScoped
 public class ApplicationScopedProducer {
-    private static transient Logger log = LoggerFactory.getLogger( ApplicationScopedProducer.class );
+
+    private IOService ioService;
+    private IOSearchService ioSearchService;
+    private AuthorizationManager authorizationManager = new RuntimeAuthorizationManager();
+
+    @Inject
+    @Named("luceneConfig")
+    private LuceneConfig config;
 
     @Inject
     private IOWatchServiceNonDotImpl watchService;
@@ -57,48 +63,39 @@ public class ApplicationScopedProducer {
     private ClusterServiceFactory clusterServiceFactory;
 
     @Inject
-    @Named("luceneConfig")
-    private LuceneConfig config;
-
-    @Inject
     private AuthenticationService authenticationService;
 
-    private IOService ioService;
-    private IOSearchService ioSearchService;
+    @Inject
+    private DefaultIndexEngineObserver defaultIndexEngineObserver;
+
+    public ApplicationScopedProducer() {
+        if ( System.getProperty( "org.uberfire.watcher.autostart" ) == null ) {
+            System.setProperty( "org.uberfire.watcher.autostart", "false" );
+        }
+        if ( System.getProperty( "org.kie.deployment.desc.location" ) == null ) {
+            System.setProperty( "org.kie.deployment.desc.location", "classpath:META-INF/kie-wb-deployment-descriptor.xml" );
+        }
+    }
 
     @PostConstruct
     public void setup() {
-        @SuppressWarnings("unchecked")
         final IOService service = new IOServiceIndexedImpl( watchService,
-                                                            config.getIndexEngine(),
-                                                            DublinCoreView.class,
-                                                            VersionAttributeView.class,
-                                                            OtherMetaView.class );
+                config.getIndexEngine(),
+                defaultIndexEngineObserver,
+                DublinCoreView.class,
+                VersionAttributeView.class,
+                OtherMetaView.class );
 
         if ( clusterServiceFactory == null ) {
             ioService = service;
         } else {
             ioService = new IOServiceClusterImpl( service,
-                                                  clusterServiceFactory );
+                    clusterServiceFactory,
+                    false );
         }
-        ioSearchService = new IOSearchIndex( config.getSearchIndex(),
-                                             ioService );
-    }
 
-    @Produces
-    @RequestScoped
-    public User getIdentity() {
-        try {
-            return authenticationService.getUser();
-        } catch ( final Exception ex ) {
-            // There is a NPE while creating the form sources injecting the User. Added this to avoid the error.
-            return new UserImpl( "system" );
-        }
-    }
-
-    @Produces
-    public AuthorizationManager getAuthManager() {
-        return new RuntimeAuthorizationManager();
+        this.ioSearchService = new IOSearchServiceImpl( config.getSearchIndex(),
+                ioService );
     }
 
     @Produces
@@ -111,6 +108,21 @@ public class ApplicationScopedProducer {
     @Named("ioSearchStrategy")
     public IOSearchService ioSearchService() {
         return ioSearchService;
+    }
+
+    @Produces
+    public AuthorizationManager getAuthManager() {
+        return authorizationManager;
+    }
+
+    @Produces
+    @RequestScoped
+    public User getIdentity() {
+        try {
+            return authenticationService.getUser();
+        } catch ( final IllegalStateException ex ) {
+            return new UserImpl( "system" );
+        }
     }
 
 }

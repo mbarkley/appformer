@@ -28,8 +28,8 @@ import org.jboss.errai.ioc.client.container.IOC;
 import org.jboss.errai.ui.client.widget.HasModel;
 import org.livespark.formmodeler.rendering.client.shared.FormModel;
 import org.livespark.formmodeler.rendering.client.view.FormView;
-import org.livespark.widgets.crud.client.component.CrudHelper;
-import org.livespark.widgets.crud.client.component.GenericCrud;
+import org.livespark.widgets.crud.client.component.CrudActionsHelper;
+import org.livespark.widgets.crud.client.component.CrudComponent;
 import org.livespark.widgets.crud.client.component.formDisplay.IsFormView;
 import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 
@@ -39,17 +39,19 @@ import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 
 public class MultipleSubForm<L extends List<M>, M, C extends FormModel, E extends FormModel> extends SimplePanel implements HasModel<L> {
 
-    private GenericCrud crudComponent;
+    private CrudComponent crudComponent;
 
     private MultipleSubFormModelAdapter<L, M, C, E> multipleSubFormModelAdapter;
 
     private L model;
 
+    private AsyncDataProvider<M> dataProvider;
+
     public MultipleSubForm( MultipleSubFormModelAdapter<L, M, C, E> adapter ) {
         super();
         if (adapter == null) throw new IllegalArgumentException( "FormModelProvider cannot be null" );
 
-        crudComponent = new GenericCrud( 5 );
+        crudComponent = IOC.getBeanManager().lookupBean( CrudComponent.class ).newInstance();
 
         add( crudComponent );
 
@@ -67,8 +69,8 @@ public class MultipleSubForm<L extends List<M>, M, C extends FormModel, E extend
         initView();
     }
 
-    protected void initCrudComponent() {
-        AsyncDataProvider<M> dataProvider = new AsyncDataProvider<M>() {
+    protected void initView() {
+        dataProvider = new AsyncDataProvider<M>() {
             @Override
             protected void onRangeChanged( HasData<M> hasData ) {
                 if ( model != null ) {
@@ -81,11 +83,7 @@ public class MultipleSubForm<L extends List<M>, M, C extends FormModel, E extend
             }
         };
 
-        crudComponent.setDataProvider( dataProvider );
-    }
-
-    protected void initView() {
-        crudComponent.config( new CrudHelper() {
+        crudComponent.init( new CrudActionsHelper() {
 
             private FormView<C> creationForm;
             private FormView<E> editionForm;
@@ -94,8 +92,33 @@ public class MultipleSubForm<L extends List<M>, M, C extends FormModel, E extend
 
 
             @Override
+            public int getPageSize() {
+                return 5;
+            }
+
+            @Override
+            public boolean isAllowCreate() {
+                return true;
+            }
+
+            @Override
+            public boolean isAllowEdit() {
+                return true;
+            }
+
+            @Override
+            public boolean isAllowDelete() {
+                return true;
+            }
+
+            @Override
             public List<ColumnMeta> getGridColumns() {
                 return multipleSubFormModelAdapter.getCrudColumns();
+            }
+
+            @Override
+            public AsyncDataProvider<?> getDataProvider() {
+                return dataProvider;
             }
 
             @Override
@@ -135,7 +158,6 @@ public class MultipleSubForm<L extends List<M>, M, C extends FormModel, E extend
                 crudComponent.refresh();
             }
         } );
-        initCrudComponent();
     }
 
     public HandlerRegistration addValueChangeHandler( ValueChangeHandler<L> valueChangeHandler ) {

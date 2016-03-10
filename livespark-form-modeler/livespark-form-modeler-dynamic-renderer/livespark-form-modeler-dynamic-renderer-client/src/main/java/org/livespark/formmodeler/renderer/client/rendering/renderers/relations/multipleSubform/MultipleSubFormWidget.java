@@ -23,12 +23,15 @@ import org.livespark.formmodeler.model.impl.relations.TableColumnMeta;
 import org.livespark.formmodeler.renderer.client.DynamicFormRenderer;
 import org.livespark.formmodeler.renderer.client.rendering.renderers.relations.multipleSubform.columns.ColumnGenerator;
 import org.livespark.formmodeler.renderer.service.FormRenderingContext;
-import org.livespark.widgets.crud.client.component.CrudHelper;
-import org.livespark.widgets.crud.client.component.GenericCrud;
+import org.livespark.widgets.crud.client.component.CrudActionsHelper;
+import org.livespark.widgets.crud.client.component.CrudComponent;
 import org.livespark.widgets.crud.client.component.formDisplay.IsFormView;
 import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 
 public class MultipleSubFormWidget extends Composite implements TakesValue<List<Object>> {
+
+    public static final int PAGE_SIZE = 5;
+
     interface MultipleSubFormWidgetBinder
             extends
             UiBinder<Widget, MultipleSubFormWidget> {
@@ -46,13 +49,17 @@ public class MultipleSubFormWidget extends Composite implements TakesValue<List<
     @Inject
     protected DynamicFormRenderer formRenderer;
 
-    private GenericCrud crudComponent;
+    @Inject
+    protected CrudComponent  crudComponent;
+
+    private MultipleSubFormFieldDefinition field;
 
     private FormRenderingContext renderingContext;
 
     private AsyncDataProvider<HasProperties> dataProvider;
 
-    private List<Object> values = new ArrayList<Object>();
+    private List<Object> values = null;
+    private List<HasProperties> tableValues = new ArrayList<>();
 
     public MultipleSubFormWidget() {
         initWidget( uiBinder.createAndBindUi( this ) );
@@ -60,47 +67,10 @@ public class MultipleSubFormWidget extends Composite implements TakesValue<List<
 
     protected void init( FieldDefinition field ) {
         content.clear();
-        crudComponent = new GenericCrud( 5, !field.getReadonly(), !field.getReadonly(), !field.getReadonly() );
         content.add( crudComponent );
     }
 
     protected void initCrud() {
-        dataProvider = new AsyncDataProvider<HasProperties>() {
-            private List<HasProperties> tableValues = new ArrayList<>();
-
-            {
-                for ( Object value : values ) {
-                    HasProperties tableValue;
-
-                    if ( value instanceof HasProperties ) {
-                        tableValue = (HasProperties) value;
-                    } else {
-                        tableValue =(HasProperties) DataBinder.forModel( value ).getModel();
-                    }
-
-                    tableValues.add( tableValue );
-                }
-            }
-
-            @Override
-            protected void onRangeChanged( HasData<HasProperties> hasData ) {
-                if ( tableValues != null ) {
-                    updateRowCount( tableValues.size(), true );
-                    updateRowData( 0, tableValues );
-                } else {
-                    updateRowCount( 0, true );
-                    updateRowData( 0, new ArrayList<HasProperties>(  ) );
-                }
-            }
-        };
-        crudComponent.setDataProvider( dataProvider );
-    }
-
-    public void config( final MultipleSubFormFieldDefinition field, final FormRenderingContext renderingContext ) {
-        init( field );
-
-        this.renderingContext = renderingContext;
-
         final List<ColumnMeta> metas = new ArrayList<ColumnMeta>();
 
         BindableProxy<?> proxy = null;
@@ -129,13 +99,50 @@ public class MultipleSubFormWidget extends Composite implements TakesValue<List<
             }
         }
 
+        dataProvider = new AsyncDataProvider<HasProperties>() {
+            @Override
+            protected void onRangeChanged( HasData<HasProperties> hasData ) {
+                if ( tableValues != null ) {
+                    updateRowCount( tableValues.size(), true );
+                    updateRowData( 0, tableValues );
+                } else {
+                    updateRowCount( 0, true );
+                    updateRowData( 0, new ArrayList<HasProperties>(  ) );
+                }
+            }
+        };
 
-        crudComponent.config( new CrudHelper<Object>() {
+        crudComponent.init( new CrudActionsHelper<Object>() {
             private Integer position;
+
+            @Override
+            public int getPageSize() {
+                return PAGE_SIZE;
+            }
+
+            @Override
+            public boolean isAllowCreate() {
+                return !field.getReadonly();
+            }
+
+            @Override
+            public boolean isAllowEdit() {
+                return !field.getReadonly();
+            }
+
+            @Override
+            public boolean isAllowDelete() {
+                return !field.getReadonly();
+            }
 
             @Override
             public List<ColumnMeta> getGridColumns() {
                 return metas;
+            }
+
+            @Override
+            public AsyncDataProvider<?> getDataProvider() {
+                return dataProvider;
             }
 
             @Override
@@ -168,29 +175,78 @@ public class MultipleSubFormWidget extends Composite implements TakesValue<List<
             @Override
             public void createInstance() {
                 values.add( formRenderer.getModel() );
-                initCrud();
+                tableValues.add( (HasProperties) formRenderer.getModel() );
+                refreshCrud();
             }
 
             @Override
             public void editInstance() {
                 values.set( position, formRenderer.getModel() );
-                initCrud();
+                tableValues.set( position, (HasProperties) formRenderer.getModel() );
+                refreshCrud();
             }
 
             @Override
             public void deleteInstance( int index ) {
                 values.remove( index );
-                initCrud();
+                tableValues.remove( index );
+                refreshCrud();
             }
         } );
+        initValues();
+    }
+
+    protected void initValues() {
+
+        tableValues.clear();
+
+        if ( values != null ) {
+            for ( Object value : values ) {
+                HasProperties tableValue;
+
+                if ( value instanceof HasProperties ) {
+                    tableValue = (HasProperties) value;
+                } else {
+                    tableValue = (HasProperties) DataBinder.forModel( value ).getModel();
+                }
+
+                tableValues.add( tableValue );
+            }
+        }
+    }
+
+    public void config( MultipleSubFormFieldDefinition field, FormRenderingContext renderingContext ) {
+        init( field );
+
+        this.field = field;
+        this.renderingContext = renderingContext;
+
         initCrud();
+    }
+
+    protected void refreshCrud() {
+        int currentStart = crudComponent.getCurrentPage();
+        if ( currentStart < 0 ) {
+            currentStart = 0;
+        } else if( currentStart <= tableValues.size()) {
+            currentStart -= PAGE_SIZE;
+        }
+        dataProvider.updateRowCount( tableValues.size(), true );
+        dataProvider.updateRowData( currentStart, tableValues );
+        crudComponent.refresh();
     }
 
     @Override
     public void setValue( List<Object> objects ) {
+        // Avoid setting value via errai-data-binding when list is updated.
+        if ( values != null ) {
+            return;
+        }
         values = objects;
 
-        initCrud();
+        initValues();
+
+        refreshCrud();
     }
 
     @Override

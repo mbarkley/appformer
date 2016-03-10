@@ -46,7 +46,6 @@ import org.uberfire.ext.widgets.common.client.common.popups.YesNoCancelPopup;
 import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 import org.uberfire.ext.widgets.common.client.tables.PagedTable;
 import org.livespark.widgets.crud.client.resources.i18n.CrudConstants;
-import org.uberfire.ext.widgets.common.client.tables.popup.DataGridFilterSummary;
 import org.uberfire.mvp.Command;
 
 public class GenericCrud extends Composite {
@@ -77,7 +76,7 @@ public class GenericCrud extends Composite {
 
     private boolean embedded = true;
 
-    private CrudHelper helper;
+    private CrudActionsHelper helper;
 
     public GenericCrud( int pageSize ) {
         this( pageSize, true, true, true );
@@ -99,7 +98,7 @@ public class GenericCrud extends Composite {
         content.add( table );
     }
 
-    public void config( final CrudHelper helper ) {
+    public void config( final CrudActionsHelper helper ) {
         if ( helper != null ) {
             if ( this.helper != null ) {
                 initGrid( table.getPageSize() );

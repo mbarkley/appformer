@@ -21,6 +21,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import org.jboss.errai.common.client.api.RemoteCallback;
@@ -29,8 +30,8 @@ import org.jboss.errai.ioc.client.container.SyncBeanManager;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.livespark.formmodeler.rendering.client.shared.FormModel;
 import org.livespark.formmodeler.rendering.client.shared.LiveSparkRestService;
-import org.livespark.widgets.crud.client.component.CrudHelper;
-import org.livespark.widgets.crud.client.component.GenericCrud;
+import org.livespark.widgets.crud.client.component.CrudActionsHelper;
+import org.livespark.widgets.crud.client.component.CrudComponent;
 import org.livespark.widgets.crud.client.component.formDisplay.IsFormView;
 import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 
@@ -40,7 +41,10 @@ public abstract class ListView<M, F extends FormModel> extends Composite {
     protected SyncBeanManager beanManager;
 
     @DataField
-    protected GenericCrud crudComponent = new GenericCrud( 10 );
+    protected FlowPanel content = new FlowPanel();
+
+    @Inject
+    protected CrudComponent crudComponent;
 
     protected List<M> crudItems;
 
@@ -48,10 +52,35 @@ public abstract class ListView<M, F extends FormModel> extends Composite {
 
     AsyncDataProvider<M> dataProvider;
 
-    protected CrudHelper crudHelper = new CrudHelper() {
+    protected CrudActionsHelper crudActionsHelper = new CrudActionsHelper() {
+        @Override
+        public int getPageSize() {
+            return 10;
+        }
+
+        @Override
+        public boolean isAllowCreate() {
+            return true;
+        }
+
+        @Override
+        public boolean isAllowEdit() {
+            return true;
+        }
+
+        @Override
+        public boolean isAllowDelete() {
+            return true;
+        }
+
         @Override
         public List<ColumnMeta> getGridColumns() {
             return getCrudColumns();
+        }
+
+        @Override
+        public AsyncDataProvider<?> getDataProvider() {
+            return dataProvider;
         }
 
         @Override
@@ -107,8 +136,23 @@ public abstract class ListView<M, F extends FormModel> extends Composite {
     };
 
     public void init() {
-        crudComponent.config( crudHelper );
+        dataProvider = new AsyncDataProvider<M>() {
+            @Override
+            protected void onRangeChanged( HasData<M> hasData ) {
+                if ( crudItems != null ) {
+                    updateRowCount( crudItems.size(), true );
+                    updateRowData( 0, crudItems );
+                } else {
+                    updateRowCount( 0, true );
+                    updateRowData( 0, new ArrayList<M>() );
+                }
+            }
+        };
+
+        crudComponent.init( crudActionsHelper );
         crudComponent.setEmbedded( false );
+
+        content.add( crudComponent );
 
         loadData( new RemoteCallback<List<M>>() {
 
@@ -136,20 +180,7 @@ public abstract class ListView<M, F extends FormModel> extends Composite {
     }
 
     protected void initCrud() {
-        dataProvider = new AsyncDataProvider<M>() {
-            @Override
-            protected void onRangeChanged( HasData<M> hasData ) {
-                if ( crudItems != null ) {
-                    updateRowCount( crudItems.size(), true );
-                    updateRowData( 0, crudItems );
-                } else {
-                    updateRowCount( 0, true );
-                    updateRowData( 0, new ArrayList<M>() );
-                }
-            }
-        };
-
-        crudComponent.setDataProvider( dataProvider );
+        crudComponent.refresh();
     }
 
     public FormView<F> getForm() {
