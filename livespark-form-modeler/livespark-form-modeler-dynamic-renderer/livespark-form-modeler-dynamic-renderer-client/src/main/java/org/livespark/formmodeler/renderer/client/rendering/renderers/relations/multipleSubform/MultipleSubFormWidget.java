@@ -112,12 +112,17 @@ public class MultipleSubFormWidget extends Composite implements TakesValue<List<
             }
         };
 
-        crudComponent.init( new CrudActionsHelper<Object>() {
+        crudComponent.init( new CrudActionsHelper() {
             private Integer position;
 
             @Override
             public int getPageSize() {
                 return PAGE_SIZE;
+            }
+
+            @Override
+            public boolean showEmbeddedForms() {
+                return true;
             }
 
             @Override
@@ -141,7 +146,7 @@ public class MultipleSubFormWidget extends Composite implements TakesValue<List<
             }
 
             @Override
-            public AsyncDataProvider<?> getDataProvider() {
+            public AsyncDataProvider getDataProvider() {
                 return dataProvider;
             }
 

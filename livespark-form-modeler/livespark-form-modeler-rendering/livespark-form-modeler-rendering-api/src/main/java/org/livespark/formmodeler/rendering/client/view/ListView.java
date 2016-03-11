@@ -54,6 +54,11 @@ public abstract class ListView<M, F extends FormModel> extends Composite {
 
     protected CrudActionsHelper crudActionsHelper = new CrudActionsHelper() {
         @Override
+        public boolean showEmbeddedForms() {
+            return false;
+        }
+
+        @Override
         public int getPageSize() {
             return 10;
         }

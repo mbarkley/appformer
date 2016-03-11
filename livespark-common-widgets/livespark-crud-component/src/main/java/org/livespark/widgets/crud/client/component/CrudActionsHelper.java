@@ -27,6 +27,8 @@ public interface CrudActionsHelper<T> {
 
     public int getPageSize();
 
+    public boolean showEmbeddedForms();
+
     public boolean isAllowCreate();
 
     public boolean isAllowEdit();
@@ -35,7 +37,7 @@ public interface CrudActionsHelper<T> {
 
     public List<ColumnMeta> getGridColumns();
 
-    public AsyncDataProvider<?> getDataProvider();
+    public AsyncDataProvider<T> getDataProvider();
 
     public IsFormView<T> getCreateInstanceForm();
 

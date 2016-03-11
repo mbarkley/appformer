@@ -90,6 +90,10 @@ public class MultipleSubForm<L extends List<M>, M, C extends FormModel, E extend
 
             private int editionIndex;
 
+            @Override
+            public boolean showEmbeddedForms() {
+                return true;
+            }
 
             @Override
             public int getPageSize() {
