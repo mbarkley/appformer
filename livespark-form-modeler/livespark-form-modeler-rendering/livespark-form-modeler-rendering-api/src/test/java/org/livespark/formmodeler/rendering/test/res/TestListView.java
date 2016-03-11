@@ -18,33 +18,103 @@ package org.livespark.formmodeler.rendering.test.res;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gwt.user.cellview.client.TextColumn;
+import com.google.gwt.user.client.rpc.core.java.lang.Boolean_CustomFieldSerializer;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.livespark.formmodeler.rendering.client.shared.LiveSparkRestService;
 import org.livespark.formmodeler.rendering.client.view.FormView;
 import org.livespark.formmodeler.rendering.client.view.ListView;
+import org.livespark.widgets.crud.client.component.CrudActionsHelper;
+import org.livespark.widgets.crud.client.component.CrudComponent;
+import org.livespark.widgets.crud.client.component.mock.CrudModel;
 import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
 
-public class TestListView extends ListView<Object, TestFormModel> {
+public class TestListView extends ListView<CrudModel, TestFormModel> {
 
     private FormView<TestFormModel> formView;
 
-    private LiveSparkRestService<Object> service;
+    private LiveSparkRestService<CrudModel> service;
 
-    public RemoteCallback<Object> lastLoadDataCallback;
+    public RemoteCallback<Object> crudModelListCallback;
+
+    public TestListView( final CrudComponent crudComponent, FormView<TestFormModel> formView, LiveSparkRestService<CrudModel> restService ) {
+        this.crudComponent = crudComponent;
+        this.formView = formView;
+        this.service = restService;
+
+        crudActionsHelper = new ListViewCrudActionsHelper() {
+            @Override
+            public void createInstance() {
+                super.createInstance();
+                crudModelListCallback.callback( getModel( currentForm.getModel() ) );
+            }
+
+            @Override
+            public void editInstance() {
+                super.editInstance();
+                crudModelListCallback.callback( Boolean.TRUE );
+            }
+
+            @Override
+            public void deleteInstance( int index ) {
+                super.deleteInstance( index );
+                crudModelListCallback.callback( Boolean.TRUE );
+            }
+        };
+    }
 
     @Override
     public List<ColumnMeta> getCrudColumns() {
-        return new ArrayList<>(  );
+
+        List<ColumnMeta> metas = new ArrayList<ColumnMeta>();
+
+        ColumnMeta<CrudModel> columnMeta = new ColumnMeta<CrudModel>( new TextColumn<CrudModel>() {
+            @Override
+            public String getValue( CrudModel model ) {
+                if ( model.getName() == null ) {
+                    return "";
+                }
+                return String.valueOf( model.getName() );
+            }
+        }, "Name" );
+
+        metas.add( columnMeta );
+
+        columnMeta = new ColumnMeta<CrudModel>( new TextColumn<CrudModel>() {
+            @Override
+            public String getValue( CrudModel model ) {
+                if ( model.getLastName() == null ) {
+                    return "";
+                }
+                return String.valueOf( model.getLastName() );
+            }
+        }, "Last Name" );
+
+        metas.add( columnMeta );
+
+        columnMeta = new ColumnMeta<CrudModel>( new TextColumn<CrudModel>() {
+            @Override
+            public String getValue( CrudModel model ) {
+                if ( model.getBirthday() == null ) {
+                    return "";
+                }
+                return String.valueOf( model.getBirthday() );
+            }
+        }, "Birthday" );
+
+        metas.add( columnMeta );
+
+        return metas;
     }
 
     @Override
-    public Object getModel( TestFormModel formModel ) {
-        return new Object();
+    public CrudModel getModel( TestFormModel formModel ) {
+        return formModel.getModel();
     }
 
     @Override
-    public TestFormModel createFormModel( Object model ) {
-        return new TestFormModel();
+    public TestFormModel createFormModel( CrudModel model ) {
+        return new TestFormModel( model );
     }
 
     /* (non-Javadoc)
@@ -52,8 +122,8 @@ public class TestListView extends ListView<Object, TestFormModel> {
          */
     @SuppressWarnings( "unchecked" )
     @Override
-    public <S extends LiveSparkRestService<Object>, R> S createRestCaller( RemoteCallback<R> callback ) {
-        lastLoadDataCallback = (RemoteCallback<Object>) callback;
+    public <S extends LiveSparkRestService<CrudModel>, R> S createRestCaller( RemoteCallback<R> callback ) {
+        crudModelListCallback = (RemoteCallback<Object>) callback;
         return (S) service;
     }
 
@@ -104,5 +174,9 @@ public class TestListView extends ListView<Object, TestFormModel> {
     @Override
     public String getListTitle() {
         throw new RuntimeException( "Not yet implemented." );
+    }
+
+    public CrudActionsHelper getActionsHelper() {
+        return crudActionsHelper;
     }
 }

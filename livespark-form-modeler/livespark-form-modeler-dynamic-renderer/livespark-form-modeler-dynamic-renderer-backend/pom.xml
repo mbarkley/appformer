@@ -159,6 +159,12 @@
       <artifactId>livespark-form-modeler-codegen-impl</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.livespark</groupId>
+      <artifactId>livespark-form-modeler-editor-backend</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
 </project>

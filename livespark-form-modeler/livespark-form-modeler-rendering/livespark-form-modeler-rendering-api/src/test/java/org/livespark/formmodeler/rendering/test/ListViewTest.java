@@ -15,32 +15,31 @@
  */
 package org.livespark.formmodeler.rendering.test;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.Date;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwtmockito.GwtMock;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 import org.jboss.errai.common.client.api.RemoteCallback;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.livespark.formmodeler.rendering.client.shared.LiveSparkRestService;
 import org.livespark.formmodeler.rendering.client.view.FormView;
-import org.livespark.formmodeler.rendering.client.view.display.modal.ModalFormDisplayer;
 import org.livespark.formmodeler.rendering.test.res.TestFormModel;
 import org.livespark.formmodeler.rendering.test.res.TestListView;
-import org.mockito.InjectMocks;
+import org.livespark.widgets.crud.client.component.AbstractCrudComponentTest;
+import org.livespark.widgets.crud.client.component.CrudActionsHelper;
+import org.livespark.widgets.crud.client.component.mock.CrudModel;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith( GwtMockitoTestRunner.class )
-public class ListViewTest {
+public class ListViewTest extends AbstractCrudComponentTest {
 
-    @InjectMocks
     private TestListView listView;
 
     @GwtMock
@@ -49,9 +48,6 @@ public class ListViewTest {
     @GwtMock
     private ClickEvent clickEvent;
 
-    @GwtMock
-    private ModalFormDisplayer modalFormDisplayer;
-
     @Mock
     private RemoteCallback callback;
 
@@ -59,13 +55,17 @@ public class ListViewTest {
     private TestFormModel formModel;
 
     @Mock
-    private LiveSparkRestService<TestFormModel> restService;
+    private LiveSparkRestService<CrudModel> restService;
 
-    @Mock
-    private List<TestFormModel> models;
+    @Before
+    public void init() {
+        super.init();
 
-    // This model won't be injected into anything.
-    private TestFormModel differentModel = new TestFormModel();
+        listView = new TestListView( crudComponent, formView, restService );
+
+        when( formView.validate() ).thenReturn( true );
+        when( formView.getModel() ).thenReturn( formModel );
+    }
 
     @Test
     public void initLoadsDataOnce() throws Exception {
@@ -78,209 +78,91 @@ public class ListViewTest {
     public void callbackParameterOfLoadDataCallsSetItemsOnce() throws Exception {
         try {
             initLoadsDataOnce();
-            assertNotNull( listView.lastLoadDataCallback );
+            assertNotNull( listView.crudModelListCallback );
         } catch ( RuntimeException e ) {
             failedPrecondition( e );
         }
-
-        final List<TestFormModel> models = Arrays.asList( formModel );
-        listView.lastLoadDataCallback.callback( models );
+        listView.crudModelListCallback.callback( models );
     }
 
     @Test
-    public void callbackParameterOfLoadDataSetsParentViewOfListItemView() throws Exception {
-        final List<TestFormModel> response = Arrays.asList( formModel );
+    public void testCreateModal() {
+        listView.init();
+        listView.loadItems( models );
 
-        try {
-            initLoadsDataOnce();
-            assertNotNull( listView.lastLoadDataCallback );
+        runCreationTest();
 
-        } catch ( RuntimeException e ) {
-            failedPrecondition( e );
-        }
-
-        listView.lastLoadDataCallback.callback( response );
+        verify( restService ).load();
+        verify( restService ).create( any( CrudModel.class ) );
     }
 
     @Test
-    public void modalIsShownOnCreateButtonClick() throws Exception {
-        //listView.onCreateClick( clickEvent );
+    public void testEditModal() {
+        listView.init();
+        listView.loadItems( models );
 
+        runCreationTest();
+
+        runEditionTest();
+
+        verify( restService ).load();
+        verify( restService ).create( any( CrudModel.class ) );
+        verify( restService ).update( any( CrudModel.class ) );
     }
 
     @Test
-    public void modalHasSubmitAndCancelCallbacksSetOnCreateButtonClick() throws Exception {
-        //listView.onCreateClick( clickEvent );
+    public void testDeletion() {
+        listView.init();
+        listView.loadItems( models );
 
+        runCreationTest();
+
+        runDeletionTest();
+
+        verify( restService ).load();
+        verify( restService ).create( any( CrudModel.class ) );
+        verify( restService ).delete( any( CrudModel.class ) );
     }
 
-    @Test
-    public void createModalSubmitHandlerCallsRestCreateAndModalHide() throws Exception {
-        try {
-            doAnswer( new Answer() {
-                @Override
-                public Object answer( InvocationOnMock invocationOnMock ) throws Throwable {
-                    listView.createRestCaller( callback ).create( formModel );
-                    return null;
-                }
-            } ).when( modalFormDisplayer ).onSubmit();
 
-            //listView.onCreateClick( clickEvent );
-
-            when( formView.validate() ).thenReturn( true );
-            when( formView.getModel() ).thenReturn( formModel );
-
-        } catch ( RuntimeException e ) {
-            failedPrecondition( e );
-        }
-
-        modalFormDisplayer.onSubmit();
-
-        verify( restService ).create( formModel );
-        verifyNoMoreInteractions( restService );
-    }
-
-    @Test
-    public void createCallbackAddsModelToListAndSetsParentView() throws Exception {
-        try {
-            //listView.setActionsHelper( listViewActionsHelper );
-            doAnswer( new Answer() {
-                @Override
-                public Object answer( InvocationOnMock invocationOnMock ) throws Throwable {
-                    listView.createRestCaller( callback ).create( formModel );
-                    models.add( differentModel );
-                    return null;
-                }
-            } ).when( modalFormDisplayer ).onSubmit();
-
-            when( formView.validate() ).thenReturn( true );
-            when( formView.getModel() ).thenReturn( formModel );
-
-            listView.lastLoadDataCallback = null;
-            modalFormDisplayer.onSubmit();
-
-            verify( restService ).create( formModel );
-            verifyNoMoreInteractions( restService );
-            assertNotNull( listView.lastLoadDataCallback );
-
-        } catch ( RuntimeException e ) {
-            failedPrecondition( e );
-        }
-
-        listView.lastLoadDataCallback.callback( differentModel );
-
-        verify( models ).add( differentModel );
-    }
-
-    @Test
-    public void onDeleteCallsRestDelete() throws Exception {
-       /* doAnswer( new Answer() {
+    @Override
+    protected void runCreationTest() {
+        doAnswer( new Answer() {
             @Override
-            public Object answer( InvocationOnMock invocationOnMock ) throws Throwable {
-                listView.createRestCaller( callback ).delete( differentModel );
-                return null;
+            public TestFormModel answer( InvocationOnMock invocationOnMock ) throws Throwable {
+                CrudModel model = new CrudModel( "Ned", "Stark", new Date() );
+                models.clear();
+                return new TestFormModel( model );
             }
-        } ).when( listViewActionsHelper ).delete(differentModel );
-*/
-        //listView.onDelete( differentModel );
-
-        verify( restService ).delete( differentModel );
-        verifyNoMoreInteractions( restService );
+        } ).when( formView ).getModel();
+        super.runCreationTest();
     }
 
-    @Test
-    public void onDeleteCallbackRemovesModelFromList() throws Exception {
-        try {
-            /*doAnswer( new Answer() {
-                @Override
-                public TestFormModel answer( InvocationOnMock invocationOnMock ) throws Throwable {
-                    models.remove( differentModel );
-                    return null;
-                }
-            } ).when( listViewActionsHelper ).delete( differentModel );
-            */
-            //listView.onDelete( differentModel );
-            assertNotNull( listView.lastLoadDataCallback );
-
-        } catch ( RuntimeException e ) {
-            failedPrecondition( e );
-        }
-
-        listView.lastLoadDataCallback.callback( true );
-
-        verify( models ).remove( differentModel );
-        verifyNoMoreInteractions( models );
-    }
-
-    @Test
-    public void onEditDisplaysModalWithCorrectModel() throws Exception {
-        /*doAnswer( new Answer() {
+    @Override
+    protected void runEditionTest() {
+        doAnswer( new Answer() {
             @Override
-            public Object answer( InvocationOnMock invocationOnMock ) throws Throwable {
-                formView.setModel( formModel );
-                return null;
+            public TestFormModel answer( InvocationOnMock invocationOnMock ) throws Throwable {
+                CrudModel model = models.get( 0 );
+                model.setName( "Tyrion" );
+                model.setLastName( "Lannister" );
+                return new TestFormModel( model );
             }
-        } ).when( listViewActionsHelper ).startEdit( listView, formModel );
-*/
-        //listView.onEdit( formModel );
-
-        verify( formView ).setModel( formModel );
+        } ).when( formView ).getModel();
+        super.runEditionTest();
     }
 
-    @Test
-    public void editModalSubmitCallbackCallsRestUpdateAndHidesModal() throws Exception {
-        try {
-            /*
-            doAnswer( new Answer() {
-                @Override
-                public Object answer( InvocationOnMock invocationOnMock ) throws Throwable {
-                    listView.createRestCaller( callback ).update( formModel );
-                    return null;
-                }
-            } ).when( listViewActionsHelper ).startEdit( listView, formModel );
-*/
-            //listView.onEdit( formModel );
+    protected void runDeletionTest() {
 
-            when( formView.validate() ).thenReturn( true );
-            when( formView.getModel() ).thenReturn( formModel );
-        } catch ( RuntimeException e ) {
-            failedPrecondition( e );
-        }
-
-        verify( restService ).update( formModel );
-    }
-
-    @Test
-    public void updateCallbackDoesNotModifyList() throws Exception {
-        try {
-            //listView.setActionsHelper( listViewActionsHelper );
-
-            doAnswer( new Answer() {
-                @Override
-                public Object answer( InvocationOnMock invocationOnMock ) throws Throwable {
-                    listView.createRestCaller( callback ).update( formModel );
-                    return null;
-                }
-            } ).when( modalFormDisplayer ).onSubmit();
-
-            //listView.onEdit( formModel );
-
-            when( formView.validate() ).thenReturn( true );
-            when( formView.getModel() ).thenReturn( formModel );
-
-            modalFormDisplayer.onSubmit();
-
-            verify( restService ).update( formModel );
-            verifyNoMoreInteractions( restService );
-            assertNotNull( listView.lastLoadDataCallback );
-        } catch ( RuntimeException e ) {
-            failedPrecondition( e );
-        }
-
-        listView.lastLoadDataCallback.callback( true );
+        super.runDeletionTest();
     }
 
     private void failedPrecondition( final Throwable cause ) {
-        throw new AssertionError( "Precondtion failed.", cause );
+        throw new AssertionError( "Precondition failed.", cause );
+    }
+
+    @Override
+    protected CrudActionsHelper getActionsHelper() {
+        return listView.getActionsHelper();
     }
 }

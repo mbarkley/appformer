@@ -52,7 +52,78 @@ public abstract class ListView<M, F extends FormModel> extends Composite {
 
     AsyncDataProvider<M> dataProvider;
 
-    protected CrudActionsHelper crudActionsHelper = new CrudActionsHelper() {
+    protected CrudActionsHelper crudActionsHelper = new ListViewCrudActionsHelper();
+
+    public void init() {
+        dataProvider = new AsyncDataProvider<M>() {
+            @Override
+            protected void onRangeChanged( HasData<M> hasData ) {
+                if ( crudItems != null ) {
+                    updateRowCount( crudItems.size(), true );
+                    updateRowData( 0, crudItems );
+                } else {
+                    updateRowCount( 0, true );
+                    updateRowData( 0, new ArrayList<M>() );
+                }
+            }
+        };
+
+        crudComponent.init( crudActionsHelper );
+        crudComponent.setEmbedded( false );
+
+        content.add( crudComponent );
+
+        loadData( new RemoteCallback<List<M>>() {
+
+            @Override
+            public void callback( List<M> response ) {
+                loadItems( response );
+            }
+        } );
+    }
+
+    /*
+     * Is overridable for testing.
+     */
+    protected <S extends LiveSparkRestService<M>, R> S createRestCaller( RemoteCallback<R> callback ) {
+        return org.jboss.errai.enterprise.client.jaxrs.api.RestClient.create( this.<S>getRemoteServiceClass(), callback );
+    }
+
+    protected void loadData( RemoteCallback<List<M>> callback ) {
+        createRestCaller( callback ).load();
+    }
+
+    public void loadItems(List<M> itemsToLoad) {
+        this.crudItems = itemsToLoad;
+        initCrud();
+    }
+
+    protected void initCrud() {
+        crudComponent.refresh();
+    }
+
+    public FormView<F> getForm() {
+        SyncBeanDef<? extends FormView<F>> beanDef = beanManager.lookupBean( getFormType() );
+        return beanDef.getInstance();
+    }
+
+    protected abstract Class<? extends FormView<F>> getFormType();
+
+    public abstract String getListTitle();
+
+    public abstract String getFormTitle();
+
+    protected abstract String getFormId();
+
+    protected abstract <S extends LiveSparkRestService<M>> Class<S> getRemoteServiceClass();
+
+    public abstract List<ColumnMeta> getCrudColumns();
+
+    public abstract M getModel( F formModel );
+
+    public abstract F createFormModel( M model );
+
+    protected class ListViewCrudActionsHelper implements CrudActionsHelper {
         @Override
         public boolean showEmbeddedForms() {
             return false;
@@ -139,73 +210,4 @@ public abstract class ListView<M, F extends FormModel> extends Composite {
                     } ).delete( model );
         }
     };
-
-    public void init() {
-        dataProvider = new AsyncDataProvider<M>() {
-            @Override
-            protected void onRangeChanged( HasData<M> hasData ) {
-                if ( crudItems != null ) {
-                    updateRowCount( crudItems.size(), true );
-                    updateRowData( 0, crudItems );
-                } else {
-                    updateRowCount( 0, true );
-                    updateRowData( 0, new ArrayList<M>() );
-                }
-            }
-        };
-
-        crudComponent.init( crudActionsHelper );
-        crudComponent.setEmbedded( false );
-
-        content.add( crudComponent );
-
-        loadData( new RemoteCallback<List<M>>() {
-
-            @Override
-            public void callback( List<M> response ) {
-                loadItems( response );
-            }
-        } );
-    }
-
-    /*
-     * Is overridable for testing.
-     */
-    protected <S extends LiveSparkRestService<M>, R> S createRestCaller( RemoteCallback<R> callback ) {
-        return org.jboss.errai.enterprise.client.jaxrs.api.RestClient.create( this.<S>getRemoteServiceClass(), callback );
-    }
-
-    protected void loadData( RemoteCallback<List<M>> callback ) {
-        createRestCaller( callback ).load();
-    }
-
-    public void loadItems(List<M> itemsToLoad) {
-        this.crudItems = itemsToLoad;
-        initCrud();
-    }
-
-    protected void initCrud() {
-        crudComponent.refresh();
-    }
-
-    public FormView<F> getForm() {
-        SyncBeanDef<? extends FormView<F>> beanDef = beanManager.lookupBean( getFormType() );
-        return beanDef.getInstance();
-    }
-
-    protected abstract Class<? extends FormView<F>> getFormType();
-
-    public abstract String getListTitle();
-
-    public abstract String getFormTitle();
-
-    protected abstract String getFormId();
-
-    protected abstract <S extends LiveSparkRestService<M>> Class<S> getRemoteServiceClass();
-
-    public abstract List<ColumnMeta> getCrudColumns();
-
-    public abstract M getModel( F formModel );
-
-    public abstract F createFormModel( M model );
 }
