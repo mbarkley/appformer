@@ -19,7 +19,7 @@ import java.util.List;
 
 import org.livespark.formmodeler.rendering.client.shared.FormModel;
 import org.livespark.formmodeler.rendering.client.view.FormView;
-import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
+import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
 /**
  * Created by pefernan on 7/2/15.

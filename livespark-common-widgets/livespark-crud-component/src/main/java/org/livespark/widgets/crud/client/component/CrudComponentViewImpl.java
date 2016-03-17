@@ -24,6 +24,7 @@ import com.google.gwt.cell.client.FieldUpdater;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.cellview.client.Column;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import org.gwtbootstrap3.client.ui.Button;
@@ -36,10 +37,8 @@ import org.jboss.errai.ui.shared.api.annotations.Templated;
 import org.livespark.widgets.crud.client.component.formDisplay.FormDisplayer;
 import org.livespark.widgets.crud.client.component.formDisplay.IsFormView;
 import org.livespark.widgets.crud.client.resources.i18n.CrudConstants;
-import org.uberfire.ext.widgets.common.client.common.popups.YesNoCancelPopup;
-import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
-import org.uberfire.ext.widgets.common.client.tables.PagedTable;
-import org.uberfire.mvp.Command;
+import org.uberfire.ext.widgets.table.client.ColumnMeta;
+import org.uberfire.ext.widgets.table.client.UberfirePagedTable;
 
 @Dependent
 @Templated
@@ -47,7 +46,7 @@ public class CrudComponentViewImpl extends Composite implements CrudComponent.Cr
 
     private CrudComponent presenter;
 
-    private PagedTable table;
+    private UberfirePagedTable table;
 
     protected FormDisplayer displayer;
 
@@ -63,8 +62,8 @@ public class CrudComponentViewImpl extends Composite implements CrudComponent.Cr
     public void init( CrudComponent.CrudMetaDefinition crudDefinition ) {
         content.clear();
 
-        table = new PagedTable<>( crudDefinition.getPageSize() );
-        table.setcolumnPickerButtonVisibe( false );
+        table = new UberfirePagedTable<>( crudDefinition.getPageSize() );
+        table.getRightToolbar().clear();
 
         if ( crudDefinition.isAllowCreate() ) {
             Button createButton = new Button( CrudConstants.INSTANCE.newInstanceButton() );
@@ -107,18 +106,9 @@ public class CrudComponentViewImpl extends Composite implements CrudComponent.Cr
             column.setFieldUpdater( new FieldUpdater<Object, String>() {
                 @Override
                 public void update( final int index, Object model, String s ) {
-                    YesNoCancelPopup.newYesNoCancelPopup( CrudConstants.INSTANCE.deleteTitle(), CrudConstants.INSTANCE.deleteBody(),
-                            new Command() {
-                                @Override
-                                public void execute() {
-                                    deleteInstance( index );
-                                }
-                            }, new Command() {
-                                @Override
-                                public void execute() {
-
-                                }
-                            }, null ).show();
+                    if ( Window.confirm(CrudConstants.INSTANCE.deleteBody()) ) {
+                        deleteInstance( index );
+                    }
                 }
             } );
             columns.add( new ColumnMeta( column, "" ) );
@@ -173,8 +163,10 @@ public class CrudComponentViewImpl extends Composite implements CrudComponent.Cr
     public void renderNestedForm( String title, IsFormView formView, FormDisplayer.FormDisplayerCallback callback ) {
         displayer = presenter.getFormDisplayer();
 
-        content.clear();
-        content.add( displayer );
+        if ( displayer.isEmbeddable() ) {
+            content.clear();
+            content.add( displayer );
+        }
 
         displayer.display( title, formView, callback );
     }
@@ -203,7 +195,9 @@ public class CrudComponentViewImpl extends Composite implements CrudComponent.Cr
 
     @Override
     public void restoreTable() {
-        content.remove( displayer );
-        content.add( table );
+        if ( displayer.isEmbeddable() ) {
+            content.remove( displayer );
+            content.add( table );
+        }
     }
 }

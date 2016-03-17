@@ -47,7 +47,7 @@
     </dependency>
     <dependency>
       <groupId>org.uberfire</groupId>
-      <artifactId>uberfire-widgets-commons</artifactId>
+      <artifactId>uberfire-widgets-table</artifactId>
     </dependency>
 
     <!-- Test -->

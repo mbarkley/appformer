@@ -27,7 +27,7 @@ import org.livespark.widgets.crud.client.component.formDisplay.FormDisplayer;
 import org.livespark.widgets.crud.client.component.formDisplay.IsFormView;
 import org.livespark.widgets.crud.client.component.formDisplay.embedded.EmbeddedFormDisplayer;
 import org.livespark.widgets.crud.client.component.formDisplay.modal.ModalFormDisplayer;
-import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
+import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
 @Dependent
 public class CrudComponent implements IsWidget{

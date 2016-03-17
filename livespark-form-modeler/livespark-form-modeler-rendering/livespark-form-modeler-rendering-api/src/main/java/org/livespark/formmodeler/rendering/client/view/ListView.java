@@ -33,7 +33,7 @@ import org.livespark.formmodeler.rendering.client.shared.LiveSparkRestService;
 import org.livespark.widgets.crud.client.component.CrudActionsHelper;
 import org.livespark.widgets.crud.client.component.CrudComponent;
 import org.livespark.widgets.crud.client.component.formDisplay.IsFormView;
-import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
+import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
 public abstract class ListView<M, F extends FormModel> extends Composite {
 

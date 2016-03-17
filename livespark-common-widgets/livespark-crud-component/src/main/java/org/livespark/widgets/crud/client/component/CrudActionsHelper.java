@@ -19,9 +19,8 @@ package org.livespark.widgets.crud.client.component;
 import java.util.List;
 
 import com.google.gwt.view.client.AsyncDataProvider;
-import org.jboss.errai.databinding.client.HasProperties;
 import org.livespark.widgets.crud.client.component.formDisplay.IsFormView;
-import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
+import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
 public interface CrudActionsHelper<T> {
 

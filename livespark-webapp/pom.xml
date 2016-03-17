@@ -702,6 +702,7 @@
     <dependency>
       <groupId>org.livespark</groupId>
       <artifactId>livespark-crud-component</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -722,6 +723,7 @@
     <dependency>
       <groupId>org.livespark</groupId>
       <artifactId>livespark-form-modeler-dynamic-renderer-client</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -732,6 +734,7 @@
     <dependency>
       <groupId>org.livespark</groupId>
       <artifactId>livespark-form-modeler-editor-client</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -861,6 +864,7 @@
             <compileSourcesArtifact>org.uberfire:uberfire-runtime-plugins-client</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-apps-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-apps-client</compileSourcesArtifact>
+            <compileSourcesArtifact>org.uberfire:uberfire-widgets-table</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-widgets-commons</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-widgets-service-api</compileSourcesArtifact>
             <compileSourcesArtifact>org.uberfire:uberfire-widgets-core-client</compileSourcesArtifact>

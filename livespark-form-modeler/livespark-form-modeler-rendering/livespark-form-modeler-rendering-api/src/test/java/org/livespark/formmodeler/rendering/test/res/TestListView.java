@@ -27,7 +27,7 @@ import org.livespark.formmodeler.rendering.client.view.ListView;
 import org.livespark.widgets.crud.client.component.CrudActionsHelper;
 import org.livespark.widgets.crud.client.component.CrudComponent;
 import org.livespark.widgets.crud.client.component.mock.CrudModel;
-import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
+import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
 public class TestListView extends ListView<CrudModel, TestFormModel> {
 

@@ -34,6 +34,11 @@ public abstract class AbstractFormDisplayer implements FormDisplayer {
     }
 
     @Override
+    public boolean isEmbeddable() {
+        return true;
+    }
+
+    @Override
     public IsFormView getFormView() {
         return formView;
     }

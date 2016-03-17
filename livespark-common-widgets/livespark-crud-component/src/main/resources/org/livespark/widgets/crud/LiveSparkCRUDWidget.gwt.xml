@@ -25,7 +25,7 @@
   <inherits name="org.jboss.errai.bus.ErraiBus"/>
 
   <!-- Uberfire Extensions - Core Widgets -->
-  <inherits name="org.uberfire.ext.widgets.common.UberfireWidgetsCommons"/>
+  <inherits name="org.uberfire.ext.widgets.table.UberfireTableWidget"/>
 
   <source path="client"/>
 </module>

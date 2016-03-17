@@ -26,7 +26,7 @@ import org.livespark.formmodeler.renderer.service.FormRenderingContext;
 import org.livespark.widgets.crud.client.component.CrudActionsHelper;
 import org.livespark.widgets.crud.client.component.CrudComponent;
 import org.livespark.widgets.crud.client.component.formDisplay.IsFormView;
-import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
+import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
 public class MultipleSubFormWidget extends Composite implements TakesValue<List<Object>> {
 

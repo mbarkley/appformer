@@ -52,6 +52,11 @@ public class ModalFormDisplayer extends AbstractFormDisplayer {
     }
 
     @Override
+    public boolean isEmbeddable() {
+        return false;
+    }
+
+    @Override
     public Widget asWidget() {
         return view.asWidget();
     }

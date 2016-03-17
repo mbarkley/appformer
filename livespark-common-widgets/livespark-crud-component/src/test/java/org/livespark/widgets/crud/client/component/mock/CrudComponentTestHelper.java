@@ -25,8 +25,7 @@ import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 import org.livespark.widgets.crud.client.component.CrudActionsHelper;
 import org.livespark.widgets.crud.client.component.formDisplay.IsFormView;
-import org.mockito.Mock;
-import org.uberfire.ext.widgets.common.client.tables.ColumnMeta;
+import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
 public class CrudComponentTestHelper implements CrudActionsHelper<CrudModel> {
     private boolean embeddedForms = true;

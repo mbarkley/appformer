@@ -22,6 +22,8 @@ public interface FormDisplayer extends IsWidget {
 
     void display( String title, IsFormView formView, FormDisplayerCallback callback );
 
+    boolean isEmbeddable();
+
     IsFormView getFormView();
 
     void cancel();
