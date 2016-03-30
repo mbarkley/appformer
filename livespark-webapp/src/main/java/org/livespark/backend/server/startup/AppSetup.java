@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Set;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.inject.Named;
 
@@ -36,6 +37,7 @@ import org.kie.workbench.common.services.shared.project.KieProject;
 import org.kie.workbench.common.services.shared.project.KieProjectService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.uberfire.commons.services.cdi.ApplicationStarted;
 import org.uberfire.commons.services.cdi.Startup;
 import org.uberfire.commons.services.cdi.StartupType;
 import org.uberfire.io.IOService;
@@ -77,12 +79,18 @@ public class AppSetup {
     @Inject
 	private DataModelerService dataModelerService;
 
+    @Inject
+    private Event<ApplicationStarted> applicationStartedEvent;
+
     @PostConstruct
     public void assertPlayground() {
         try {
             configurationService.startBatch();
 
             loadLiveSparkExamples();
+
+            // notify components that bootstrap is completed to start post setups
+            applicationStartedEvent.fire( new ApplicationStarted() );
 
         } catch ( final Exception e ) {
             logger.error( "Error during live spark demo repositories configuration", e );

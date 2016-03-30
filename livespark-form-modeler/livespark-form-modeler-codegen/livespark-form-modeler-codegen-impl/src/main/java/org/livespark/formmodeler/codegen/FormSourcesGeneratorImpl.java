@@ -18,16 +18,14 @@ package org.livespark.formmodeler.codegen;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Set;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.commons.lang3.StringUtils;
+import org.guvnor.common.services.backend.util.CommentedOptionFactory;
 import org.guvnor.common.services.project.model.Package;
-import org.jboss.errai.security.shared.api.identity.User;
 import org.kie.workbench.common.screens.datamodeller.service.DataModelerService;
 import org.kie.workbench.common.services.datamodeller.core.DataObject;
 import org.kie.workbench.common.services.shared.project.KieProject;
@@ -61,9 +59,6 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
     @Inject
     @Named("ioStrategy")
     private IOService ioService;
-
-    @Inject
-    private User identity;
 
     @Inject
     private KieProjectService projectService;
@@ -112,6 +107,9 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
 
     @Inject
     private VFSFormFinderService vfsFormFinderService;
+
+    @Inject
+    private CommentedOptionFactory commentedOptionFactory;
 
     @Override
     public void generateEntityFormSources(FormDefinition form, Path resourcePath) {
@@ -345,13 +343,6 @@ public class FormSourcesGeneratorImpl implements FormSourcesGenerator {
     }
 
     public CommentedOption makeCommentedOption( String commitMessage ) {
-        final String name = identity.getIdentifier();
-        final Date when = new Date();
-
-        final CommentedOption option = new CommentedOption( name,
-                null,
-                commitMessage,
-                when );
-        return option;
+        return commentedOptionFactory.makeCommentedOption( commitMessage );
     }
 }

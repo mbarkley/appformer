@@ -144,7 +144,6 @@ public class RoasterJavaTemplateSourceGenerator extends RoasterClientTemplateSou
             JavaClassSource viewClass ) {
         viewClass.addAnnotation( ERRAI_TEMPLATED );
         viewClass.addAnnotation( INJECT_NAMED ).setStringValue( context.getFormViewName() );
-        viewClass.addAnnotation( FORM_MODEL_ANNOTATION ).setStringValue( context.getSharedPackage().getPackageName() + "." + context.getFormModelName() );
     }
 
     @Override

@@ -226,7 +226,6 @@ public class RoasterListJavaTemplateSourceGenerator implements FormJavaTemplateS
 
     private void addAnnotations( SourceGenerationContext context, JavaClassSource viewClass ) {
         viewClass.addAnnotation( ERRAI_TEMPLATED );
-        viewClass.addAnnotation( FORM_MODEL_ANNOTATION ).setStringValue( context.getSharedPackage().getPackageName() + "." + context.getFormModelName() );
     }
 
     private void addImports( SourceGenerationContext context,
