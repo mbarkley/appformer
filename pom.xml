@@ -78,7 +78,9 @@
     <module>livespark-common-widgets</module>
     <module>livespark-form-modeler</module>
     <module>livespark-deployment</module>
-    <module>livespark-webapp</module>
+    <!--module>livespark-webapp</module-->
+    <module>livespark-home-page</module>
+    <module>livespark-webapp2</module>
     <module>livespark-integration-tests</module>
   </modules>
 
