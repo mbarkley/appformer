@@ -15,13 +15,11 @@
  */
 package org.livespark.client.docks;
 
-import java.util.Set;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
 import org.guvnor.common.services.shared.security.KieWorkbenchACL;
-import org.jboss.errai.security.shared.api.Role;
 import org.kie.workbench.common.screens.datamodeller.client.DataModelerContext;
 import org.kie.workbench.common.screens.datamodeller.client.context.DataModelerWorkbenchContext;
 import org.kie.workbench.common.screens.datamodeller.client.context.DataModelerWorkbenchContextChangeEvent;
@@ -57,8 +55,6 @@ public class AuthoringWorkbenchDocks {
     @Inject
     private SessionInfo sessionInfo;
 
-    private UberfireDock plannerDock = null;
-
     private String currentPerspectiveIdentifier = null;
 
     private boolean dataModelerDocksEnabled = true;
@@ -67,18 +63,6 @@ public class AuthoringWorkbenchDocks {
     public void perspectiveChangeEvent( @Observes UberfireDockReadyEvent dockReadyEvent ) {
         currentPerspectiveIdentifier = dockReadyEvent.getCurrentPerspective();
         if ( authoringPerspectiveIdentifier != null && dockReadyEvent.getCurrentPerspective().equals( authoringPerspectiveIdentifier ) ) {
-            if ( hasPlannerDomainGrant() ) {
-                if ( plannerDock == null ) {
-                    plannerDock = new UberfireDock( UberfireDockPosition.EAST, "CALCULATOR", new DefaultPlaceRequest( "PlannerDomainScreen" ), authoringPerspectiveIdentifier ).withSize( 450 ).withLabel( "OptaPlanner" );
-                } else {
-                    //avoid duplications
-                    uberfireDocks.remove( plannerDock );
-                }
-                uberfireDocks.add( plannerDock );
-            } else if ( plannerDock != null ) {
-                uberfireDocks.remove( plannerDock );
-            }
-
             if ( projectExplorerDock != null ) {
                 uberfireDocks.expand( projectExplorerDock );
             }
@@ -146,20 +130,5 @@ public class AuthoringWorkbenchDocks {
 
     private boolean shouldDisplayWestDocks( DataModelerContext context ) {
         return context != null && context.getEditionMode() == DataModelerContext.EditionMode.GRAPHICAL_MODE;
-    }
-
-    private boolean hasPlannerDomainGrant() {
-        Set<String> grantedRoles = kieACL.getGrantedRoles( "wb_optaplanner_domain" );
-        boolean plannerGrant = false;
-
-        if ( sessionInfo != null && sessionInfo.getIdentity() != null && sessionInfo.getIdentity().getRoles() != null ) {
-            for ( Role role : sessionInfo.getIdentity().getRoles() ) {
-                if ( grantedRoles.contains( role.getName() ) ) {
-                    plannerGrant = true;
-                    break;
-                }
-            }
-        }
-        return plannerGrant;
     }
 }

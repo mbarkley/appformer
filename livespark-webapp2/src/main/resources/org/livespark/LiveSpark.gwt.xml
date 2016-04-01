@@ -78,25 +78,29 @@
   <inherits name="org.drools.workbench.models.commons.DroolsWorkbenchModelsCommon"/>
   <inherits name="org.drools.workbench.models.datamodel.DroolsWorkbenchDataModelAPI"/>
 
+  <inherits name="org.drools.workbench.models.testscenarios.DroolsWorkbenchModelsTestScenarios" />
+
+  <inherits name="org.drools.workbench.models.guided.dtable.DroolsWorkbenchModelsGuidedDTable" />
+
   <!-- Drools Workbench Screens -->
   <inherits name="org.drools.workbench.screens.drltext.DroolsWorkbenchDRLTextEditorClient"/>
-  <inherits name="org.drools.workbench.screens.enums.DroolsWorkbenchEnumEditorClient"/>
-  <inherits name="org.drools.workbench.screens.factmodel.DroolsWorkbenchFactModelEditorAPI"/>
-  <inherits name="org.drools.workbench.screens.guided.rule.DroolsWorkbenchGuidedRuleEditorClient"/>
-  <inherits name="org.drools.workbench.screens.guided.template.DroolsWorkbenchGuidedTemplateEditorClient"/>
-  <inherits name="org.drools.workbench.screens.guided.dtable.DroolsWorkbenchGuidedDecisionTableEditorClient"/>
-  <inherits name="org.drools.workbench.screens.guided.dtree.DroolsWorkbenchGuidedDecisionTreeEditorClient"/>
-  <inherits name="org.drools.workbench.screens.guided.scorecard.DroolsWorkbenchGuidedScoreCardEditorClient"/>
-  <inherits name="org.drools.workbench.screens.dsltext.DroolsWorkbenchDSLTextEditorClient"/>
-  <inherits name="org.drools.workbench.screens.globals.DroolsWorkbenchGlobalsEditorClient"/>
-  <inherits name="org.drools.workbench.screens.workitems.DroolsWorkbenchWorkItemsEditorClient"/>
-  <inherits name="org.drools.workbench.screens.dtablexls.DroolsWorkbenchDecisionTableXLSEditorClient"/>
-  <inherits name="org.drools.workbench.screens.scorecardxls.DroolsWorkbenchScoreCardXLSEditorClient"/>
-  <inherits name="org.drools.workbench.screens.testscenario.DroolsWorkbenchTestScenarioEditorClient"/>
+  <!-- Not apply for LS inherits name="org.drools.workbench.screens.enums.DroolsWorkbenchEnumEditorClient"/-->
+  <!-- Not apply for LS inherits name="org.drools.workbench.screens.factmodel.DroolsWorkbenchFactModelEditorAPI"/-->
+  <!-- Not apply for LS inherits name="org.drools.workbench.screens.guided.rule.DroolsWorkbenchGuidedRuleEditorClient"/-->
+  <!-- Not apply for LS inherits name="org.drools.workbench.screens.guided.template.DroolsWorkbenchGuidedTemplateEditorClient"/-->
+  <!-- Not apply for LS inherits name="org.drools.workbench.screens.guided.dtable.DroolsWorkbenchGuidedDecisionTableEditorClient"/-->
+  <!-- Not apply for LS inherits name="org.drools.workbench.screens.guided.dtree.DroolsWorkbenchGuidedDecisionTreeEditorClient"/-->
+  <!-- Not apply for LS inherits name="org.drools.workbench.screens.guided.scorecard.DroolsWorkbenchGuidedScoreCardEditorClient"/-->
+  <!-- Not apply for LS inherits name="org.drools.workbench.screens.dsltext.DroolsWorkbenchDSLTextEditorClient"/-->
+  <!-- Not apply for LS inherits name="org.drools.workbench.screens.globals.DroolsWorkbenchGlobalsEditorClient"/-->
+  <!-- Not apply for LS inherits name="org.drools.workbench.screens.workitems.DroolsWorkbenchWorkItemsEditorClient"/-->
+  <!-- Not apply for LS inherits name="org.drools.workbench.screens.dtablexls.DroolsWorkbenchDecisionTableXLSEditorClient"/-->
+  <!-- Not apply for LS inherits name="org.drools.workbench.screens.scorecardxls.DroolsWorkbenchScoreCardXLSEditorClient"/-->
+  <!-- Not apply for LS inherits name="org.drools.workbench.screens.testscenario.DroolsWorkbenchTestScenarioEditorClient"/-->
 
   <!-- Optaplanner Workbench Screens -->
-  <inherits name="org.optaplanner.workbench.screens.domaineditor.OptaPlannerWorkbenchDomainEditorClient"/>
-  <inherits name="org.optaplanner.workbench.screens.solver.OptaPlannerWorkbenchSolverEditorClient"/>
+  <!-- Not apply for LS inherits name="org.optaplanner.workbench.screens.domaineditor.OptaPlannerWorkbenchDomainEditorClient"/-->
+  <!-- Not apply for LS inherits name="org.optaplanner.workbench.screens.solver.OptaPlannerWorkbenchSolverEditorClient"/-->
 
   <!-- Security management. -->
   <inherits name="org.uberfire.ext.security.management.UberfireSecurityManagementWorkbench"/>

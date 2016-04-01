@@ -121,7 +121,7 @@
     <url-pattern>/maven2/*</url-pattern>
   </filter-mapping>
 
-  <servlet>
+  <!-- Not apply for LS servlet>
     <servlet-name>DTableXLSFileServlet</servlet-name>
     <servlet-class>org.drools.workbench.screens.dtablexls.backend.server.DecisionTableXLSFileServlet</servlet-class>
     <init-param>
@@ -136,7 +136,7 @@
   <servlet-mapping>
     <servlet-name>DTableXLSFileServlet</servlet-name>
     <url-pattern>/org.livespark.LiveSpark/dtablexls/file</url-pattern>
-  </servlet-mapping>
+  </servlet-mapping-->
 
   <servlet>
     <servlet-name>ArchiveServlet</servlet-name>
@@ -155,7 +155,7 @@
     <url-pattern>/org.livespark.LiveSpark/archive</url-pattern>
   </servlet-mapping>
 
-  <servlet>
+  <!-- Not apply for LS servlet>
     <servlet-name>ScoreCardFileServlet</servlet-name>
     <servlet-class>org.drools.workbench.screens.scorecardxls.backend.server.ScoreCardXLSFileServlet</servlet-class>
     <init-param>
@@ -170,7 +170,7 @@
   <servlet-mapping>
     <servlet-name>ScoreCardFileServlet</servlet-name>
     <url-pattern>/org.livespark.LiveSpark/scorecardxls/file</url-pattern>
-  </servlet-mapping>
+  </servlet-mapping-->
 
   <servlet>
     <servlet-name>UberfireFileUploadServlet</servlet-name>

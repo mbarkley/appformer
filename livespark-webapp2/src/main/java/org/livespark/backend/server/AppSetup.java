@@ -28,7 +28,6 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.drools.workbench.screens.workitems.service.WorkItemsEditorService;
 import org.guvnor.common.services.project.model.GAV;
 import org.guvnor.common.services.project.model.POM;
 import org.guvnor.common.services.shared.security.KieWorkbenchPolicy;
@@ -144,6 +143,8 @@ public class AppSetup {
                 configurationService.addConfiguration( getGlobalConfiguration() );
             }
 
+            /*
+            Not apply for LS
             //Define properties required by the Work Items Editor
             List<ConfigGroup> editorConfigGroups = configurationService.getConfiguration( ConfigType.EDITOR );
             boolean workItemsEditorSettingsDefined = false;
@@ -156,6 +157,7 @@ public class AppSetup {
             if ( !workItemsEditorSettingsDefined ) {
                 configurationService.addConfiguration( getWorkItemElementDefinitions() );
             }
+            */
 
             final KieWorkbenchPolicy policy = new KieWorkbenchPolicy( securityService.loadPolicy() );
             // register roles
@@ -255,6 +257,7 @@ public class AppSetup {
         return group;
     }
 
+    /* Not apply for LS
     private ConfigGroup getWorkItemElementDefinitions() {
         // Work Item Definition elements used when creating Work Item Definitions.
         // Each entry in this file represents a Button in the Editor's Palette:-
@@ -293,6 +296,7 @@ public class AppSetup {
                                                                  "\"displayName\" : \"My Task|\"" ) );
         return group;
     }
+    */
 
     private Repository createRepository( String alias,
                                          String scheme,

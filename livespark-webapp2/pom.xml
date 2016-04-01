@@ -271,14 +271,14 @@
       <groupId>org.drools</groupId>
       <artifactId>drools-workbench-models-guided-dtable</artifactId>
     </dependency>
-    <dependency>
+    <!-- Not apply for LS dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-workbench-models-guided-scorecard</artifactId>
-    </dependency>
-    <dependency>
+    </dependency-->
+    <!-- Not apply for LS dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-workbench-models-guided-template</artifactId>
-    </dependency>
+    </dependency-->
     <dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-workbench-models-test-scenarios</artifactId>
@@ -545,42 +545,42 @@
       <groupId>org.drools</groupId>
       <artifactId>drools-wb-guided-rule-editor-backend</artifactId>
     </dependency>
-    <dependency>
+    <!-- Not apply for LS dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-wb-guided-template-editor-client</artifactId>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
+    </dependency-->
+    <!-- Not apply for LS dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-wb-guided-template-editor-backend</artifactId>
-    </dependency>
-    <dependency>
+    </dependency-->
+    <!-- Not apply for LS dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-wb-guided-dtable-editor-client</artifactId>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
+    </dependency-->
+    <!-- Not apply for LS dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-wb-guided-dtable-editor-backend</artifactId>
-    </dependency>
-    <dependency>
+    </dependency-->
+    <!-- Not apply for LS dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-wb-guided-dtree-editor-client</artifactId>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
+    </dependency-->
+    <!-- Not apply for LS dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-wb-guided-dtree-editor-backend</artifactId>
-    </dependency>
-    <dependency>
+    </dependency-->
+    <!-- Not apply for LS dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-wb-guided-scorecard-editor-client</artifactId>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
+    </dependency-->
+    <!-- Not apply for LS dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-wb-guided-scorecard-editor-backend</artifactId>
-    </dependency>
+    </dependency-->
     <dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-wb-drl-text-editor-client</artifactId>
@@ -590,105 +590,105 @@
       <groupId>org.drools</groupId>
       <artifactId>drools-wb-drl-text-editor-backend</artifactId>
     </dependency>
-    <dependency>
+    <!-- Not apply for LS dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-wb-enum-editor-client</artifactId>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
+    </dependency-->
+    <!-- Not apply for LS dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-wb-enum-editor-backend</artifactId>
-    </dependency>
-    <dependency>
+    </dependency-->
+    <!-- Not apply for LS dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-wb-factmodel-editor-backend</artifactId>
-    </dependency>
-    <dependency>
+    </dependency-->
+    <!-- Not apply for LS dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-wb-dsl-text-editor-client</artifactId>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
+    </dependency-->
+    <!-- Not apply for LS dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-wb-dsl-text-editor-backend</artifactId>
-    </dependency>
-    <dependency>
+    </dependency-->
+    <!-- Not apply for LS dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-wb-dtable-xls-editor-client</artifactId>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
+    </dependency-->
+    <!-- Not apply for LS dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-wb-dtable-xls-editor-backend</artifactId>
-    </dependency>
-    <dependency>
+    </dependency-->
+    <!-- Not apply for LS dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-wb-scorecard-xls-editor-client</artifactId>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
+    </dependency-->
+    <!-- Not apply for LS dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-wb-scorecard-xls-editor-backend</artifactId>
-    </dependency>
-    <dependency>
+    </dependency-->
+    <!-- Not apply for LS dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-wb-globals-editor-api</artifactId>
-    </dependency>
-    <dependency>
+    </dependency-->
+    <!-- Not apply for LS dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-wb-globals-editor-client</artifactId>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
+    </dependency-->
+    <!-- Not apply for LS dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-wb-globals-editor-backend</artifactId>
-    </dependency>
-    <dependency>
+    </dependency-->
+    <!-- Not apply for LS dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-wb-test-scenario-editor-client</artifactId>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
+    </dependency-->
+    <dependency> <!-- WM: required by GuidedRule indexer -->
       <groupId>org.drools</groupId>
       <artifactId>drools-wb-test-scenario-editor-backend</artifactId>
     </dependency>
-    <dependency>
+    <!-- Not apply for LS dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-wb-workitems-editor-client</artifactId>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
+    </dependency-->
+    <!-- Not apply for LS dependency>
       <groupId>org.drools</groupId>
       <artifactId>drools-wb-workitems-editor-backend</artifactId>
-    </dependency>
+    </dependency-->
 
     <!-- OptaPlanner Workbench Screens -->
-    <dependency>
+    <!-- Not apply for LS dependency>
       <groupId>org.optaplanner</groupId>
       <artifactId>optaplanner-wb-domain-editor-api</artifactId>
-    </dependency>
-    <dependency>
+    </dependency-->
+    <!-- Not apply for LS dependency>
       <groupId>org.optaplanner</groupId>
       <artifactId>optaplanner-wb-domain-editor-client</artifactId>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
+    </dependency-->
+    <!-- Not apply for LS dependency>
       <groupId>org.optaplanner</groupId>
       <artifactId>optaplanner-wb-domain-editor-backend</artifactId>
-    </dependency>
-    <dependency>
+    </dependency -->
+    <!-- Not apply for LS dependency>
       <groupId>org.optaplanner</groupId>
       <artifactId>optaplanner-wb-solver-editor-api</artifactId>
-    </dependency>
-    <dependency>
+    </dependency-->
+    <!-- Not apply for LS dependency>
       <groupId>org.optaplanner</groupId>
       <artifactId>optaplanner-wb-solver-editor-client</artifactId>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
+    </dependency-->
+    <!-- Not apply for LS dependency>
       <groupId>org.optaplanner</groupId>
       <artifactId>optaplanner-wb-solver-editor-backend</artifactId>
-    </dependency>
+    </dependency-->
 
     <!-- jBPM Designer -->
     <dependency>
@@ -1488,44 +1488,44 @@
               <!-- Models for Drools WB -->
               <compileSourcesArtifact>org.drools:drools-workbench-models-commons</compileSourcesArtifact>
               <compileSourcesArtifact>org.drools:drools-workbench-models-guided-dtable</compileSourcesArtifact>
-              <compileSourcesArtifact>org.drools:drools-workbench-models-guided-scorecard</compileSourcesArtifact>
-              <compileSourcesArtifact>org.drools:drools-workbench-models-guided-template</compileSourcesArtifact>
+              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-workbench-models-guided-scorecard</compileSourcesArtifact-->
+              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-workbench-models-guided-template</compileSourcesArtifact-->
               <compileSourcesArtifact>org.drools:drools-workbench-models-test-scenarios</compileSourcesArtifact>
 
               <!-- Drools WB -->
-              <compileSourcesArtifact>org.drools:drools-wb-enum-editor-api</compileSourcesArtifact>
-              <compileSourcesArtifact>org.drools:drools-wb-enum-editor-client</compileSourcesArtifact>
+              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-enum-editor-api</compileSourcesArtifact-->
+              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-enum-editor-client</compileSourcesArtifact-->
               <compileSourcesArtifact>org.drools:drools-wb-drl-text-editor-api</compileSourcesArtifact>
               <compileSourcesArtifact>org.drools:drools-wb-drl-text-editor-client</compileSourcesArtifact>
-              <compileSourcesArtifact>org.drools:drools-wb-factmodel-editor-api</compileSourcesArtifact>
-              <compileSourcesArtifact>org.drools:drools-wb-guided-rule-editor-api</compileSourcesArtifact>
-              <compileSourcesArtifact>org.drools:drools-wb-guided-rule-editor-client</compileSourcesArtifact>
-              <compileSourcesArtifact>org.drools:drools-wb-guided-template-editor-api</compileSourcesArtifact>
-              <compileSourcesArtifact>org.drools:drools-wb-guided-template-editor-client</compileSourcesArtifact>
-              <compileSourcesArtifact>org.drools:drools-wb-guided-dtable-editor-api</compileSourcesArtifact>
-              <compileSourcesArtifact>org.drools:drools-wb-guided-dtable-editor-client</compileSourcesArtifact>
-              <compileSourcesArtifact>org.drools:drools-wb-guided-dtree-editor-api</compileSourcesArtifact>
-              <compileSourcesArtifact>org.drools:drools-wb-guided-dtree-editor-client</compileSourcesArtifact>
-              <compileSourcesArtifact>org.drools:drools-wb-guided-scorecard-editor-api</compileSourcesArtifact>
-              <compileSourcesArtifact>org.drools:drools-wb-guided-scorecard-editor-client</compileSourcesArtifact>
-              <compileSourcesArtifact>org.drools:drools-wb-dsl-text-editor-api</compileSourcesArtifact>
-              <compileSourcesArtifact>org.drools:drools-wb-dsl-text-editor-client</compileSourcesArtifact>
-              <compileSourcesArtifact>org.drools:drools-wb-globals-editor-api</compileSourcesArtifact>
-              <compileSourcesArtifact>org.drools:drools-wb-globals-editor-client</compileSourcesArtifact>
-              <compileSourcesArtifact>org.drools:drools-wb-dtable-xls-editor-api</compileSourcesArtifact>
-              <compileSourcesArtifact>org.drools:drools-wb-dtable-xls-editor-client</compileSourcesArtifact>
-              <compileSourcesArtifact>org.drools:drools-wb-scorecard-xls-editor-api</compileSourcesArtifact>
-              <compileSourcesArtifact>org.drools:drools-wb-scorecard-xls-editor-client</compileSourcesArtifact>
-              <compileSourcesArtifact>org.drools:drools-wb-workitems-editor-api</compileSourcesArtifact>
-              <compileSourcesArtifact>org.drools:drools-wb-workitems-editor-client</compileSourcesArtifact>
-              <compileSourcesArtifact>org.drools:drools-wb-test-scenario-editor-api</compileSourcesArtifact>
-              <compileSourcesArtifact>org.drools:drools-wb-test-scenario-editor-client</compileSourcesArtifact>
+              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-factmodel-editor-api</compileSourcesArtifact-->
+              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-guided-rule-editor-api</compileSourcesArtifact-->
+              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-guided-rule-editor-client</compileSourcesArtifact-->
+              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-guided-template-editor-api</compileSourcesArtifact-->
+              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-guided-template-editor-client</compileSourcesArtifact-->
+              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-guided-dtable-editor-api</compileSourcesArtifact-->
+              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-guided-dtable-editor-client</-compileSourcesArtifact-->
+              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-guided-dtree-editor-api</compileSourcesArtifact-->
+              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-guided-dtree-editor-client</compileSourcesArtifact-->
+              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-guided-scorecard-editor-api</compileSourcesArtifact-->
+              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-guided-scorecard-editor-client</compileSourcesArtifact-->
+              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-dsl-text-editor-api</compileSourcesArtifact-->
+              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-dsl-text-editor-client</compileSourcesArtifact-->
+              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-globals-editor-api</compileSourcesArtifact-->
+              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-globals-editor-client</compileSourcesArtifact-->
+              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-dtable-xls-editor-api</compileSourcesArtifact-->
+              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-dtable-xls-editor-client</compileSourcesArtifact-->
+              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-scorecard-xls-editor-api</compileSourcesArtifact-->
+              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-scorecard-xls-editor-client</compileSourcesArtifact-->
+              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-workitems-editor-api</compileSourcesArtifact -->
+              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-workitems-editor-client</compileSourcesArtifact-->
+              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-test-scenario-editor-api</compileSourcesArtifact-->
+              <!-- Not apply for LS compileSourcesArtifact>org.drools:drools-wb-test-scenario-editor-client</compileSourcesArtifact-->
 
               <!-- OptaPlanner WB -->
-              <compileSourcesArtifact>org.optaplanner:optaplanner-wb-domain-editor-api</compileSourcesArtifact>
-              <compileSourcesArtifact>org.optaplanner:optaplanner-wb-domain-editor-client</compileSourcesArtifact>
-              <compileSourcesArtifact>org.optaplanner:optaplanner-wb-solver-editor-api</compileSourcesArtifact>
-              <compileSourcesArtifact>org.optaplanner:optaplanner-wb-solver-editor-client</compileSourcesArtifact>
+              <!-- Not apply for LS compileSourcesArtifact>org.optaplanner:optaplanner-wb-domain-editor-api</compileSourcesArtifact-->
+              <!-- Not apply for LS compileSourcesArtifact>org.optaplanner:optaplanner-wb-domain-editor-client</compileSourcesArtifact-->
+              <!-- Not apply for LS compileSourcesArtifact>org.optaplanner:optaplanner-wb-solver-editor-api</compileSourcesArtifact-->
+              <!-- Not apply for LS compileSourcesArtifact>org.optaplanner:optaplanner-wb-solver-editor-client</compileSourcesArtifact-->
 
               <!-- UberFire -->
               <compileSourcesArtifact>org.uberfire:uberfire-commons</compileSourcesArtifact>
