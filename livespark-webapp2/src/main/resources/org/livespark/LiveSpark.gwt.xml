@@ -104,7 +104,23 @@
 
   <!-- Security management. -->
   <inherits name="org.uberfire.ext.security.management.UberfireSecurityManagementWorkbench"/>
-  
+
+  <!-- Start LiveSpark Modules -->
+  <inherits name="org.livespark.formmodeler.renderer.FormModelerDynamicRendererClient"/>
+  <inherits name="org.livespark.formmodeler.editor.FormModelerEditorClient"/>
+  <!-- <inherits name="org.livespark.LiveSparkDeployment"/> -->
+
+  <!-- Dashbuilder must use Errai validation. Then this line can be removed.
+        We need this now because Dashbuilder's rebind rule for it's Validator
+        collides with our own. This overrides both. -->
+  <inherits name="org.jboss.errai.validation.Validation" />
+  <inherits name="org.hibernate.validator.HibernateValidator" />
+  <generate-with class="org.jboss.errai.validation.rebind.ValidatorFactoryGenerator">
+    <when-type-assignable
+        class="javax.validation.ValidatorFactory"/>
+  </generate-with>
+  <!-- End LiveSpark Modules -->
+
   <!-- Specify the application specific style sheet. -->
   <stylesheet src='css/livespark.css'/>
 
