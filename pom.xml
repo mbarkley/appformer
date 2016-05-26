@@ -80,6 +80,7 @@
     <module>livespark-deployment</module>
     <module>livespark-showcase</module>
     <module>livespark-integration-tests</module>
+    <module>livespark-process-api</module>
   </modules>
 
   <dependencyManagement>
