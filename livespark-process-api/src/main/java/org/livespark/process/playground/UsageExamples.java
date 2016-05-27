@@ -21,38 +21,50 @@ import java.util.List;
 
 import org.livespark.process.api.Command;
 import org.livespark.process.api.CrudOperation;
-import org.livespark.process.api.InputSource;
 import org.livespark.process.api.ProcessFactory;
+import org.livespark.process.api.ProcessFlow;
 import org.livespark.process.api.Step;
+import org.livespark.process.api.Unit;
 
 /**
  * @author Max Barkley <mbarkley@redhat.com>
  */
 public class UsageExamples {
 
-    <MODEL> void example(final ProcessFactory factory) {
-        final InputSource<List<MODEL>> allModels = factory.getInputSource( "AllEntities" );
+    <MODEL> void crudFlow(final ProcessFactory factory) {
         final Step<List<MODEL>, Command<CrudOperation, MODEL>> listView = factory.getStep( "ListView" );
         final Step<MODEL, MODEL> formView = factory.getStep( "FormView" );
         final Step<MODEL, Boolean> save = factory.getStep( "SaveEntity" );
         final Step<MODEL, Boolean> update = factory.getStep( "UpdateEntity" );
+        final Step<Unit, List<MODEL>> loader = factory.getStep( "LoadEntities" );
 
-        listView.startProcess( allModels )
-                .transition( output -> {
-                    switch (output.commandType) {
+        final ProcessFlow<Unit, Boolean> app =
+                factory
+                .startProcess( loader )
+                .andThen( listView )
+                .transition( result -> {
+                    switch (result.commandType) {
                         case CREATE :
-                            return formView.startProcess( factory.createInputSource( output.value ) )
-                                           .map( save )
-                                           .transition( success -> factory.getProcessFlow( "Main" ) );
+                            return factory
+                                    .startProcess( formView )
+                                    .andThen( save )
+                                    .andThen( factory.<Unit, Boolean>getProcessFlow( "App" )
+                                                     .butFirst( bool -> Unit.INSTANCE ))
+                                    .butFirst( ignore -> result.value );
                         case UPDATE :
-                            return formView.startProcess( factory.createInputSource( output.value ) )
-                                           .map( update )
-                                           .transition( success -> factory.<Boolean>getProcessFlow( "Main" ) );
+                            return factory
+                                    .startProcess( formView )
+                                    .andThen( update )
+                                    .andThen( factory.<Unit, Boolean>getProcessFlow( "App" )
+                                                     .butFirst( bool -> Unit.INSTANCE ))
+                                    .butFirst( ignore -> result.value );
                         default :
-                            return factory.getProcessFlow( "Main" );
+                            return factory
+                                    .<Unit, Boolean>getProcessFlow( "App" );
                     }
                 } );
 
+        factory.registerProcess( "App", app );
     }
 
 }

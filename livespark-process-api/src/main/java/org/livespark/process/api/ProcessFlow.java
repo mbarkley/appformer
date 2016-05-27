@@ -18,16 +18,29 @@
 package org.livespark.process.api;
 
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * @author Max Barkley <mbarkley@redhat.com>
  */
-public interface ProcessFlow<OUTPUT> {
+public interface ProcessFlow<INPUT, OUTPUT> {
 
-    <T> ProcessFlow<T> map(Step<OUTPUT, T> nextStep);
+    <T> ProcessFlow<INPUT, T> andThen(Step<OUTPUT, T> nextStep);
 
-    <T> ProcessFlow<T> map(Function<OUTPUT, T> transformation);
+    <T> ProcessFlow<INPUT, T> andThen(Function<OUTPUT, T> transformation);
 
-    <T> ProcessFlow<T> transition(Function<OUTPUT, ProcessFlow<T>> chooser);
+    <T> ProcessFlow<T, OUTPUT> butFirst(Function<T, INPUT> transformation);
+
+    <T> ProcessFlow<T, OUTPUT> butFirst(Step<T, INPUT> prevStep);
+
+    <T> ProcessFlow<INPUT, T> transition(Function<OUTPUT, ProcessFlow<INPUT, T>> chooser);
+
+    default <T> ProcessFlow<INPUT, T> andThen(Supplier<ProcessFlow<OUTPUT, T>> supplier) {
+        return transition( (OUTPUT output) -> supplier.get().butFirst( ignore -> output ) );
+    }
+
+    default <T> ProcessFlow<INPUT, T> andThen(ProcessFlow<OUTPUT, T> other) {
+        return andThen( () -> other );
+    }
 
 }

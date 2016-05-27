@@ -17,9 +17,15 @@
 
 package org.livespark.process.api;
 
+import java.util.Collection;
+
 /**
  * @author Max Barkley <mbarkley@redhat.com>
  */
-public interface InputSource<T> {
+public interface DataSource<T> {
+
+    T getOne(Query query);
+
+    Collection<T> getMany(Query query);
 
 }

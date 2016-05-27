@@ -17,14 +17,19 @@
 
 package org.livespark.process.api;
 
+import java.util.function.Function;
+
 /**
  * @author Max Barkley <mbarkley@redhat.com>
  */
 public interface ProcessFactory {
 
     <INPUT, OUTPUT> Step<INPUT, OUTPUT> getStep(String stepId);
-    <INPUT> InputSource<INPUT> getInputSource(String inputSourceId);
-    <OUTPUT> ProcessFlow<OUTPUT> getProcessFlow(String processFlowId);
-    <INPUT> InputSource<INPUT> createInputSource(INPUT value);
+    <INPUT> DataSource<INPUT> getInputSource(String inputSourceId);
+    <INPUT, OUTPUT> ProcessFlow<INPUT, OUTPUT> getProcessFlow(String processFlowId);
+    <INPUT> DataSource<INPUT> createInputSource(INPUT value);
+    <INPUT, OUTPUT> ProcessFlow<INPUT, OUTPUT> startProcess(Step<INPUT, OUTPUT> step);
+    <INPUT, OUTPUT> ProcessFlow<INPUT, OUTPUT> process(Function<INPUT, OUTPUT> func);
+    void registerProcess( String string, ProcessFlow<?, ?> main );
 
 }

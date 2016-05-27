@@ -20,5 +20,7 @@ package org.livespark.process.api;
 /**
  * @author Max Barkley <mbarkley@redhat.com>
  */
-public interface Step<INPUT, OUTPUT> {
+public interface Tuple2<A, B> {
+    A get1();
+    B get2();
 }

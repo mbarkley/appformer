@@ -20,5 +20,6 @@ package org.livespark.process.api;
 /**
  * @author Max Barkley <mbarkley@redhat.com>
  */
-public interface Step<INPUT, OUTPUT> {
+public interface Query {
+
 }
