@@ -17,11 +17,17 @@
 
 package org.livespark.process.api;
 
+import java.util.function.Consumer;
+
 /**
  * @author Max Barkley <mbarkley@redhat.com>
  */
 public interface ProcessExecutor {
 
-    void execute(ProcessFlow<?, ?> process);
+    default void execute( final ProcessFlow<?, ?> process ) {
+        execute( process, o -> {} );
+    }
+
+    void execute( ProcessFlow<?, ?> process, Consumer<Object> callback );
 
 }

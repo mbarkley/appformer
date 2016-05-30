@@ -20,7 +20,7 @@ package org.livespark.process.client.local;
 import java.util.Optional;
 import java.util.function.Function;
 
-class TransformationNode<INPUT, OUTPUT> extends ProcessNode<INPUT, OUTPUT> {
+final class TransformationNode<INPUT, OUTPUT> extends ProcessNode<INPUT, OUTPUT> {
 
     final Function<INPUT, OUTPUT> transformation;
 

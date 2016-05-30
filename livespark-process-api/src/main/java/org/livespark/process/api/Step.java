@@ -17,8 +17,13 @@
 
 package org.livespark.process.api;
 
+import java.util.function.Consumer;
+
 /**
  * @author Max Barkley <mbarkley@redhat.com>
  */
 public interface Step<INPUT, OUTPUT> {
+    boolean hasUnitInput();
+    void execute(INPUT input, Consumer<OUTPUT> callback);
+    String getName();
 }

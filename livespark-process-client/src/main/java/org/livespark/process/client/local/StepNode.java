@@ -21,7 +21,7 @@ import java.util.Optional;
 
 import org.livespark.process.api.Step;
 
-class StepNode<INPUT, OUTPUT> extends ProcessNode<INPUT, OUTPUT> {
+final class StepNode<INPUT, OUTPUT> extends ProcessNode<INPUT, OUTPUT> {
 
     final Step<INPUT, OUTPUT> step;
 

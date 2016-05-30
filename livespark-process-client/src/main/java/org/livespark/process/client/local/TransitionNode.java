@@ -22,7 +22,7 @@ import java.util.function.Function;
 
 import org.livespark.process.api.ProcessFlow;
 
-class TransitionNode<INPUT, PREV_INPUT, OUTPUT> extends ProcessNode<INPUT, OUTPUT> {
+final class TransitionNode<INPUT, PREV_INPUT, OUTPUT> extends ProcessNode<INPUT, OUTPUT> {
 
     Function<INPUT, ProcessFlow<PREV_INPUT, OUTPUT>> transition;
 
