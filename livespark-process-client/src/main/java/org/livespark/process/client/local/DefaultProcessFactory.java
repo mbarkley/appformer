@@ -20,11 +20,14 @@ package org.livespark.process.client.local;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import org.livespark.process.api.DataSource;
 import org.livespark.process.api.ProcessFactory;
 import org.livespark.process.api.ProcessFlow;
 import org.livespark.process.api.Step;
 
+@ApplicationScoped
 public class DefaultProcessFactory implements ProcessFactory {
 
     private final Map<String, Step<?, ?>> steps = new HashMap<>();

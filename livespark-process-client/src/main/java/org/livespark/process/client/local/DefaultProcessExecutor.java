@@ -20,10 +20,13 @@ package org.livespark.process.client.local;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import org.livespark.process.api.ProcessExecutor;
 import org.livespark.process.api.ProcessFlow;
 import org.livespark.process.api.Step;
 
+@ApplicationScoped
 public class DefaultProcessExecutor implements ProcessExecutor {
 
     @Override

@@ -36,6 +36,7 @@
   <properties>
     <arquillian.version>1.1.8.Final</arquillian.version>
     <gwtmockito.version>1.1.5</gwtmockito.version>
+    <gwt.version>2.8.0-SNAPSHOT</gwt.version>
     <hibernate.validator.version>4.1.0.Final</hibernate.validator.version>
     <validation.api.version>1.0.0.GA</validation.api.version>
     <javaee.version>1.0.2.Final</javaee.version>
@@ -106,6 +107,17 @@
         <artifactId>validation-api</artifactId>
         <version>${validation.api.version}</version>
         <classifier>sources</classifier>
+      </dependency>
+      
+      <dependency>
+        <groupId>com.google.gwt</groupId>
+        <artifactId>gwt-user</artifactId>
+        <version>${gwt.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.gwt</groupId>
+        <artifactId>gwt-dev</artifactId>
+        <version>${gwt.version}</version>
       </dependency>
 
       <dependency>
