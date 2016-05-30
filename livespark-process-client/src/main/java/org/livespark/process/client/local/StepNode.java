@@ -15,19 +15,25 @@
  */
 
 
-package org.livespark.process.api;
+package org.livespark.process.client.local;
 
-/**
- * @author Max Barkley <mbarkley@redhat.com>
- */
-public interface ProcessFactory {
+import java.util.Optional;
 
-    <INPUT, OUTPUT> Step<INPUT, OUTPUT> getStep(String stepId);
-    <INPUT> DataSource<INPUT> getDataSource(String inputSourceId);
-    <INPUT, OUTPUT> ProcessFlow<INPUT, OUTPUT> getProcessFlow(String processFlowId);
-    <INPUT, OUTPUT> ProcessFlow<INPUT, OUTPUT> buildProcessFrom(Step<INPUT, OUTPUT> step);
-    void registerProcess( String id, ProcessFlow<?, ?> main );
-    void registerDataSource( String id, DataSource<?> source );
-    void registerStep( String id, Step<?, ?> step );
+import org.livespark.process.api.Step;
+
+class StepNode<INPUT, OUTPUT> extends ProcessNode<INPUT, OUTPUT> {
+
+    final Step<INPUT, OUTPUT> step;
+
+    StepNode( final Step<INPUT, OUTPUT> step ) {
+        this( step, Optional.empty(), Optional.empty() );
+    }
+
+    StepNode( final Step<INPUT, OUTPUT> step,
+              final Optional<ProcessNode<?, INPUT>> prev,
+              final Optional<ProcessNode<OUTPUT, ? >> next ) {
+        super( prev, next );
+        this.step = step;
+    }
 
 }

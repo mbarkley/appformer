@@ -40,20 +40,20 @@ public class UsageExamples {
 
         final ProcessFlow<Unit, Boolean> app =
                 factory
-                .startProcess( loader )
+                .buildProcessFrom( loader )
                 .andThen( listView )
                 .transition( result -> {
                     switch (result.commandType) {
                         case CREATE :
                             return factory
-                                    .startProcess( formView )
+                                    .buildProcessFrom( formView )
                                     .andThen( save )
                                     .andThen( factory.<Unit, Boolean>getProcessFlow( "App" )
                                                      .butFirst( bool -> Unit.INSTANCE ))
                                     .butFirst( ignore -> result.value );
                         case UPDATE :
                             return factory
-                                    .startProcess( formView )
+                                    .buildProcessFrom( formView )
                                     .andThen( update )
                                     .andThen( factory.<Unit, Boolean>getProcessFlow( "App" )
                                                      .butFirst( bool -> Unit.INSTANCE ))

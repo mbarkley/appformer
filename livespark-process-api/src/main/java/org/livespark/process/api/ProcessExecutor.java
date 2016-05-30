@@ -20,14 +20,8 @@ package org.livespark.process.api;
 /**
  * @author Max Barkley <mbarkley@redhat.com>
  */
-public interface ProcessFactory {
+public interface ProcessExecutor {
 
-    <INPUT, OUTPUT> Step<INPUT, OUTPUT> getStep(String stepId);
-    <INPUT> DataSource<INPUT> getDataSource(String inputSourceId);
-    <INPUT, OUTPUT> ProcessFlow<INPUT, OUTPUT> getProcessFlow(String processFlowId);
-    <INPUT, OUTPUT> ProcessFlow<INPUT, OUTPUT> buildProcessFrom(Step<INPUT, OUTPUT> step);
-    void registerProcess( String id, ProcessFlow<?, ?> main );
-    void registerDataSource( String id, DataSource<?> source );
-    void registerStep( String id, Step<?, ?> step );
+    void execute(ProcessFlow<?, ?> process);
 
 }

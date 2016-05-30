@@ -81,6 +81,7 @@
     <module>livespark-showcase</module>
     <module>livespark-integration-tests</module>
     <module>livespark-process-api</module>
+    <module>livespark-process-client</module>
   </modules>
 
   <dependencyManagement>
@@ -221,6 +222,16 @@
       <dependency>
         <groupId>org.livespark</groupId>
         <artifactId>livespark-deployment</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.livespark</groupId>
+        <artifactId>livespark-process-api</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.livespark</groupId>
+        <artifactId>livespark-process-client</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
