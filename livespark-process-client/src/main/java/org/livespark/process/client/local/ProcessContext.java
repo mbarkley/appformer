@@ -60,7 +60,7 @@ class ProcessContext {
     }
 
     boolean isStarted() {
-        return !( currentNode.isPresent() || output.isPresent() );
+        return currentNode.isPresent() || output.isPresent();
     }
 
     boolean isFinished() {

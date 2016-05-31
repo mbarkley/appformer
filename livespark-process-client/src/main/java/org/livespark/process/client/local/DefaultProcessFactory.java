@@ -37,19 +37,19 @@ public class DefaultProcessFactory implements ProcessFactory {
     @SuppressWarnings( "unchecked" )
     @Override
     public <INPUT, OUTPUT> Step<INPUT, OUTPUT> getStep( final String stepId ) {
-        return (Step<INPUT, OUTPUT>) steps.get( stepId );
+        return assertNotNull( stepId, Step.class, steps.get( stepId ) );
     }
 
     @SuppressWarnings( "unchecked" )
     @Override
     public <INPUT> DataSource<INPUT> getDataSource( final String sourceId ) {
-        return (DataSource<INPUT>) dataSources.get( sourceId );
+        return assertNotNull( sourceId, DataSource.class, dataSources.get( sourceId ) );
     }
 
     @SuppressWarnings( "unchecked" )
     @Override
     public <INPUT, OUTPUT> ProcessFlow<INPUT, OUTPUT> getProcessFlow( final String processFlowId ) {
-        return (ProcessFlow<INPUT, OUTPUT>) processes.get( processFlowId );
+        return assertNotNull( processFlowId, ProcessFlow.class, processes.get( processFlowId ) );
     }
 
     @Override
@@ -70,6 +70,15 @@ public class DefaultProcessFactory implements ProcessFactory {
     @Override
     public void registerStep( final String id, final Step<? , ?> step ) {
         steps.put( id, step );
+    }
+
+    private <T> T assertNotNull( final String id, final Class<T> type, final T value ) {
+        if ( value == null ) {
+            throw new RuntimeException( "No " + type.getSimpleName() + " was found for the id " + id );
+        }
+        else {
+            return value;
+        }
     }
 
 }

@@ -29,8 +29,9 @@ class DefaultProcessFlow<INPUT, OUTPUT> implements ProcessFlow<INPUT, OUTPUT> {
     ProcessNode<?, OUTPUT> end;
 
     public DefaultProcessFlow( final Step<INPUT, OUTPUT> step ) {
-        start = new StepNode<>( step );
-        end = new StepNode<>( step );
+        final StepNode<INPUT, OUTPUT> stepNode = new StepNode<>( step );
+        start = stepNode;
+        end = stepNode;
     }
 
     @SuppressWarnings( "unchecked" )

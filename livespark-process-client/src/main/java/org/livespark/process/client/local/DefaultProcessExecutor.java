@@ -25,6 +25,7 @@ import javax.enterprise.context.ApplicationScoped;
 import org.livespark.process.api.ProcessExecutor;
 import org.livespark.process.api.ProcessFlow;
 import org.livespark.process.api.Step;
+import org.livespark.process.api.Unit;
 
 @ApplicationScoped
 public class DefaultProcessExecutor implements ProcessExecutor {
@@ -63,6 +64,7 @@ public class DefaultProcessExecutor implements ProcessExecutor {
                 final TransitionNode<?, ?, ?> node = (TransitionNode<?, ?, ?>) curNode;
                 final Object newInput = pollOutput( context );
                 executeTransition( newInput, (Function) node.transition, context );
+                return;
             } else {
                 throw new RuntimeException( "Unrecognized " + ProcessNode.class.getSimpleName() + " subtype: " + curNode.getClass().getName() );
             }
@@ -91,7 +93,7 @@ public class DefaultProcessExecutor implements ProcessExecutor {
                 continueProcess( context );
             } );
         } catch ( final Throwable t ) {
-            throw new RuntimeException( "An error occurred while executing the " + step.getName() + " step.");
+            throw new RuntimeException( "An error occurred while executing the " + (step == null ? "null" : step.getName()) + " step.", t);
         }
     }
 
@@ -101,7 +103,7 @@ public class DefaultProcessExecutor implements ProcessExecutor {
     }
 
     private static Object pollOutput( final ProcessContext context ) {
-        final Object newInput = context.pollOutput().orElseThrow( () -> new RuntimeException( "Cannot start a process with a transformation." ) );
+        final Object newInput = context.pollOutput().orElse( Unit.INSTANCE );
         return newInput;
     }
 
