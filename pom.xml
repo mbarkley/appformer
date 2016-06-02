@@ -81,8 +81,8 @@
     <module>livespark-deployment</module>
     <module>livespark-showcase</module>
     <module>livespark-integration-tests</module>
-    <module>livespark-process-api</module>
-    <module>livespark-process-client</module>
+    <module>livespark-app-flow-api</module>
+    <module>livespark-app-flow-client</module>
   </modules>
 
   <dependencyManagement>
@@ -238,12 +238,12 @@
       </dependency>
       <dependency>
         <groupId>org.livespark</groupId>
-        <artifactId>livespark-process-api</artifactId>
+        <artifactId>livespark-app-flow-api</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.livespark</groupId>
-        <artifactId>livespark-process-client</artifactId>
+        <artifactId>livespark-app-flow-client</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
