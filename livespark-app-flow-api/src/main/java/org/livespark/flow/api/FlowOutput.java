@@ -15,10 +15,10 @@
  */
 
 
-package org.livespark.flow.client.local;
+package org.livespark.flow.api;
 
-public interface FlowInput<M> {
+public interface FlowOutput<M> {
 
-  M get();
+  void submit(M model);
 
 }

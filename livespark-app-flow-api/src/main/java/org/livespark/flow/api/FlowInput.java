@@ -15,18 +15,10 @@
  */
 
 
-package org.livespark.flow.client.local;
+package org.livespark.flow.api;
 
-import java.util.Optional;
+public interface FlowInput<M> {
 
-abstract class FlowNode<INPUT, OUTPUT> {
-
-    Optional<FlowNode<OUTPUT, ?>> next;
-    Optional<FlowNode<? , INPUT>> prev;
-
-    FlowNode( final Optional<FlowNode<?, INPUT>> prev, final Optional<FlowNode<OUTPUT, ?>> next ) {
-        this.prev = prev;
-        this.next = next;
-    }
+  M get();
 
 }

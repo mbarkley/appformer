@@ -21,10 +21,18 @@ import java.util.function.Consumer;
 
 public interface AppFlowExecutor {
 
-    default void execute( final AppFlow<?, ?> flow ) {
+    default <OUTPUT> void execute( final AppFlow<Unit, OUTPUT> flow ) {
         execute( flow, o -> {} );
     }
 
-    void execute( AppFlow<?, ?> flow, Consumer<Object> callback );
+    default <OUTPUT> void execute( final AppFlow<Unit, OUTPUT> flow, final Consumer<? super OUTPUT> callback ) {
+        execute( Unit.INSTANCE, flow, callback );
+    }
+
+    <INPUT, OUTPUT> void execute( INPUT input, AppFlow<INPUT, OUTPUT> flow, Consumer<? super OUTPUT> callback );
+
+    default <INPUT, OUTPUT> void execute( final INPUT input, final AppFlow<INPUT, OUTPUT> flow ) {
+        execute( input, flow, o -> {} );
+    }
 
 }

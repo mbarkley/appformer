@@ -24,6 +24,8 @@ import java.util.function.Consumer;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.inject.Produces;
 
+import org.livespark.flow.api.FlowInput;
+import org.livespark.flow.api.FlowOutput;
 import org.livespark.flow.api.Step;
 
 @ApplicationScoped
@@ -42,16 +44,10 @@ public class CDIStepFactory {
 
     private final Deque<StepFrame> inputStack = new LinkedList<>();
 
-    public <T, INPUT, OUTPUT> Step<INPUT, OUTPUT> createCdiStep( final Runnable starter,
+    public <INPUT, OUTPUT> Step<INPUT, OUTPUT> createCdiStep( final Runnable starter,
                                                                  final Runnable closer,
-                                                                 final String name,
-                                                                 final boolean hasUnitInput ) {
+                                                                 final String name ) {
         return new Step<INPUT, OUTPUT>() {
-
-            @Override
-            public boolean hasUnitInput() {
-                return hasUnitInput;
-            }
 
             @Override
             public void execute( final INPUT input,

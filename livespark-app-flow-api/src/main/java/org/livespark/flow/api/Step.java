@@ -20,7 +20,6 @@ package org.livespark.flow.api;
 import java.util.function.Consumer;
 
 public interface Step<INPUT, OUTPUT> {
-    boolean hasUnitInput();
     void execute(INPUT input, Consumer<OUTPUT> callback);
     String getName();
 }

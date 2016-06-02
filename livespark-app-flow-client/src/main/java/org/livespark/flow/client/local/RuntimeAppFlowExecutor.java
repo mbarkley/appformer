@@ -22,8 +22,8 @@ import java.util.function.Function;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import org.livespark.flow.api.AppFlowExecutor;
 import org.livespark.flow.api.AppFlow;
+import org.livespark.flow.api.AppFlowExecutor;
 import org.livespark.flow.api.Step;
 import org.livespark.flow.api.Unit;
 
@@ -31,17 +31,19 @@ import org.livespark.flow.api.Unit;
 public class RuntimeAppFlowExecutor implements AppFlowExecutor {
 
     @Override
-    public void execute( final AppFlow<?, ?> flow, final Consumer<Object> callback ) {
+    public <INPUT, OUTPUT> void execute( final INPUT input, final AppFlow<INPUT, OUTPUT> flow, final Consumer<? super OUTPUT> callback ) {
         if ( !(flow instanceof RuntimeAppFlow) ) {
             throw new RuntimeException( "This " + AppFlowExecutor.class.getSimpleName() + " can only execute a " + RuntimeAppFlow.class.getSimpleName() );
         }
 
-        executeDefaultProcess( (RuntimeAppFlow<?, ?>) flow, callback );
+        executeDefaultProcess( input, (RuntimeAppFlow<INPUT, OUTPUT>) flow, callback );
     }
 
-    private void executeDefaultProcess( final RuntimeAppFlow<?, ?> flow, final Consumer<Object> callback ) {
+    private <INPUT, OUTPUT> void executeDefaultProcess( final INPUT input,
+                                                        final RuntimeAppFlow<INPUT, OUTPUT> flow,
+                                                        final Consumer<? super OUTPUT> callback ) {
         final FlowContext context = new FlowContext( flow );
-        context.start();
+        context.start( input );
         context.pushCallback( callback );
         continueFlow( context );
     }
@@ -69,13 +71,19 @@ public class RuntimeAppFlowExecutor implements AppFlowExecutor {
                 throw new RuntimeException( "Unrecognized " + FlowNode.class.getSimpleName() + " subtype: " + curNode.getClass().getName() );
             }
         }
+        if ( context.isFinished() ) {
+            final Object output = pollOutput( context );
+            while ( context.hasCallbacks() ) {
+                context.applyCallbackAndPop( output );
+            }
+        }
     }
 
-    private void executeTransition( final Object newInput,
-                                    final Function<Object, AppFlow<?, ?>> transition,
+    private <OUTPUT> void executeTransition( final Object newInput,
+                                    final Function<Object, AppFlow<Unit, OUTPUT>> transition,
                                     final FlowContext context ) {
         try {
-            final AppFlow<?, ?> newProcess = transition.apply( newInput );
+            final AppFlow<Unit, ?> newProcess = transition.apply( newInput );
             execute( newProcess, output -> {
                 context.pushOutput( output );
                 continueFlow( context );
@@ -105,7 +113,8 @@ public class RuntimeAppFlowExecutor implements AppFlowExecutor {
     }
 
     private static Object pollOutput( final FlowContext context ) {
-        final Object newInput = context.pollOutput().orElse( Unit.INSTANCE );
+        final Object newInput = context.pollOutput()
+                .orElseThrow( () -> new IllegalStateException( "The " + FlowContext.class.getSimpleName() + " was polled with no previous output." ) );
         return newInput;
     }
 

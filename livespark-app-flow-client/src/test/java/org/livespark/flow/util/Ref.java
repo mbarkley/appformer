@@ -15,10 +15,18 @@
  */
 
 
-package org.livespark.flow.client.local;
+package org.livespark.flow.util;
 
-public interface FlowOutput<M> {
+public class Ref<T> {
 
-  void submit(M model);
+    public T val;
+
+    public Ref( final T val ) {
+        this.val = val;
+    }
+
+    public Ref() {
+        this( null );
+    }
 
 }

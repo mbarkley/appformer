@@ -34,42 +34,42 @@ class RuntimeAppFlow<INPUT, OUTPUT> implements AppFlow<INPUT, OUTPUT> {
         end = stepNode;
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings( { "unchecked", "rawtypes" } )
     @Override
-    public <T> AppFlow<INPUT, T> andThen( final Step<OUTPUT, T> nextStep ) {
-        addLast( new StepNode<>( nextStep ) );
+    public <T> AppFlow<INPUT, T> andThen( final Step<? super OUTPUT, T> nextStep ) {
+        addLast( new StepNode( nextStep ) );
 
         return (AppFlow<INPUT, T>) this;
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings( { "unchecked", "rawtypes" } )
     @Override
-    public <T> AppFlow<INPUT, T> andThen( final Function<OUTPUT, T> transformation ) {
-        addLast( new TransformationNode<>( transformation ) );
+    public <T> AppFlow<INPUT, T> andThen( final Function<? super OUTPUT, T> transformation ) {
+        addLast( new TransformationNode( transformation ) );
 
         return (AppFlow<INPUT, T>) this;
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings( { "unchecked", "rawtypes" } )
     @Override
-    public <T> AppFlow<T, OUTPUT> butFirst( final Function<T, INPUT> transformation ) {
-        addFirst( new TransformationNode<>( transformation ) );
+    public <T> AppFlow<T, OUTPUT> butFirst( final Function<T, ? extends INPUT> transformation ) {
+        addFirst( new TransformationNode( transformation ) );
 
         return (AppFlow<T, OUTPUT>) this;
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings( { "unchecked", "rawtypes" } )
     @Override
-    public <T> AppFlow<T, OUTPUT> butFirst( final Step<T, INPUT> prevStep ) {
-        addFirst( new StepNode<>( prevStep ) );
+    public <T> AppFlow<T, OUTPUT> butFirst( final Step<T, ? extends INPUT> prevStep ) {
+        addFirst( new StepNode( prevStep ) );
 
         return (AppFlow<T, OUTPUT>) this;
     }
 
-    @SuppressWarnings( "unchecked" )
+    @SuppressWarnings( { "unchecked", "rawtypes" } )
     @Override
-    public <T> AppFlow<INPUT, T> transition( final Function<OUTPUT, AppFlow<INPUT, T>> transition ) {
-        addLast( new TransitionNode<>( transition ) );
+    public <T> AppFlow<INPUT, T> transition( final Function<? super OUTPUT, AppFlow<INPUT, T>> transition ) {
+        addLast( new TransitionNode( transition ) );
 
         return (AppFlow<INPUT, T>) this;
     }

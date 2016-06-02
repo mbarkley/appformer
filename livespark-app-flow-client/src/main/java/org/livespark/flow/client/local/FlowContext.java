@@ -24,47 +24,42 @@ import java.util.function.Consumer;
 
 class FlowContext {
 
-    private Optional<Object> input = Optional.empty(),
-                             output = Optional.empty();
+    private Optional<Object> lastOutput = Optional.empty();
     private final RuntimeAppFlow<?, ?> flow;
     private Optional<FlowNode<?, ?>> currentNode = Optional.empty();
 
-    private final Deque<Consumer<Object>> callbacks = new LinkedList<>();
+    private final Deque<Consumer<?>> callbacks = new LinkedList<>();
 
 
     FlowContext( final RuntimeAppFlow<?, ?> flow ) {
         this.flow = flow;
     }
 
-    Optional<Object> pollInput() {
-        return input;
-    }
-
     Optional<Object> pollOutput() {
-        return output;
+        return lastOutput;
     }
 
     @SuppressWarnings( { "unchecked", "rawtypes" } )
     void pushOutput(final Object value) {
-        input = output;
-        output = Optional.of( value );
+        lastOutput = Optional.of( value );
         currentNode = (Optional) currentNode.flatMap( node -> node.next );
     }
 
-    void start() {
+    void start( final Object initialInput ) {
         if ( isStarted() ) {
             throw new RuntimeException( "Process has already been started." );
         }
 
         currentNode = Optional.of( flow.start );
+        lastOutput = Optional.of( initialInput );
     }
 
     boolean isStarted() {
-        return currentNode.isPresent() || output.isPresent();
+        return currentNode.isPresent() || lastOutput.isPresent();
     }
 
     boolean isFinished() {
-        return !currentNode.isPresent() && output.isPresent();
+        return !currentNode.isPresent() && lastOutput.isPresent();
     }
 
     Optional<FlowNode<?, ?>> getCurrentNode() {
@@ -75,8 +70,19 @@ class FlowContext {
         return flow;
     }
 
-    public void pushCallback( final Consumer<Object> callback ) {
+    public void pushCallback( final Consumer<?> callback ) {
         callbacks.push( callback );
+    }
+
+    public boolean hasCallbacks() {
+        return !callbacks.isEmpty();
+    }
+
+    @SuppressWarnings( { "unchecked", "rawtypes" } )
+    public void applyCallbackAndPop( final Object value ) {
+        final Consumer callback = callbacks.peek();
+        callback.accept( value );
+        callbacks.pop();
     }
 
 }
