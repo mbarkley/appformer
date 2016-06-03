@@ -24,6 +24,7 @@ import java.util.function.Consumer;
 
 class FlowContext {
 
+    private Optional<Object> initialInput = Optional.empty();
     private Optional<Object> lastOutput = Optional.empty();
     private final RuntimeAppFlow<?, ?> flow;
     private Optional<FlowNode<?, ?>> currentNode = Optional.empty();
@@ -33,6 +34,10 @@ class FlowContext {
 
     FlowContext( final RuntimeAppFlow<?, ?> flow ) {
         this.flow = flow;
+    }
+
+    Object getInitialInput() {
+        return initialInput.orElseThrow( () -> new IllegalStateException( "Can't get initial input before flow is started." ) );
     }
 
     Optional<Object> pollOutput() {
@@ -50,6 +55,7 @@ class FlowContext {
             throw new RuntimeException( "Process has already been started." );
         }
 
+        this.initialInput = Optional.of( initialInput );
         currentNode = Optional.of( flow.start );
         lastOutput = Optional.of( initialInput );
     }

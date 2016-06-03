@@ -77,7 +77,7 @@ class RuntimeAppFlow<INPUT, OUTPUT> implements AppFlow<INPUT, OUTPUT> {
 
     @SuppressWarnings( { "unchecked", "rawtypes" } )
     @Override
-    public <T> AppFlow<INPUT, T> transition( final Function<? super OUTPUT, AppFlow<INPUT, T>> transition ) {
+    public <T> AppFlow<INPUT, T> transitionTo( final Function<? super OUTPUT, AppFlow<INPUT, T>> transition ) {
         final RuntimeAppFlow<INPUT, OUTPUT> copy = copy();
         copy.addLast( new TransitionNode( transition ) );
 

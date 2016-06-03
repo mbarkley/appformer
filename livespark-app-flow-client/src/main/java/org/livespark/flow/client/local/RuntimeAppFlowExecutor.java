@@ -25,7 +25,6 @@ import javax.enterprise.context.ApplicationScoped;
 import org.livespark.flow.api.AppFlow;
 import org.livespark.flow.api.AppFlowExecutor;
 import org.livespark.flow.api.Step;
-import org.livespark.flow.api.Unit;
 
 @ApplicationScoped
 public class RuntimeAppFlowExecutor implements AppFlowExecutor {
@@ -79,12 +78,13 @@ public class RuntimeAppFlowExecutor implements AppFlowExecutor {
         }
     }
 
-    private <OUTPUT> void executeTransition( final Object newInput,
-                                    final Function<Object, AppFlow<Unit, OUTPUT>> transition,
+    @SuppressWarnings( "unchecked" )
+    private <INPUT, OUTPUT> void executeTransition( final INPUT newInput,
+                                    final Function<Object, AppFlow<INPUT, OUTPUT>> transition,
                                     final FlowContext context ) {
         try {
-            final AppFlow<Unit, ?> newProcess = transition.apply( newInput );
-            execute( newProcess, output -> {
+            final AppFlow<INPUT, ?> newProcess = transition.apply( newInput );
+            execute( (INPUT) context.getInitialInput(), newProcess, output -> {
                 context.pushOutput( output );
                 continueFlow( context );
             } );

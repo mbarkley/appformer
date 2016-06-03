@@ -19,9 +19,9 @@ package org.livespark.flow.api;
 
 public interface AppFlowFactory {
 
-    <INPUT, OUTPUT> Step<INPUT, OUTPUT> getStep(String id);
-    <INPUT, OUTPUT> AppFlow<INPUT, OUTPUT> getFlow(String id);
-    <INPUT, OUTPUT> AppFlow<INPUT, OUTPUT> buildFrom(Step<INPUT, OUTPUT> step);
+    <INPUT, OUTPUT> Step<INPUT, OUTPUT> getStep( String id );
+    <INPUT, OUTPUT> AppFlow<INPUT, OUTPUT> getFlow( String id );
+    <INPUT, OUTPUT> AppFlow<INPUT, OUTPUT> buildFrom( Step<INPUT, OUTPUT> step );
     void registerProcess( String id, AppFlow<?, ?> flow );
     void registerStep( String id, Step<?, ?> step );
 

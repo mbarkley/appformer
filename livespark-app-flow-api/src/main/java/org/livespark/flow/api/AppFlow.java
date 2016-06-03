@@ -22,21 +22,21 @@ import java.util.function.Supplier;
 
 public interface AppFlow<INPUT, OUTPUT> {
 
-    <T> AppFlow<INPUT, T> andThen(Step<? super OUTPUT, T> nextStep);
+    <T> AppFlow<INPUT, T> andThen( Step<? super OUTPUT, T> nextStep );
 
-    <T> AppFlow<INPUT, T> andThen(Function<? super OUTPUT, T> transformation);
+    <T> AppFlow<INPUT, T> andThen( Function<? super OUTPUT, T> transformation );
 
-    <T> AppFlow<T, OUTPUT> butFirst(Function<T, ? extends INPUT> transformation);
+    <T> AppFlow<T, OUTPUT> butFirst( Function<T, ? extends INPUT> transformation );
 
-    <T> AppFlow<T, OUTPUT> butFirst(Step<T, ? extends INPUT> prevStep);
+    <T> AppFlow<T, OUTPUT> butFirst( Step<T, ? extends INPUT> prevStep );
 
-    <T> AppFlow<INPUT, T> transition(Function<? super OUTPUT, AppFlow<INPUT, T>> chooser);
+    <T> AppFlow<INPUT, T> transitionTo( Function<? super OUTPUT, AppFlow<INPUT, T>> transition );
 
-    default <T> AppFlow<INPUT, T> andThen(final Supplier<AppFlow<OUTPUT, T>> supplier) {
-        return transition( (final OUTPUT output) -> supplier.get().butFirst( ignore -> output ) );
+    default <T> AppFlow<INPUT, T> andThen( final Supplier<AppFlow<OUTPUT, T>> supplier ) {
+        return transitionTo( (final OUTPUT output) -> supplier.get().butFirst( ignore -> output ) );
     }
 
-    default <T> AppFlow<INPUT, T> andThen(final AppFlow<OUTPUT, T> nextFlow) {
+    default <T> AppFlow<INPUT, T> andThen( final AppFlow<OUTPUT, T> nextFlow ) {
         return andThen( () -> nextFlow );
     }
 

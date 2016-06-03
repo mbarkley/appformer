@@ -19,9 +19,9 @@ package org.livespark.flow.unit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import static org.livespark.flow.client.local.StepUtil.identity;
 import static org.livespark.flow.client.local.StepUtil.wrap;
 
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import org.junit.Before;
@@ -33,6 +33,7 @@ import org.livespark.flow.api.Step;
 import org.livespark.flow.api.Unit;
 import org.livespark.flow.client.local.RuntimeAppFlowExecutor;
 import org.livespark.flow.client.local.RuntimeAppFlowFactory;
+import org.livespark.flow.client.local.StepUtil;
 import org.livespark.flow.util.Ref;
 
 public class FlowBuildAndExecutionTest {
@@ -59,10 +60,7 @@ public class FlowBuildAndExecutionTest {
             .andThen( stringify )
             .andThen( reverse );
 
-        final Ref<String> result = new Ref<>();
-        executor.execute( flow, val -> { result.val = val; } );
-
-        assertEquals( "01", result.val );
+        assertEquals( "01", getSyncFlowOutput( flow ) );
     }
 
     @Test
@@ -75,20 +73,14 @@ public class FlowBuildAndExecutionTest {
 
         final AppFlow<Unit, String> tFlow = factory
             .buildFrom( t )
-            .transition( transition );
+            .transitionTo( transition );
 
         final AppFlow<Unit, String> fFlow = factory
             .buildFrom( f )
-            .transition( transition );
+            .transitionTo( transition );
 
-        final Ref<String> res = new Ref<>();
-        final Consumer<String> resConsumer = s -> { res.val = s; };
-
-        executor.execute( tFlow, resConsumer );
-        assertEquals( "true", res.val );
-
-        executor.execute( fFlow, resConsumer );
-        assertEquals( "false", res.val );
+        assertEquals( "true", getSyncFlowOutput( tFlow ) );
+        assertEquals( "false", getSyncFlowOutput( fFlow ) );
     }
 
     @Test
@@ -96,7 +88,7 @@ public class FlowBuildAndExecutionTest {
         final Step<Unit, Integer> zero = wrap( "Produce Zero", () -> 0 );
         final Function<Integer, Integer> add10 = n -> n + 10;
         final Function<Object, String> stringify = o -> o.toString();
-        final Step<String, String> reverse = wrap( "Reverse String", (final String s) -> new StringBuilder( s ).reverse().toString() );
+        final Function<String, String> reverse = s -> new StringBuilder( s ).reverse().toString();
 
         final AppFlow<Unit, String> flow = factory
             .buildFrom( zero )
@@ -104,10 +96,7 @@ public class FlowBuildAndExecutionTest {
             .andThen( stringify )
             .andThen( reverse );
 
-        final Ref<String> result = new Ref<>();
-        executor.execute( flow, val -> { result.val = val; } );
-
-        assertEquals( "01", result.val );
+        assertEquals( "01", getSyncFlowOutput( flow ) );
     }
 
     @Test
@@ -124,10 +113,7 @@ public class FlowBuildAndExecutionTest {
                           .butFirst( stringify )
                           .butFirst( add10 ) );
 
-        final Ref<String> result = new Ref<>();
-        executor.execute( flow, val -> { result.val = val; } );
-
-        assertEquals( "01", result.val );
+        assertEquals( "01", getSyncFlowOutput( flow ) );
     }
 
     @Test
@@ -135,16 +121,13 @@ public class FlowBuildAndExecutionTest {
         final Step<Unit, Integer> zero = wrap( "Produce Zero", () -> 0 );
         final Step<Integer, Integer> add10 = wrap( "Add 10", n -> n + 10 );
         final AppFlow<Integer, Integer> add10Flow = factory.buildFrom( add10 );
-        final Step<Integer, Integer> stepCallingProcess = wrap( "Step Calling Process", (n, callback) -> executor.execute( n, add10Flow, callback ) );
+        final Step<Integer, Integer> stepCallingFlow = wrap( "Step Calling Flow", (n, callback) -> executor.execute( n, add10Flow, callback ) );
 
         final AppFlow<Unit, Integer> flow = factory
             .buildFrom( zero )
-            .andThen( stepCallingProcess );
+            .andThen( stepCallingFlow );
 
-        final Ref<Integer> result = new Ref<>();
-        executor.execute( flow, val -> { result.val = val; } );
-
-        assertEquals( Integer.valueOf( 10 ), result.val );
+        assertEquals( Integer.valueOf( 10 ), getSyncFlowOutput( flow ) );
     }
 
     @Test
@@ -158,6 +141,25 @@ public class FlowBuildAndExecutionTest {
                        .andThen( add10 );
 
         original.andThen( throwing );
+
+        try {
+            executor.execute( original );
+        } catch ( final RuntimeException e ) {
+            fail();
+        }
+    }
+
+    @Test
+    public void callingStepButFirstOnFlowDoesNotModifyOriginalFlow() throws Exception {
+        final Step<Unit, Integer> zero = wrap( "Produce Zero", () -> 0 );
+        final Step<Integer, Integer> add10 = wrap( "Add 10", n -> n + 10 );
+        final Step<Unit, Unit> throwing = wrap( "Throwing", n -> { throw new RuntimeException(); } );
+
+        final AppFlow<Unit, Integer> original =
+                factory.buildFrom( zero )
+                       .andThen( add10 );
+
+        original.butFirst( throwing );
 
         try {
             executor.execute( original );
@@ -205,7 +207,26 @@ public class FlowBuildAndExecutionTest {
     }
 
     @Test
-    public void callingTransitionOnFlowDoesNotModifyOriginalFlow() throws Exception {
+    public void callingFunctionButFirstOnFlowDoesNotModifyOriginalFlow() throws Exception {
+        final Step<Unit, Integer> zero = wrap( "Produce Zero", () -> 0 );
+        final Step<Integer, Integer> add10 = wrap( "Add 10", n -> n + 10 );
+        final Function<Unit, Unit> throwing = n -> { throw new RuntimeException(); };
+
+        final AppFlow<Unit, Integer> original =
+                factory.buildFrom( zero )
+                       .andThen( add10 );
+
+        original.butFirst( throwing );
+
+        try {
+            executor.execute( original );
+        } catch ( final RuntimeException e ) {
+            fail();
+        }
+    }
+
+    @Test
+    public void callingTransitionToOnFlowDoesNotModifyOriginalFlow() throws Exception {
         final Step<Unit, Integer> zero = wrap( "Produce Zero", () -> 0 );
         final Step<Integer, Integer> add10 = wrap( "Add 10", n -> n + 10 );
         final Function<Integer, AppFlow<Unit, Unit>> throwing = n -> { throw new RuntimeException(); };
@@ -221,6 +242,42 @@ public class FlowBuildAndExecutionTest {
         } catch ( final RuntimeException e ) {
             fail();
         }
+    }
+
+    @Test
+    public void transitionFlowReceviesInitialInput() throws Exception {
+        final Step<Integer, Integer> doubler = wrap( "Doubler", n -> 2 * n );
+        final Step<Integer, Integer> add10 = wrap( "Add 10", n -> n + 10 );
+
+        final AppFlow<Integer, Integer> flow = factory
+            .buildFrom( doubler )
+            .transitionTo( ignore -> factory.buildFrom( add10 ) );
+
+        assertEquals( Integer.valueOf( 11 ), getSyncFlowOutput( 1, flow ) );
+    }
+
+    @Test
+    public void flowFromSecondTransitionToInSequenceReceivesInitialInput() throws Exception {
+        final Function<Integer, AppFlow<Integer, Integer>> identityTransition = ignore -> factory.buildFrom( identity() );
+
+        final AppFlow<Integer, Integer> flow = factory
+            .buildFrom( StepUtil.<Integer>identity() )
+            .transitionTo( identityTransition )
+            .andThen( n -> n + 1 )
+            .transitionTo( identityTransition );
+
+        assertEquals( Integer.valueOf( 1 ), getSyncFlowOutput( 1, flow ) );
+    }
+
+    private <OUTPUT> OUTPUT getSyncFlowOutput( final AppFlow<Unit, OUTPUT> flow ) {
+        return getSyncFlowOutput( Unit.INSTANCE, flow );
+    }
+
+    private <INPUT, OUTPUT> OUTPUT getSyncFlowOutput( final INPUT in, final AppFlow<INPUT, OUTPUT> flow ) {
+        final Ref<OUTPUT> ref = new Ref<>();
+        executor.execute( in, flow, val -> { ref.val = val; } );
+
+        return ref.val;
     }
 
 }
