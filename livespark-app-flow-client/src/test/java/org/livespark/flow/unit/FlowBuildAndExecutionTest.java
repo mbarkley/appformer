@@ -18,6 +18,7 @@
 package org.livespark.flow.unit;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.livespark.flow.client.local.StepUtil.wrap;
 
 import java.util.function.Consumer;
@@ -144,6 +145,82 @@ public class FlowBuildAndExecutionTest {
         executor.execute( flow, val -> { result.val = val; } );
 
         assertEquals( Integer.valueOf( 10 ), result.val );
+    }
+
+    @Test
+    public void callingStepAndThenOnFlowDoesNotModifyOriginalFlow() throws Exception {
+        final Step<Unit, Integer> zero = wrap( "Produce Zero", () -> 0 );
+        final Step<Integer, Integer> add10 = wrap( "Add 10", n -> n + 10 );
+        final Step<Integer, Unit> throwing = wrap( "Throwing", n -> { throw new RuntimeException(); } );
+
+        final AppFlow<Unit, Integer> original =
+                factory.buildFrom( zero )
+                       .andThen( add10 );
+
+        original.andThen( throwing );
+
+        try {
+            executor.execute( original );
+        } catch ( final RuntimeException e ) {
+            fail();
+        }
+    }
+
+    @Test
+    public void callingFlowAndThenOnFlowDoesNotModifyOriginalFlow() throws Exception {
+        final Step<Unit, Integer> zero = wrap( "Produce Zero", () -> 0 );
+        final Step<Integer, Integer> add10 = wrap( "Add 10", n -> n + 10 );
+        final AppFlow<Integer, Unit> throwing = factory.buildFrom( wrap( "Throwing", n -> { throw new RuntimeException(); } ) );
+
+        final AppFlow<Unit, Integer> original =
+                factory.buildFrom( zero )
+                       .andThen( add10 );
+
+        original.andThen( throwing );
+
+        try {
+            executor.execute( original );
+        } catch ( final RuntimeException e ) {
+            fail();
+        }
+    }
+
+    @Test
+    public void callingFunctionAndThenOnFlowDoesNotModifyOriginalFlow() throws Exception {
+        final Step<Unit, Integer> zero = wrap( "Produce Zero", () -> 0 );
+        final Step<Integer, Integer> add10 = wrap( "Add 10", n -> n + 10 );
+        final Function<Integer, Unit> throwing = n -> { throw new RuntimeException(); };
+
+        final AppFlow<Unit, Integer> original =
+                factory.buildFrom( zero )
+                       .andThen( add10 );
+
+        original.andThen( throwing );
+
+        try {
+            executor.execute( original );
+        } catch ( final RuntimeException e ) {
+            fail();
+        }
+    }
+
+    @Test
+    public void callingTransitionOnFlowDoesNotModifyOriginalFlow() throws Exception {
+        final Step<Unit, Integer> zero = wrap( "Produce Zero", () -> 0 );
+        final Step<Integer, Integer> add10 = wrap( "Add 10", n -> n + 10 );
+        final Function<Integer, AppFlow<Unit, Unit>> throwing = n -> { throw new RuntimeException(); };
+
+        final AppFlow<Unit, Integer> original =
+                factory.buildFrom( zero )
+                       .andThen( add10 );
+
+        original.andThen( throwing );
+
+        try {
+            executor.execute( original );
+        } catch ( final RuntimeException e ) {
+            fail();
+        }
     }
 
 }

@@ -34,45 +34,56 @@ class RuntimeAppFlow<INPUT, OUTPUT> implements AppFlow<INPUT, OUTPUT> {
         end = stepNode;
     }
 
+    private RuntimeAppFlow( final FlowNode<INPUT, ?> start, final FlowNode<?, OUTPUT> end ) {
+        this.start = start;
+        this.end = end;
+    }
+
     @SuppressWarnings( { "unchecked", "rawtypes" } )
     @Override
     public <T> AppFlow<INPUT, T> andThen( final Step<? super OUTPUT, T> nextStep ) {
-        addLast( new StepNode( nextStep ) );
+        final RuntimeAppFlow<INPUT, OUTPUT> copy = copy();
+        copy.addLast( new StepNode( nextStep ) );
 
-        return (AppFlow<INPUT, T>) this;
+        return (AppFlow<INPUT, T>) copy;
     }
 
     @SuppressWarnings( { "unchecked", "rawtypes" } )
     @Override
     public <T> AppFlow<INPUT, T> andThen( final Function<? super OUTPUT, T> transformation ) {
-        addLast( new TransformationNode( transformation ) );
+        final RuntimeAppFlow<INPUT, OUTPUT> copy = copy();
+        copy.addLast( new TransformationNode( transformation ) );
 
-        return (AppFlow<INPUT, T>) this;
+        return (AppFlow<INPUT, T>) copy;
     }
 
     @SuppressWarnings( { "unchecked", "rawtypes" } )
     @Override
     public <T> AppFlow<T, OUTPUT> butFirst( final Function<T, ? extends INPUT> transformation ) {
-        addFirst( new TransformationNode( transformation ) );
+        final RuntimeAppFlow<INPUT, OUTPUT> copy = copy();
+        copy.addFirst( new TransformationNode( transformation ) );
 
-        return (AppFlow<T, OUTPUT>) this;
+        return (AppFlow<T, OUTPUT>) copy;
     }
 
     @SuppressWarnings( { "unchecked", "rawtypes" } )
     @Override
     public <T> AppFlow<T, OUTPUT> butFirst( final Step<T, ? extends INPUT> prevStep ) {
-        addFirst( new StepNode( prevStep ) );
+        final RuntimeAppFlow<INPUT, OUTPUT> copy = copy();
+        copy.addFirst( new StepNode( prevStep ) );
 
-        return (AppFlow<T, OUTPUT>) this;
+        return (AppFlow<T, OUTPUT>) copy;
     }
 
     @SuppressWarnings( { "unchecked", "rawtypes" } )
     @Override
     public <T> AppFlow<INPUT, T> transition( final Function<? super OUTPUT, AppFlow<INPUT, T>> transition ) {
-        addLast( new TransitionNode( transition ) );
+        final RuntimeAppFlow<INPUT, OUTPUT> copy = copy();
+        copy.addLast( new TransitionNode( transition ) );
 
-        return (AppFlow<INPUT, T>) this;
+        return (AppFlow<INPUT, T>) copy;
     }
+
 
     @SuppressWarnings( "unchecked" )
     private void addLast( final FlowNode<OUTPUT, ?> node ) {
@@ -86,6 +97,24 @@ class RuntimeAppFlow<INPUT, OUTPUT> implements AppFlow<INPUT, OUTPUT> {
         node.next = Optional.of( start );
         start.prev = Optional.of( node );
         start = (FlowNode<INPUT, ? >) node;
+    }
+
+    @SuppressWarnings( { "rawtypes", "unchecked" } )
+    private RuntimeAppFlow<INPUT, OUTPUT> copy() {
+        final FlowNode newStart = start.copy();
+        FlowNode curCopy = newStart;
+        FlowNode curOriginal = start;
+        while ( curOriginal.next.isPresent() ) {
+            final FlowNode nextOriginal = (FlowNode) curOriginal.next.get();
+            final FlowNode nextCopy = nextOriginal.copy();
+            curCopy.next = Optional.of( nextCopy );
+            nextCopy.prev = Optional.of( curCopy );
+
+            curCopy = nextCopy;
+            curOriginal = nextOriginal;
+        }
+
+        return new RuntimeAppFlow<>( newStart, curCopy );
     }
 
 }

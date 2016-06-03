@@ -37,4 +37,9 @@ final class TransitionNode<INPUT, PREV_INPUT, OUTPUT> extends FlowNode<INPUT, OU
         this.transition = transition;
     }
 
+    @Override
+    FlowNode<INPUT, OUTPUT> copy() {
+        return new TransitionNode<>( transition, prev, next );
+    }
+
 }

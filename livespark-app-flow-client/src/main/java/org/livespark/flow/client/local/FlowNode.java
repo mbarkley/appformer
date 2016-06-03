@@ -29,4 +29,6 @@ abstract class FlowNode<INPUT, OUTPUT> {
         this.next = next;
     }
 
+    abstract FlowNode<INPUT, OUTPUT> copy();
+
 }

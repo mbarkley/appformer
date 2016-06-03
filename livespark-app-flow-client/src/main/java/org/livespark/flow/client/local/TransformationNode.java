@@ -35,4 +35,9 @@ final class TransformationNode<INPUT, OUTPUT> extends FlowNode<INPUT, OUTPUT> {
         this.transformation = transformation;
     }
 
+    @Override
+    FlowNode<INPUT, OUTPUT> copy() {
+        return new TransformationNode<>( transformation, prev, next );
+    }
+
 }

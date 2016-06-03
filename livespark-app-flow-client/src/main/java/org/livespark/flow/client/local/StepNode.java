@@ -36,4 +36,9 @@ final class StepNode<INPUT, OUTPUT> extends FlowNode<INPUT, OUTPUT> {
         this.step = step;
     }
 
+    @Override
+    FlowNode<INPUT, OUTPUT> copy() {
+        return new StepNode<>( step, prev, next );
+    }
+
 }
