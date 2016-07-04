@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://xmlns.jcp.org/xml/ns/javaee">
+
+  <scan>
+    <!-- These exclusions were added by Errai to avoid deploying client-side classes to the server -->
+    <exclude name = "org.livespark.demo.client.local.BindableEmailAnchor" />
+    <exclude name = "org.livespark.demo.client.local.Constants" />
+    <exclude name = "org.livespark.demo.client.local.FormPage" />
+    <exclude name = "org.livespark.demo.client.local.DoubleClick" />
+    <exclude name = "org.livespark.demo.client.local.ContactEditor" />
+    <exclude name = "org.livespark.demo.client.local.WelcomePage" />
+    <exclude name = "org.livespark.demo.client.local.AppSetup" />
+    <exclude name = "org.livespark.demo.client.local.PendingPage" />
+    <exclude name = "org.livespark.demo.client.local.ContactPresenter" />
+    <exclude name = "org.livespark.demo.client.local.AppSetup$1" />
+    <exclude name = "org.livespark.demo.client.local.ContactModal" />
+    <exclude name = "org.livespark.demo.client.local.ContactStepProducer$3" />
+    <exclude name = "org.livespark.demo.client.local.DateConverter" />
+    <exclude name = "org.livespark.demo.client.local.ContactStepProducer$2" />
+    <exclude name = "org.livespark.demo.client.local.NavBar" />
+    <exclude name = "org.livespark.demo.client.local.BindableTelAnchor" />
+    <exclude name = "org.livespark.demo.client.local.ContactDisplay" />
+    <exclude name = "org.livespark.demo.client.local.ContactList" />
+    <exclude name = "org.livespark.demo.client.local.ContactStepProducer" />
+    <exclude name = "org.livespark.demo.client.local.Click" />
+    <exclude name = "org.livespark.demo.client.local.AppSetup$2" />
+    <exclude name = "org.livespark.demo.client.local.ContactStepProducer$1" />
+    <!-- End of Errai exclusions -->
+  </scan>
+</beans>
