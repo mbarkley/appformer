@@ -26,8 +26,8 @@ import org.junit.runner.RunWith;
 import org.livespark.formmodeler.codegen.view.impl.inputs.AbstractInputHelperTest;
 import org.livespark.formmodeler.codegen.view.impl.java.inputs.InputCreatorHelper;
 import org.livespark.formmodeler.codegen.view.impl.java.inputs.impl.ObjectSelectorBoxHelper;
-import org.livespark.formmodeler.model.FieldDefinition;
-import org.livespark.formmodeler.model.impl.relations.ObjectSelectorFieldDefinition;
+import org.kie.workbench.common.forms.model.FieldDefinition;
+import org.kie.workbench.common.forms.model.impl.relations.ObjectSelectorFieldDefinition;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.BEFORE_DISPLAY_METHOD;

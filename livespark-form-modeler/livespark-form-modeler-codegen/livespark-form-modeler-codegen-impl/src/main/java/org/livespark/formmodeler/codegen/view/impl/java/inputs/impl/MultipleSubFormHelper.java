@@ -25,16 +25,16 @@ import org.apache.commons.lang3.text.WordUtils;
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
+import org.kie.workbench.common.forms.editor.service.DataObjectFinderService;
 import org.kie.workbench.common.services.datamodeller.core.DataObject;
 import org.kie.workbench.common.services.datamodeller.core.ObjectProperty;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.view.impl.java.RequiresCustomCode;
 import org.livespark.formmodeler.codegen.view.impl.java.tableColumns.ColumnMetaGenerator;
 import org.livespark.formmodeler.codegen.view.impl.java.tableColumns.ColumnMetaGeneratorManager;
-import org.livespark.formmodeler.editor.service.DataObjectFinderService;
-import org.livespark.formmodeler.model.FormDefinition;
-import org.livespark.formmodeler.model.impl.relations.MultipleSubFormFieldDefinition;
-import org.livespark.formmodeler.model.impl.relations.TableColumnMeta;
+import org.kie.workbench.common.forms.model.FormDefinition;
+import org.kie.workbench.common.forms.model.impl.relations.MultipleSubFormFieldDefinition;
+import org.kie.workbench.common.forms.model.impl.relations.TableColumnMeta;
 
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 

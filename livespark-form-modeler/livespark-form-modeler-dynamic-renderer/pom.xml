@@ -31,9 +31,7 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>livespark-form-modeler-dynamic-renderer-api</module>
     <module>livespark-form-modeler-dynamic-renderer-client</module>
-    <module>livespark-form-modeler-dynamic-renderer-backend</module>
   </modules>
 
 

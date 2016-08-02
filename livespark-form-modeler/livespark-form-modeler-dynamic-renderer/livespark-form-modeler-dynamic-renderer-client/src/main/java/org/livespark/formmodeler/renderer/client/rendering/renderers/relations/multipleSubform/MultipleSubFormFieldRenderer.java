@@ -23,12 +23,9 @@ import org.gwtbootstrap3.client.ui.FieldSet;
 import org.gwtbootstrap3.client.ui.FormGroup;
 import org.gwtbootstrap3.client.ui.HelpBlock;
 import org.gwtbootstrap3.client.ui.Legend;
-import org.livespark.formmodeler.model.impl.relations.MultipleSubFormFieldDefinition;
-import org.livespark.formmodeler.renderer.client.rendering.FieldRenderer;
+import org.kie.workbench.common.forms.dynamic.client.rendering.FieldRenderer;
+import org.kie.workbench.common.forms.model.impl.relations.MultipleSubFormFieldDefinition;
 
-/**
- * Created by pefernan on 9/21/15.
- */
 @Dependent
 public class MultipleSubFormFieldRenderer extends FieldRenderer<MultipleSubFormFieldDefinition> {
 

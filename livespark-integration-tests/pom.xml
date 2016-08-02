@@ -1,14 +1,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
+    <artifactId>livespark-deps</artifactId>
     <groupId>org.livespark</groupId>
-    <artifactId>livespark-parent</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <relativePath>../livespark-deps/pom.xml</relativePath>
   </parent>
   <artifactId>livespark-integration-tests</artifactId>
   <name>LiveSpark :: Integration Tests</name>
   <packaging>jar</packaging>
-  
+
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -90,7 +91,7 @@
     </dependencies>
   </dependencyManagement>
 
-  
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -117,14 +118,14 @@
       <artifactId>shrinkwrap-resolver-impl-maven</artifactId>
       <scope>test</scope>
     </dependency>
-    
+
     <dependency>
       <groupId>org.jboss.spec</groupId>
       <artifactId>jboss-javaee-7.0</artifactId>
       <type>pom</type>
       <scope>provided</scope>
     </dependency>
-    
+
     <dependency>
       <groupId>org.kie.workbench.screens</groupId>
       <artifactId>kie-wb-common-data-modeller-api</artifactId>
@@ -136,7 +137,7 @@
       <artifactId>livespark-form-modeler-codegen-api</artifactId>
       <scope>test</scope>
     </dependency>
-    
+
     <dependency>
       <groupId>org.livespark</groupId>
       <artifactId>livespark-deployment</artifactId>
@@ -156,7 +157,7 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  
+
   <build>
     <plugins>
       <plugin>
@@ -242,5 +243,5 @@
       </build>
     </profile>
   </profiles>
-  
+
 </project>

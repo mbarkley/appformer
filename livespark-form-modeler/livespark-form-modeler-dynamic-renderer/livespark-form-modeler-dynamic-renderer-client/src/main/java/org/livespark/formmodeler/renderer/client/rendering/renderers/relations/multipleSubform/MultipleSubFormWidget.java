@@ -16,13 +16,12 @@ import org.jboss.errai.databinding.client.HasProperties;
 import org.jboss.errai.databinding.client.api.DataBinder;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.jboss.errai.ui.shared.api.annotations.Templated;
-import org.livespark.formmodeler.model.impl.relations.MultipleSubFormFieldDefinition;
-import org.livespark.formmodeler.model.impl.relations.TableColumnMeta;
-import org.livespark.formmodeler.processing.engine.handling.FieldChangeHandler;
-import org.livespark.formmodeler.processing.engine.handling.IsNestedModel;
-import org.livespark.formmodeler.renderer.client.DynamicFormRenderer;
+import org.kie.workbench.common.forms.dynamic.service.FormRenderingContext;
+import org.kie.workbench.common.forms.model.impl.relations.MultipleSubFormFieldDefinition;
+import org.kie.workbench.common.forms.model.impl.relations.TableColumnMeta;
+import org.kie.workbench.common.forms.processing.engine.handling.FieldChangeHandler;
+import org.kie.workbench.common.forms.processing.engine.handling.IsNestedModel;
 import org.livespark.formmodeler.renderer.client.rendering.renderers.relations.multipleSubform.columns.ColumnGenerator;
-import org.livespark.formmodeler.renderer.service.FormRenderingContext;
 import org.livespark.widgets.crud.client.component.CrudActionsHelper;
 import org.livespark.widgets.crud.client.component.CrudComponent;
 import org.livespark.widgets.crud.client.component.formDisplay.IsFormView;
@@ -41,7 +40,7 @@ public class MultipleSubFormWidget extends Composite implements TakesValue<List<
     protected ColumnGeneratorManager columnGeneratorManager;
 
     @Inject
-    protected DynamicFormRenderer formRenderer;
+    protected DynamicFormRendererExt formRenderer;
 
     @Inject
     protected CrudComponent  crudComponent;
