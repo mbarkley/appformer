@@ -1330,11 +1330,6 @@
               <compileSourcesArtifact>org.uberfire:uberfire-security-management-client-wb</compileSourcesArtifact>
               <compileSourcesArtifact>org.uberfire:uberfire-widgets-security-management</compileSourcesArtifact>
 
-              <!-- Wires -->
-              <compileSourcesArtifact>org.uberfire:uberfire-wires-core-api</compileSourcesArtifact>
-              <compileSourcesArtifact>org.uberfire:uberfire-wires-core-client</compileSourcesArtifact>
-              <compileSourcesArtifact>org.uberfire:uberfire-wires-core-trees</compileSourcesArtifact>
-
               <!-- KIE UberFire extensions -->
               <compileSourcesArtifact>org.kie.uberfire:kie-uberfire-social-activities-api</compileSourcesArtifact>
               <compileSourcesArtifact>org.kie.uberfire:kie-uberfire-social-activities-client</compileSourcesArtifact>

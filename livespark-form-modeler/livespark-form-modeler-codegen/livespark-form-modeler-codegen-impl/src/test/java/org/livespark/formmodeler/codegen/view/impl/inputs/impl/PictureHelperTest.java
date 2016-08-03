@@ -22,11 +22,12 @@ import java.util.List;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 import org.junit.runner.RunWith;
+import org.kie.workbench.common.forms.model.FieldDefinition;
+import org.kie.workbench.common.forms.model.impl.basic.image.PictureFieldDefinition;
+import org.kie.workbench.common.forms.model.impl.basic.image.PictureSize;
 import org.livespark.formmodeler.codegen.view.impl.inputs.AbstractInputHelperTest;
 import org.livespark.formmodeler.codegen.view.impl.java.inputs.InputCreatorHelper;
-import org.livespark.formmodeler.model.FieldDefinition;
-import org.livespark.formmodeler.model.impl.basic.image.PictureFieldDefinition;
-import org.livespark.formmodeler.model.impl.basic.image.PictureSize;
+import org.livespark.formmodeler.codegen.view.impl.java.inputs.impl.PictureHelper;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;

@@ -19,9 +19,9 @@ package org.livespark.formmodeler.codegen.view.impl.java.inputs.impl;
 
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
+import org.kie.workbench.common.forms.model.impl.basic.image.PictureFieldDefinition;
 import org.livespark.formmodeler.codegen.SourceGenerationContext;
 import org.livespark.formmodeler.codegen.view.impl.java.RequiresCustomCode;
-import org.livespark.formmodeler.model.impl.basic.image.PictureFieldDefinition;
 
 import static org.livespark.formmodeler.codegen.util.SourceGenerationUtil.*;
 
@@ -34,7 +34,7 @@ public class PictureHelper extends AbstractInputCreatorHelper<PictureFieldDefini
 
     @Override
     public String getInputWidget( PictureFieldDefinition fieldDefinition ) {
-        return "org.livespark.formmodeler.rendering.client.widgets.image.PictureInput";
+        return "org.kie.workbench.common.forms.common.client.widgets.picture.widget.PictureInput";
     }
 
     @Override
