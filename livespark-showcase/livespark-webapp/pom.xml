@@ -1345,6 +1345,8 @@
               <compileSourcesArtifact>org.kie.workbench.forms:kie-wb-common-forms-common-widgets</compileSourcesArtifact>
               <compileSourcesArtifact>org.kie.workbench.forms:kie-wb-common-dynamic-forms-api</compileSourcesArtifact>
               <compileSourcesArtifact>org.kie.workbench.forms:kie-wb-common-dynamic-forms-client</compileSourcesArtifact>
+              <compileSourcesArtifact>org.kie.workbench.forms:kie-wb-common-forms-editor-api</compileSourcesArtifact>
+              <compileSourcesArtifact>org.kie.workbench.forms:kie-wb-common-forms-editor-client</compileSourcesArtifact>
 
               <!-- LiveSpark -->
               <compileSourcesArtifact>org.livespark:livespark-crud-component</compileSourcesArtifact>
