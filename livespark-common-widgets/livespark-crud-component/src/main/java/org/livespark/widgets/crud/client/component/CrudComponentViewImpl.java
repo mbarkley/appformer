@@ -46,11 +46,11 @@ import com.google.gwt.view.client.AsyncDataProvider;
 
 @Dependent
 @Templated
-public class CrudComponentViewImpl extends Composite implements CrudComponent.CrudComponentView {
+public class CrudComponentViewImpl<MODEL, FORM_MODEL> extends Composite implements CrudComponent.CrudComponentView<MODEL, FORM_MODEL> {
 
-    private CrudComponent presenter;
+    private CrudComponent<MODEL, FORM_MODEL> presenter;
 
-    private UberfirePagedTable table;
+    private UberfirePagedTable<MODEL> table;
 
     protected FormDisplayer displayer;
 
@@ -66,24 +66,24 @@ public class CrudComponentViewImpl extends Composite implements CrudComponent.Cr
     }
 
     @Override
-    public void setPresenter( final CrudComponent presenter ) {
+    public void setPresenter( final CrudComponent<MODEL, FORM_MODEL> presenter ) {
         this.presenter = presenter;
     }
 
     @Override
-    public void setDataProvider( final AsyncDataProvider dataProvider ) {
+    public void setDataProvider( final AsyncDataProvider<MODEL> dataProvider ) {
         table.setDataProvider( dataProvider );
     }
 
     @Override
     public void showDeleteButtons() {
-        final Column<Object, String> column = new Column<Object, String>( new ButtonCell( IconType.TRASH, ButtonType.DANGER, ButtonSize.SMALL ) ) {
+        final Column<MODEL, String> column = new Column<MODEL, String>( new ButtonCell( IconType.TRASH, ButtonType.DANGER, ButtonSize.SMALL ) ) {
             @Override
-            public String getValue( final Object model ) {
+            public String getValue( final MODEL model ) {
                 return translationService.getTranslation( CrudComponentConstants.CrudComponentViewImplDeleteInstance );
             }
         };
-        column.setFieldUpdater( new FieldUpdater<Object, String>() {
+        column.setFieldUpdater( new FieldUpdater<MODEL, String>() {
             @Override
             public void update( final int index, final Object model, final String s ) {
                 if ( Window.confirm( translationService.getTranslation( CrudComponentConstants.CrudComponentViewImplDeleteBody ) ) ) {
@@ -96,27 +96,27 @@ public class CrudComponentViewImpl extends Composite implements CrudComponent.Cr
 
     @Override
     public void showEditButtons() {
-        final Column<Object, String> column = new Column<Object, String>( new ButtonCell( IconType.EDIT, ButtonType.PRIMARY, ButtonSize.SMALL ) ) {
+        final Column<MODEL, String> column = new Column<MODEL, String>( new ButtonCell( IconType.EDIT, ButtonType.PRIMARY, ButtonSize.SMALL ) ) {
             @Override
             public String getValue( final Object model ) {
                 return translationService.getTranslation( CrudComponentConstants.CrudComponentViewImplEditInstanceButton );
             }
         };
-        column.setFieldUpdater( new FieldUpdater<Object, String>() {
+        column.setFieldUpdater( new FieldUpdater<MODEL, String>() {
             @Override
             public void update( final int index, final Object model, final String s ) {
-                presenter.showEditForm( index );
+                presenter.editInstance( index );
             }
         } );
         table.addColumn( column, "" );
     }
 
     @Override
-    public void initTableView( final List<ColumnMeta> dataColumns, final int pageSize ) {
+    public void initTableView( final List<ColumnMeta<MODEL>> dataColumns, final int pageSize ) {
         content.clear();
         table = new UberfirePagedTable<>( pageSize );
         table.getRightToolbar().clear();
-        final List<ColumnMeta> columns = new ArrayList<>( dataColumns );
+        final List<ColumnMeta<MODEL>> columns = new ArrayList<>( dataColumns );
         table.addColumns( columns );
         content.add( table );
     }
@@ -130,7 +130,7 @@ public class CrudComponentViewImpl extends Composite implements CrudComponent.Cr
         createButton.addClickHandler( new ClickHandler() {
             @Override
             public void onClick( final ClickEvent clickEvent ) {
-                presenter.showCreateForm();
+                presenter.createInstance();
             }
         } );
     }

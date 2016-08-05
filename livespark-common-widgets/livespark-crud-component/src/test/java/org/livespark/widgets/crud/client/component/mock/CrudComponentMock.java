@@ -21,9 +21,9 @@ import org.livespark.widgets.crud.client.component.CrudComponent;
 import org.livespark.widgets.crud.client.component.formDisplay.embedded.EmbeddedFormDisplayer;
 import org.livespark.widgets.crud.client.component.formDisplay.modal.ModalFormDisplayer;
 
-public class CrudComponentMock extends CrudComponent {
+public class CrudComponentMock<MODEL, FORM_MODEL> extends CrudComponent<MODEL, FORM_MODEL> {
 
-    public CrudComponentMock( final CrudComponentView view,
+    public CrudComponentMock( final CrudComponentView<MODEL, FORM_MODEL> view,
                               final EmbeddedFormDisplayer embeddedFormDisplayer,
                               final ModalFormDisplayer modalFormDisplayer,
                               final TranslationService translationService ) {

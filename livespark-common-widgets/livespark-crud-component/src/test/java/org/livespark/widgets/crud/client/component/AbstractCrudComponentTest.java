@@ -17,7 +17,6 @@
 package org.livespark.widgets.crud.client.component;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -25,6 +24,7 @@ import static org.mockito.Mockito.when;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.junit.Before;
 import org.livespark.widgets.crud.client.component.formDisplay.FormDisplayer;
+import org.livespark.widgets.crud.client.component.formDisplay.FormDisplayer.FormDisplayerCallback;
 import org.livespark.widgets.crud.client.component.formDisplay.IsFormView;
 import org.livespark.widgets.crud.client.component.formDisplay.embedded.EmbeddedFormDisplayer;
 import org.livespark.widgets.crud.client.component.formDisplay.modal.ModalFormDisplayer;
@@ -37,9 +37,9 @@ import com.google.gwtmockito.GwtMock;
 
 import junit.framework.TestCase;
 
-public abstract class AbstractCrudComponentTest extends TestCase {
+public abstract class AbstractCrudComponentTest<MODEL, FORM_MODEL> extends TestCase {
     @Mock
-    protected CrudComponent.CrudComponentView view;
+    protected CrudComponent.CrudComponentView<MODEL, FORM_MODEL> view;
 
     @Mock
     protected TranslationService translationService;
@@ -51,11 +51,15 @@ public abstract class AbstractCrudComponentTest extends TestCase {
     protected ModalFormDisplayer modalFormDisplayer;
 
     @Mock
-    private IsFormView formView;
+    private IsFormView<FORM_MODEL> formView;
 
-    protected CrudActionsHelper helper = Mockito.mock( CrudActionsHelper.class );
+    @Mock
+    private FormDisplayerCallback callback;
 
-    protected CrudComponentMock crudComponent;
+    @SuppressWarnings( "unchecked" )
+    protected CrudActionsHelper<MODEL> helper = Mockito.mock( CrudActionsHelper.class );
+
+    protected CrudComponentMock<MODEL, FORM_MODEL> crudComponent;
 
     protected static final String NEW_INSTANCE_TITLE = "New Instance Title";
     protected static final String EDIT_INSTANCE_TITLE = "Edit Instance Title";
@@ -64,10 +68,8 @@ public abstract class AbstractCrudComponentTest extends TestCase {
     public void init() {
         when( translationService.getTranslation( CrudComponentConstants.CrudComponentViewImplNewInstanceTitle ) ).thenReturn( NEW_INSTANCE_TITLE );
         when( translationService.getTranslation( CrudComponentConstants.CrudComponentViewImplEditInstanceTitle ) ).thenReturn( EDIT_INSTANCE_TITLE );
-        when( helper.getCreateInstanceForm() ).thenReturn( getFormView() );
-        when( helper.getEditInstanceForm( anyInt() ) ).thenReturn( getFormView() );
         when( embeddedFormDisplayer.isEmbeddable() ).thenReturn( true );
-        crudComponent = new CrudComponentMock( view, embeddedFormDisplayer, modalFormDisplayer, translationService );
+        crudComponent = new CrudComponentMock<>( view, embeddedFormDisplayer, modalFormDisplayer, translationService );
     }
 
     protected void initTest() {
@@ -80,12 +82,9 @@ public abstract class AbstractCrudComponentTest extends TestCase {
         verify( view ).getCurrentPage();
     }
 
-    protected void runCreationTest() {
-        crudComponent.showCreateForm();
+    protected void runFormTest() {
+        crudComponent.displayForm( formView, callback );
 
-        if ( helper == getActionsHelper() ) {
-            verify( helper ).getCreateInstanceForm();
-        }
         if ( getActionsHelper().showEmbeddedForms() ) {
             verify( view ).addDisplayer( embeddedFormDisplayer );
             verify( embeddedFormDisplayer ).display( eq( NEW_INSTANCE_TITLE ), eq( getFormView() ), any( FormDisplayer.FormDisplayerCallback.class ) );
@@ -93,92 +92,18 @@ public abstract class AbstractCrudComponentTest extends TestCase {
             verify( modalFormDisplayer ).display( eq( NEW_INSTANCE_TITLE ), eq( getFormView() ), any( FormDisplayer.FormDisplayerCallback.class ) );
         }
 
-        crudComponent.doCreate();
-
-        if ( getActionsHelper().showEmbeddedForms() ) {
-            verify( view ).removeDisplayer( embeddedFormDisplayer );
-        }
-        if ( helper == getActionsHelper() ) {
-            verify( helper ).createInstance();
-        }
-    }
-
-    protected void runCreationCancelTest() {
-        crudComponent.showCreateForm();
-
-        if ( helper == getActionsHelper() ) {
-            verify( helper ).getCreateInstanceForm();
-        }
-        if ( getActionsHelper().showEmbeddedForms() ) {
-            verify( view ).addDisplayer( embeddedFormDisplayer );
-            verify( embeddedFormDisplayer ).display( eq( NEW_INSTANCE_TITLE ), eq( getFormView() ), any( FormDisplayer.FormDisplayerCallback.class ) );
-        } else {
-            verify( modalFormDisplayer ).display( eq( NEW_INSTANCE_TITLE ), eq( getFormView() ), any( FormDisplayer.FormDisplayerCallback.class ) );
-        }
-
-        crudComponent.doCancel();
+        crudComponent.restoreTable();
 
         if ( getActionsHelper().showEmbeddedForms() ) {
             verify( view ).removeDisplayer( embeddedFormDisplayer );
         }
     }
 
-    protected void runEditTest() {
-        crudComponent.showEditForm( 0 );
-
-        if ( helper == getActionsHelper() ) {
-            verify( helper ).getEditInstanceForm( 0 );
-        }
-        if ( getActionsHelper().showEmbeddedForms() ) {
-            verify( view ).addDisplayer( embeddedFormDisplayer );
-            verify( embeddedFormDisplayer ).display( eq( EDIT_INSTANCE_TITLE ), eq( getFormView() ), any( FormDisplayer.FormDisplayerCallback.class ) );
-        } else {
-            verify( modalFormDisplayer ).display( eq( EDIT_INSTANCE_TITLE ), eq( getFormView() ), any( FormDisplayer.FormDisplayerCallback.class ) );
-        }
-
-        crudComponent.doEdit();
-
-        if ( getActionsHelper().showEmbeddedForms() ) {
-            verify( view ).removeDisplayer( embeddedFormDisplayer );
-        }
-        if ( helper == getActionsHelper() ) {
-            verify( helper ).editInstance();
-        }
-    }
-
-    protected void runEditCancelTest() {
-        crudComponent.showEditForm( 0 );
-
-        if ( helper == getActionsHelper() ) {
-            verify( helper ).getEditInstanceForm( 0 );
-        }
-        if ( getActionsHelper().showEmbeddedForms() ) {
-            verify( view ).addDisplayer( embeddedFormDisplayer );
-            verify( embeddedFormDisplayer ).display( eq( EDIT_INSTANCE_TITLE ), eq( getFormView() ), any( FormDisplayer.FormDisplayerCallback.class ) );
-        } else {
-            verify( modalFormDisplayer ).display( eq( EDIT_INSTANCE_TITLE ), eq( getFormView() ), any( FormDisplayer.FormDisplayerCallback.class ) );
-        }
-
-        crudComponent.doCancel();
-
-        if ( getActionsHelper().showEmbeddedForms() ) {
-            verify( view ).removeDisplayer( embeddedFormDisplayer );
-        }
-    }
-
-    protected void runDeletionTest() {
-        crudComponent.deleteInstance( 0 );
-
-        if ( helper == getActionsHelper() ) {
-            verify( helper ).deleteInstance( 0 );
-        }
-    }
-
-    protected CrudActionsHelper getActionsHelper() {
+    protected CrudActionsHelper<MODEL> getActionsHelper() {
         return helper;
     }
 
-    protected IsFormView getFormView() {
+    protected IsFormView<FORM_MODEL> getFormView() {
         return formView;
     }
 }

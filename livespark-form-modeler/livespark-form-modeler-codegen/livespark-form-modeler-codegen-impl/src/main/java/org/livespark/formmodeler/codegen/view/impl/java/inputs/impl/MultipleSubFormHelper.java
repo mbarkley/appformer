@@ -150,10 +150,13 @@ public class MultipleSubFormHelper extends AbstractNestedModelHelper<MultipleSub
         getEditionModelMethod.addAnnotation( Override.class );
 
 
+        String returnType = "List<ColumnMeta<" + standaloneName + ">>";
         StringBuffer getCrudColumnsBody = new StringBuffer();
-        getCrudColumnsBody.append( "List<ColumnMeta> " )
-                .append( COLUMN_METAS_VAR_NAME )
-                .append( " = new ArrayList<ColumnMeta>();" );
+        getCrudColumnsBody
+            .append( returnType )
+            .append( " " )
+            .append( COLUMN_METAS_VAR_NAME )
+            .append( " = new ArrayList<>();" );
 
         DataObject dataObject = dataObjectFinderService.getDataObject( field.getStandaloneClassName(),
                 context.getPath() );
@@ -178,7 +181,7 @@ public class MultipleSubFormHelper extends AbstractNestedModelHelper<MultipleSub
 
         multipleSubformAdapter.addMethod()
                 .setName( "getCrudColumns" )
-                .setReturnType( "List<ColumnMeta>" )
+                .setReturnType( returnType )
                 .setBody( getCrudColumnsBody.toString() )
                 .setPublic()
                 .addAnnotation( Override.class );

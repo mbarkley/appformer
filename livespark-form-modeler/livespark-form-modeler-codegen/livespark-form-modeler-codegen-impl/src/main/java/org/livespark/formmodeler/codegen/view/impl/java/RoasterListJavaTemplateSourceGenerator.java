@@ -125,10 +125,11 @@ public class RoasterListJavaTemplateSourceGenerator implements FormJavaTemplateS
         viewClass.addImport( ArrayList.class.getName() );
         viewClass.addImport( COLUMN_META_CLASS_NAME );
 
+        String returnType = "List<ColumnMeta<" + context.getEntityName() + ">>";
         StringBuffer body = new StringBuffer();
-        body.append( "List<ColumnMeta> " )
+        body.append( returnType )
                 .append( COLUMN_METAS_VAR_NAME )
-                .append( " = new ArrayList<ColumnMeta>();" );
+                .append( " = new ArrayList<>();" );
 
 
         FormDefinition form = context.getFormDefinition();
@@ -154,7 +155,7 @@ public class RoasterListJavaTemplateSourceGenerator implements FormJavaTemplateS
 
         viewClass.addMethod()
                 .setName( "getCrudColumns" )
-                .setReturnType( "List<ColumnMeta>" )
+                .setReturnType( returnType )
                 .setBody( body.toString() )
                 .setPublic()
                 .addAnnotation( Override.class );

@@ -15,7 +15,6 @@
  */
 package org.livespark.widgets.crud.client.component;
 
-import static org.livespark.widgets.crud.client.resources.i18n.CrudComponentConstants.CrudComponentViewImplEditInstanceTitle;
 import static org.livespark.widgets.crud.client.resources.i18n.CrudComponentConstants.CrudComponentViewImplNewInstanceTitle;
 
 import java.util.List;
@@ -25,6 +24,7 @@ import javax.inject.Inject;
 
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.livespark.widgets.crud.client.component.formDisplay.FormDisplayer;
+import org.livespark.widgets.crud.client.component.formDisplay.FormDisplayer.FormDisplayerCallback;
 import org.livespark.widgets.crud.client.component.formDisplay.IsFormView;
 import org.livespark.widgets.crud.client.component.formDisplay.embedded.EmbeddedFormDisplayer;
 import org.livespark.widgets.crud.client.component.formDisplay.modal.ModalFormDisplayer;
@@ -36,10 +36,10 @@ import com.google.gwt.view.client.AsyncDataProvider;
 import com.google.gwt.view.client.HasData;
 
 @Dependent
-public class CrudComponent implements IsWidget{
+public class CrudComponent<MODEL, FORM_MODEL> implements IsWidget{
 
-    public interface CrudComponentView extends IsWidget{
-        void setPresenter( CrudComponent presenter );
+    public interface CrudComponentView<MODEL, FORM_MODEL> extends IsWidget{
+        void setPresenter( CrudComponent<MODEL, FORM_MODEL> presenter );
 
         int getCurrentPage();
 
@@ -47,18 +47,18 @@ public class CrudComponent implements IsWidget{
 
         void removeDisplayer( FormDisplayer displayer );
 
-        void initTableView( List<ColumnMeta> dataColumns, int pageSize );
+        void initTableView( List<ColumnMeta<MODEL>> dataColumns, int pageSize );
 
         void showCreateButton();
 
-        void setDataProvider( final AsyncDataProvider dataProvider );
+        void setDataProvider( final AsyncDataProvider<MODEL> dataProvider );
 
         void showDeleteButtons();
 
         void showEditButtons();
     }
 
-    private final CrudComponentView view;
+    private final CrudComponentView<MODEL, FORM_MODEL> view;
 
     private final EmbeddedFormDisplayer embeddedFormDisplayer;
 
@@ -66,12 +66,12 @@ public class CrudComponent implements IsWidget{
 
     protected boolean embedded = true;
 
-    protected CrudActionsHelper helper;
+    protected CrudActionsHelper<MODEL> helper;
 
     private final TranslationService translationService;
 
     @Inject
-    public CrudComponent( final CrudComponentView view,
+    public CrudComponent( final CrudComponentView<MODEL, FORM_MODEL> view,
                           final EmbeddedFormDisplayer embeddedFormDisplayer,
                           final ModalFormDisplayer modalFormDisplayer,
                           final TranslationService translationService ) {
@@ -82,7 +82,7 @@ public class CrudComponent implements IsWidget{
         view.setPresenter( this );
     }
 
-    public void init( final CrudActionsHelper helper ) {
+    public void init( final CrudActionsHelper<MODEL> helper ) {
         this.helper = helper;
         view.initTableView( helper.getGridColumns(), helper.getPageSize() );
         if ( helper.isAllowCreate() ) {
@@ -106,20 +106,12 @@ public class CrudComponent implements IsWidget{
         return modalFormDisplayer;
     }
 
-    public IsFormView getCreateForm() {
-        return helper.getCreateInstanceForm();
-    }
-
-    public IsFormView getEditForm( final int index ) {
-        return helper.getEditInstanceForm( index );
-    }
-
     public void createInstance() {
         helper.createInstance();
     }
 
-    public void editInstance() {
-        helper.editInstance();
+    public void editInstance( int index ) {
+        helper.editInstance( index );
     }
 
     public void deleteInstance( final int index ) {
@@ -131,7 +123,7 @@ public class CrudComponent implements IsWidget{
     }
 
     public void refresh() {
-        final HasData next = (HasData) helper.getDataProvider().getDataDisplays().iterator().next();
+        final HasData<MODEL> next = helper.getDataProvider().getDataDisplays().iterator().next();
         next.setVisibleRangeAndClearData( next.getVisibleRange(), true );
     }
 
@@ -148,14 +140,33 @@ public class CrudComponent implements IsWidget{
         return view.asWidget();
     }
 
-    public void renderNestedForm( final String title, final IsFormView formView, final FormDisplayer.FormDisplayerCallback callback ) {
+    public void displayForm( final String title, final IsFormView<FORM_MODEL> formView, final FormDisplayer.FormDisplayerCallback callback ) {
         final FormDisplayer displayer = getFormDisplayer();
 
         if ( displayer.isEmbeddable() ) {
             view.addDisplayer( displayer );
         }
 
-        displayer.display( title, formView, callback );
+        displayer.display( title, formView, new FormDisplayerCallback() {
+
+            @Override
+            public void onCancel() {
+                restoreTable();
+                callback.onCancel();
+            }
+
+            @Override
+            public void onAccept() {
+                restoreTable();
+                callback.onAccept();
+            }
+        } );
+    }
+
+    public void displayForm( IsFormView<FORM_MODEL> formView, FormDisplayerCallback callback ) {
+        displayForm( translationService.getTranslation( CrudComponentViewImplNewInstanceTitle ),
+                          formView,
+                          callback );
     }
 
     public void restoreTable() {
@@ -163,51 +174,5 @@ public class CrudComponent implements IsWidget{
         if ( displayer.isEmbeddable() ) {
             view.removeDisplayer( displayer );
         }
-    }
-
-    public void doCreate() {
-        restoreTable();
-        createInstance();
-    }
-
-    public void doEdit() {
-        restoreTable();
-        editInstance();
-    }
-
-    public void doCancel() {
-        restoreTable();
-    }
-
-    public void showCreateForm() {
-        renderNestedForm( translationService.getTranslation( CrudComponentViewImplNewInstanceTitle ),
-                          getCreateForm(),
-                          new FormDisplayer.FormDisplayerCallback() {
-                              @Override
-                              public void onAccept() {
-                                  doCreate();
-                              }
-
-                              @Override
-                              public void onCancel() {
-                                  doCancel();
-                              }
-                          } );
-    }
-
-    public void showEditForm( final int index ) {
-        renderNestedForm( translationService.getTranslation( CrudComponentViewImplEditInstanceTitle ),
-                          getEditForm( index ),
-                          new FormDisplayer.FormDisplayerCallback() {
-                              @Override
-                              public void onAccept() {
-                                  doEdit();
-                              }
-
-                              @Override
-                              public void onCancel() {
-                                  doCancel();
-                              }
-                          } );
     }
 }

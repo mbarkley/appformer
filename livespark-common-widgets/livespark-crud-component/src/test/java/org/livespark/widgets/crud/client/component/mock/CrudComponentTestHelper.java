@@ -27,17 +27,15 @@ import org.livespark.widgets.crud.client.component.CrudActionsHelper;
 import org.livespark.widgets.crud.client.component.formDisplay.IsFormView;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
-public class CrudComponentTestHelper implements CrudActionsHelper<CrudModel> {
+public class CrudComponentTestHelper<FORM_MODEL> implements CrudActionsHelper<CrudModel> {
     private boolean embeddedForms = true;
     private List<CrudModel> models;
 
-    private int editionIndex = -1;
-
     private AsyncDataProvider<CrudModel> dataProvider;
 
-    private IsFormView<CrudModel> formView;
+    private IsFormView<FORM_MODEL> formView;
 
-    public CrudComponentTestHelper( IsFormView formView, List<CrudModel> listModels ) {
+    public CrudComponentTestHelper( IsFormView<FORM_MODEL> formView, List<CrudModel> listModels ) {
         this.formView = formView;
         this.models = listModels;
         dataProvider = new AsyncDataProvider<CrudModel>() {
@@ -84,10 +82,10 @@ public class CrudComponentTestHelper implements CrudActionsHelper<CrudModel> {
     }
 
     @Override
-    public List<ColumnMeta> getGridColumns() {
-        List<ColumnMeta> metas = new ArrayList<ColumnMeta>();
+    public List<ColumnMeta<CrudModel>> getGridColumns() {
+        List<ColumnMeta<CrudModel>> metas = new ArrayList<>();
 
-        ColumnMeta<CrudModel> columnMeta = new ColumnMeta<CrudModel>( new TextColumn<CrudModel>() {
+        ColumnMeta<CrudModel> columnMeta = new ColumnMeta<>( new TextColumn<CrudModel>() {
             @Override
             public String getValue( CrudModel model ) {
                 if ( model.getName() == null ) {
@@ -99,7 +97,7 @@ public class CrudComponentTestHelper implements CrudActionsHelper<CrudModel> {
 
         metas.add( columnMeta );
 
-        columnMeta = new ColumnMeta<CrudModel>( new TextColumn<CrudModel>() {
+        columnMeta = new ColumnMeta<>( new TextColumn<CrudModel>() {
             @Override
             public String getValue( CrudModel model ) {
                 if ( model.getLastName() == null ) {
@@ -111,7 +109,7 @@ public class CrudComponentTestHelper implements CrudActionsHelper<CrudModel> {
 
         metas.add( columnMeta );
 
-        columnMeta = new ColumnMeta<CrudModel>( new TextColumn<CrudModel>() {
+        columnMeta = new ColumnMeta<>( new TextColumn<CrudModel>() {
             @Override
             public String getValue( CrudModel model ) {
                 if ( model.getBirthday() == null ) {
@@ -132,29 +130,8 @@ public class CrudComponentTestHelper implements CrudActionsHelper<CrudModel> {
     }
 
     @Override
-    public IsFormView<CrudModel> getCreateInstanceForm() {
-        return formView;
-    }
-
-    @Override
     public void createInstance() {
         models.add( new CrudModel( "Ned", "Stark", new Date() ) );
-    }
-
-    @Override
-    public IsFormView<CrudModel> getEditInstanceForm( Integer index ) {
-        editionIndex = index;
-        return formView;
-    }
-
-    @Override
-    public void editInstance() {
-        if ( editionIndex != -1 ) {
-            CrudModel model = models.get( editionIndex );
-            model.setName( "Tyrion" );
-            model.setLastName( "Lannister" );
-            editionIndex = -1;
-        }
     }
 
     @Override
@@ -162,5 +139,11 @@ public class CrudComponentTestHelper implements CrudActionsHelper<CrudModel> {
         if ( index != -1 && index < models.size() ) {
             models.remove( index );
         }
+    }
+
+    @Override
+    public void editInstance( int index ) {
+        // TODO Auto-generated method stub
+
     }
 }

@@ -2,14 +2,9 @@ package org.livespark.formmodeler.renderer.client.rendering.renderers.relations.
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.inject.Inject;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.user.client.TakesValue;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.view.client.AsyncDataProvider;
-import com.google.gwt.view.client.HasData;
 import org.jboss.errai.databinding.client.BindableProxy;
 import org.jboss.errai.databinding.client.BindableProxyFactory;
 import org.jboss.errai.databinding.client.HasProperties;
@@ -24,8 +19,16 @@ import org.kie.workbench.common.forms.processing.engine.handling.IsNestedModel;
 import org.livespark.formmodeler.renderer.client.rendering.renderers.relations.multipleSubform.columns.ColumnGenerator;
 import org.livespark.widgets.crud.client.component.CrudActionsHelper;
 import org.livespark.widgets.crud.client.component.CrudComponent;
+import org.livespark.widgets.crud.client.component.formDisplay.FormDisplayer.FormDisplayerCallback;
 import org.livespark.widgets.crud.client.component.formDisplay.IsFormView;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.TakesValue;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.view.client.AsyncDataProvider;
+import com.google.gwt.view.client.HasData;
 
 @Templated
 public class MultipleSubFormWidget extends Composite implements TakesValue<List<Object>>, IsNestedModel {
@@ -62,7 +65,7 @@ public class MultipleSubFormWidget extends Composite implements TakesValue<List<
     }
 
     protected void initCrud() {
-        final List<ColumnMeta> metas = new ArrayList<ColumnMeta>();
+        final List<ColumnMeta> metas = new ArrayList<>();
 
         BindableProxy<?> proxy = null;
 
@@ -104,7 +107,6 @@ public class MultipleSubFormWidget extends Composite implements TakesValue<List<
         };
 
         crudComponent.init( new CrudActionsHelper() {
-            private Integer position;
 
             @Override
             public int getPageSize() {
@@ -141,7 +143,6 @@ public class MultipleSubFormWidget extends Composite implements TakesValue<List<
                 return dataProvider;
             }
 
-            @Override
             public IsFormView<Object> getCreateInstanceForm() {
                 if ( field.getCreationForm() != null ) {
                     BindableProxy<?> proxy = null;
@@ -157,9 +158,7 @@ public class MultipleSubFormWidget extends Composite implements TakesValue<List<
                 return null;
             }
 
-            @Override
-            public IsFormView<Object> getEditInstanceForm( Integer position ) {
-                this.position = position;
+            public IsFormView<Object> getEditInstanceForm( int position ) {
                 if ( field.getEditionForm() != null ) {
                     formRenderer.render( renderingContext.getCopyFor( field.getCreationForm(), values.get( position ) ) );
                     return formRenderer;
@@ -170,18 +169,40 @@ public class MultipleSubFormWidget extends Composite implements TakesValue<List<
 
             @Override
             public void createInstance() {
-                values.add( formRenderer.getModel() );
-                tableValues.add( (HasProperties) formRenderer.getModel() );
-                refreshCrud();
-                fireFieldChange();
+                IsFormView form = getCreateInstanceForm();
+                crudComponent.displayForm( form, new FormDisplayerCallback() {
+
+                    @Override
+                    public void onCancel() {
+                    }
+
+                    @Override
+                    public void onAccept() {
+                        values.add( formRenderer.getModel() );
+                        tableValues.add( (HasProperties) formRenderer.getModel() );
+                        refreshCrud();
+                        fireFieldChange();
+                    }
+                } );
             }
 
             @Override
-            public void editInstance() {
-                values.set( position, formRenderer.getModel() );
-                tableValues.set( position, (HasProperties) formRenderer.getModel() );
-                refreshCrud();
-                fireFieldChange();
+            public void editInstance( int index ) {
+                IsFormView form = getEditInstanceForm( index );
+                crudComponent.displayForm( form, new FormDisplayerCallback() {
+
+                    @Override
+                    public void onCancel() {
+                    }
+
+                    @Override
+                    public void onAccept() {
+                        values.set( index, formRenderer.getModel() );
+                        tableValues.set( index, (HasProperties) formRenderer.getModel() );
+                        refreshCrud();
+                        fireFieldChange();
+                    }
+                } );
             }
 
             @Override

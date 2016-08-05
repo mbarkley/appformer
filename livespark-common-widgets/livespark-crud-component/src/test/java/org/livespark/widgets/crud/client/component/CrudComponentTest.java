@@ -16,6 +16,7 @@
 
 package org.livespark.widgets.crud.client.component;
 
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.Test;
@@ -25,10 +26,10 @@ import org.livespark.widgets.crud.client.component.formDisplay.FormDisplayer;
 import com.google.gwtmockito.GwtMockitoTestRunner;
 
 @RunWith(GwtMockitoTestRunner.class)
-public class CrudComponentTest extends AbstractCrudComponentTest {
+public class CrudComponentTest<MODEL, FORM_MODEL> extends AbstractCrudComponentTest<MODEL, FORM_MODEL> {
 
     @Test
-    public void testModelCreateOnEmbeddedForms() {
+    public void usesEmbeddedDisplayerWhenShowEmbeddedFormsTrue() {
         initTest();
 
         when( helper.showEmbeddedForms() ).thenReturn( true );
@@ -37,24 +38,11 @@ public class CrudComponentTest extends AbstractCrudComponentTest {
 
         assertTrue( displayer.equals( embeddedFormDisplayer ) );
 
-        runCreationTest();
+        runFormTest();
     }
 
     @Test
-    public void testModelCreateCancellationOnEmbeddedForms() {
-        initTest();
-
-        when( helper.showEmbeddedForms() ).thenReturn( true );
-
-        final FormDisplayer displayer = crudComponent.getFormDisplayer();
-
-        assertTrue( displayer.equals( embeddedFormDisplayer ) );
-
-        runCreationCancelTest();
-    }
-
-    @Test
-    public void testModelCreateOnModalForms() {
+    public void useModalDisplayerWhenShowEmbeddedFormsFalse() {
         initTest();
 
         when( helper.showEmbeddedForms() ).thenReturn( false );
@@ -63,80 +51,28 @@ public class CrudComponentTest extends AbstractCrudComponentTest {
 
         assertTrue( displayer.equals( modalFormDisplayer ) );
 
-        runCreationTest();
+        runFormTest();
     }
 
     @Test
-    public void testModelCreateCancellationOnModalForms() {
+    public void createInstanceCallsHelperCreateInstance() {
         initTest();
-
-        when( helper.showEmbeddedForms() ).thenReturn( false );
-
-        final FormDisplayer displayer = crudComponent.getFormDisplayer();
-
-        assertTrue( displayer.equals( modalFormDisplayer ) );
-
-        runCreationCancelTest();
+        crudComponent.createInstance();
+        verify( helper ).createInstance();
     }
 
     @Test
-    public void testModelEditOnEmbeddedForms() {
+    public void editInstanceCallsHelperEditInstance() {
         initTest();
-
-        when( helper.showEmbeddedForms() ).thenReturn( true );
-
-        final FormDisplayer displayer = crudComponent.getFormDisplayer();
-
-        assertTrue( displayer.equals( embeddedFormDisplayer ) );
-
-        runEditTest();
+        crudComponent.editInstance( 0 );
+        verify( helper ).editInstance( 0 );
     }
 
     @Test
-    public void testModelEditCancellationOnEmbeddedForms() {
+    public void deleteInstanceCallsHelperDeleteInstance() {
         initTest();
-
-        when( helper.showEmbeddedForms() ).thenReturn( true );
-
-        final FormDisplayer displayer = crudComponent.getFormDisplayer();
-
-        assertTrue( displayer.equals( embeddedFormDisplayer ) );
-
-        runEditCancelTest();
+        crudComponent.deleteInstance( 0 );
+        verify( helper ).deleteInstance( 0 );
     }
-
-    @Test
-    public void testModelEditOnModalForms() {
-        initTest();
-
-        when( helper.showEmbeddedForms() ).thenReturn( false );
-
-        final FormDisplayer displayer = crudComponent.getFormDisplayer();
-        assertTrue( displayer.equals( modalFormDisplayer ) );
-
-        runEditTest();
-    }
-
-    @Test
-    public void testModelEditCancellationOnModalForms() {
-        initTest();
-
-        when( helper.showEmbeddedForms() ).thenReturn( false );
-
-        final FormDisplayer displayer = crudComponent.getFormDisplayer();
-        assertTrue( displayer.equals( modalFormDisplayer ) );
-
-        runEditCancelTest();
-    }
-
-
-    @Test
-    public void testModelDeletion() {
-        initTest();
-
-        runDeletionTest();
-    }
-
-
 
 }

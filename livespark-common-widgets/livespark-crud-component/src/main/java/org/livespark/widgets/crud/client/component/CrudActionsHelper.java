@@ -18,11 +18,11 @@ package org.livespark.widgets.crud.client.component;
 
 import java.util.List;
 
-import com.google.gwt.view.client.AsyncDataProvider;
-import org.livespark.widgets.crud.client.component.formDisplay.IsFormView;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
-public interface CrudActionsHelper<T> {
+import com.google.gwt.view.client.AsyncDataProvider;
+
+public interface CrudActionsHelper<MODEL> {
 
     public int getPageSize();
 
@@ -34,17 +34,13 @@ public interface CrudActionsHelper<T> {
 
     public boolean isAllowDelete();
 
-    public List<ColumnMeta> getGridColumns();
+    public List<ColumnMeta<MODEL>> getGridColumns();
 
-    public AsyncDataProvider<T> getDataProvider();
-
-    public IsFormView<T> getCreateInstanceForm();
+    public AsyncDataProvider<MODEL> getDataProvider();
 
     public void createInstance();
 
-    public IsFormView<T> getEditInstanceForm( Integer index );
-
-    public void editInstance();
+    public void editInstance( int index );
 
     public void deleteInstance( int index );
 }
