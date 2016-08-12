@@ -42,7 +42,7 @@ import org.jboss.errai.ioc.rebind.ioc.injector.api.FactoryController;
 import org.livespark.flow.cdi.api.FlowInput;
 import org.livespark.flow.cdi.api.FlowOutput;
 import org.livespark.flow.cdi.api.Step;
-import org.livespark.flow.client.local.CDIStepFactory.BaseFlowIO;
+import org.livespark.flow.client.local.CDIFlowFactory.BaseFlowIO;
 
 @CodeDecorator
 public class FlowIODecorator extends IOCDecoratorExtension<Step> {

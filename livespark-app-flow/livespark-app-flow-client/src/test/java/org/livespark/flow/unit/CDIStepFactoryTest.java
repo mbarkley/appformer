@@ -29,17 +29,17 @@ import org.junit.Test;
 import org.livespark.flow.api.Step;
 import org.livespark.flow.cdi.api.FlowInput;
 import org.livespark.flow.cdi.api.FlowOutput;
-import org.livespark.flow.client.local.CDIStepFactory;
-import org.livespark.flow.client.local.CDIStepFactory.BaseFlowIO;
+import org.livespark.flow.client.local.CDIFlowFactory;
+import org.livespark.flow.client.local.CDIFlowFactory.BaseFlowIO;
 import org.livespark.flow.util.Ref;
 
 public class CDIStepFactoryTest {
 
-    private CDIStepFactory factory;
+    private CDIFlowFactory factory;
 
     @Before
     public void setup() {
-        factory = new CDIStepFactory();
+        factory = new CDIFlowFactory();
     }
 
     @Test
@@ -48,7 +48,7 @@ public class CDIStepFactoryTest {
         final List<Integer> outputs = new ArrayList<>();
 
         final Step<Integer, Integer> step =
-                factory.createCdiStep( () -> new Object(),
+                factory.createStep( () -> new Object(),
                                        o -> {
                                            final FlowInput<Integer> flowInput = factory.createInput();
                                            final FlowOutput<Integer> flowOutput = factory.createOutput();
@@ -78,7 +78,7 @@ public class CDIStepFactoryTest {
 
         final Function<Function<Integer, Integer>, Step<Integer, Integer>> stepFunc =
                 consumer ->
-            factory.createCdiStep( () -> new Object(),
+            factory.createStep( () -> new Object(),
                                    o -> {
                                        final FlowInput<Integer> flowInput = factory.createInput();
                                        final FlowOutput<Integer> flowOutput = factory.createOutput();
@@ -115,7 +115,7 @@ public class CDIStepFactoryTest {
         final List<Integer> submittedOutputs = new ArrayList<>();
 
         final Step<Integer, Integer> nonTerminatingStep =
-                factory.createCdiStep(
+                factory.createStep(
                                       () -> new Object(),
                                       o -> {
                                           final FlowInput<Integer> flowInput = factory.createInput();

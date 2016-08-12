@@ -30,14 +30,11 @@ import org.jboss.errai.ui.client.local.api.IsElement;
 import org.jboss.errai.ui.shared.api.annotations.DataField;
 import org.kie.workbench.common.forms.crud.client.component.CrudActionsHelper;
 import org.kie.workbench.common.forms.crud.client.component.CrudComponent;
-import org.kie.workbench.common.forms.crud.client.component.formDisplay.FormDisplayer;
 import org.livespark.flow.api.Command;
 import org.livespark.flow.api.CrudOperation;
 import org.livespark.flow.cdi.api.FlowInput;
 import org.livespark.flow.cdi.api.FlowOutput;
 import org.livespark.formmodeler.rendering.client.shared.FormModel;
-import org.kie.workbench.common.forms.crud.client.component.CrudActionsHelper;
-import org.kie.workbench.common.forms.crud.client.component.CrudComponent;
 import org.uberfire.ext.widgets.table.client.ColumnMeta;
 
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -103,6 +100,20 @@ public abstract class ListView<M, F extends FormModel> implements IsElement {
 
         content.add( crudComponent );
         loadItems( crudItems );
+    }
+
+    public void addModel( final M model ) {
+        crudItems.add( model );
+        crudComponent.refresh();
+    }
+
+    public void removeModel( final M model ) {
+        crudItems.remove( model );
+        crudComponent.refresh();
+    }
+
+    public void refresh() {
+        crudComponent.refresh();
     }
 
     /*

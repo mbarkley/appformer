@@ -27,11 +27,12 @@ import javax.enterprise.inject.Produces;
 
 import org.jboss.errai.ioc.client.container.Factory;
 import org.livespark.flow.api.Step;
+import org.livespark.flow.api.UIComponent;
 import org.livespark.flow.cdi.api.FlowInput;
 import org.livespark.flow.cdi.api.FlowOutput;
 
 @ApplicationScoped
-public class CDIStepFactory {
+public class CDIFlowFactory {
 
     public static abstract class BaseFlowIO {
         private Object key;
@@ -64,12 +65,12 @@ public class CDIStepFactory {
         }
     }
 
-    private static class StepFrame {
+    private static class Frame {
         final Object instance;
         final Object input;
         final Consumer<?> callback;
         final Consumer<?> closer;
-        StepFrame( final Object instance, final Object input, final Consumer<?> callback, final Consumer<?> closer ) {
+        Frame( final Object instance, final Object input, final Consumer<?> callback, final Consumer<?> closer ) {
             this.instance = instance;
             this.input = input;
             this.callback = callback;
@@ -77,19 +78,19 @@ public class CDIStepFactory {
         }
     }
 
-    private final Map<Object, StepFrame> frames = new IdentityHashMap<>();
+    private final Map<Object, Frame> frames = new IdentityHashMap<>();
 
-    public <T, INPUT, OUTPUT> Step<INPUT, OUTPUT> createCdiStep( final Supplier<T> instanceSupplier,
-                                                                 final Consumer<T> starter,
-                                                                 final Consumer<T> closer,
-                                                                 final String name ) {
+    public <T, INPUT, OUTPUT> Step<INPUT, OUTPUT> createStep( final Supplier<T> instanceSupplier,
+                                                              final Consumer<T> starter,
+                                                              final Consumer<T> closer,
+                                                              final String name ) {
         return new Step<INPUT, OUTPUT>() {
 
             @Override
             public void execute( final INPUT input,
                                  final Consumer<OUTPUT> callback ) {
                 final T instance = Factory.maybeUnwrapProxy( instanceSupplier.get() );
-                final StepFrame frame = new StepFrame( instance, input, callback, closer );
+                final Frame frame = new Frame( instance, input, callback, closer );
                 storeFrame( instance, frame );
                 starter.accept( instance );
             }
@@ -101,15 +102,57 @@ public class CDIStepFactory {
         };
     }
 
-    protected void storeFrame( final Object key, final StepFrame frame ) {
+    public <INPUT, OUTPUT, COMPONENT, T extends COMPONENT> UIComponent<OUTPUT, COMPONENT> createUIComponent( final INPUT input,
+                                                                                                             final Supplier<T> instanceSupplier,
+                                                                                                             final Consumer<T> starter,
+                                                                                                             final Consumer<T> destroy,
+                                                                                                             final String name ) {
+        return new UIComponent<OUTPUT, COMPONENT>() {
+            T instance;
+
+            T get() {
+                if (instance == null) {
+                    instance = Factory.maybeUnwrapProxy( instanceSupplier.get() );
+                }
+
+                return instance;
+            }
+            @Override
+            public void start( final Consumer<OUTPUT> callback ) {
+                final T instance = get();
+                final Frame frame = new Frame( instance, input, callback, t -> {} );
+                storeFrame( instance, frame );
+
+                starter.accept( instance );
+            }
+
+            @Override
+            public void destroy() {
+                destroy.accept( get() );
+                instance = null;
+            }
+
+            @Override
+            public COMPONENT asComponent() {
+                return get();
+            }
+
+            @Override
+            public String getName() {
+                return name;
+            }
+        };
+    }
+
+    protected void storeFrame( final Object key, final Frame frame ) {
         if ( frames.containsKey( key ) ) {
             throw new IllegalStateException( "Attempted to store StepFrame for [" + key + "] when one already existed." );
         }
         frames.put( key, frame );
     }
 
-    private StepFrame removeFrame( final Object key ) {
-        final StepFrame removed = frames.get( key );
+    private Frame removeFrame( final Object key ) {
+        final Frame removed = frames.get( key );
         frames.remove( key );
         if ( removed == null ) {
             throw new IllegalStateException( "Attempted to remove StepFrame for [" + key + "] but none existed." );
@@ -118,13 +161,13 @@ public class CDIStepFactory {
         return removed;
     }
 
-    private StepFrame getFrame( final Object key ) {
+    private Frame getFrame( final Object key ) {
         return frames.get( key );
     }
 
     @SuppressWarnings( { "unchecked", "rawtypes" } )
     private void consumeOutput( final Object key, final Object output ) {
-        final StepFrame frame = removeFrame( key );
+        final Frame frame = removeFrame( key );
         ((Consumer) frame.closer).accept( frame.instance );
         ((Consumer) frame.callback).accept( output );
     }
@@ -135,11 +178,11 @@ public class CDIStepFactory {
 
     @Produces
     public <T> FlowInput<T> createInput() {
-        return new FlowInputImpl<T>();
+        return new FlowInputImpl<>();
     }
 
     @Produces
     public <T> FlowOutput<T> createOutput() {
-        return new FlowOutputImpl<T>();
+        return new FlowOutputImpl<>();
     }
 }

@@ -35,9 +35,14 @@ public interface AppFlow<INPUT, OUTPUT> {
     default <T> AppFlow<INPUT, T> andThen( final Supplier<AppFlow<OUTPUT, T>> supplier ) {
         return transitionTo( (final OUTPUT output) -> supplier.get().butFirst( ignore -> output ) );
     }
-
     default <T> AppFlow<INPUT, T> andThen( final AppFlow<OUTPUT, T> nextFlow ) {
         return andThen( () -> nextFlow );
+    }
+    default AppFlow<INPUT, OUTPUT> andThen( final Runnable task ) {
+        return andThen( output -> {
+            task.run();
+            return output;
+        } );
     }
     default AppFlow<INPUT, Unit> toUnit() {
         return andThen( ignore -> Unit.INSTANCE );
