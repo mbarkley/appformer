@@ -124,6 +124,18 @@
       <groupId>org.kie.workbench.forms</groupId>
       <artifactId>kie-wb-common-forms-data-modeller-integration-api</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.kie.workbench.forms</groupId>
+      <artifactId>kie-wb-common-forms-fields</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.workbench.forms</groupId>
+      <artifactId>kie-wb-common-forms-fields</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.kie.workbench.forms</groupId>
+      <artifactId>kie-wb-common-dynamic-forms-client</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.kie.appformer</groupId>

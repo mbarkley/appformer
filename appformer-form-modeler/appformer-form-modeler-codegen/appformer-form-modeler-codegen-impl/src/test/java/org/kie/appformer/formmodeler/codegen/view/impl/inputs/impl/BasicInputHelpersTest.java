@@ -24,11 +24,15 @@ import org.kie.appformer.formmodeler.codegen.view.impl.inputs.AbstractInputHelpe
 import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.InputCreatorHelper;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl.CheckBoxHelper;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl.DatePickerHelper;
+import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl.DecimalBoxHelper;
+import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl.IntegerBoxHelper;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl.SliderHelper;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl.TextAreaHelper;
 import org.kie.appformer.formmodeler.codegen.view.impl.java.inputs.impl.TextBoxHelper;
 import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.checkBox.definition.CheckBoxFieldDefinition;
 import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.datePicker.definition.DatePickerFieldDefinition;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.decimalBox.definition.DecimalBoxFieldDefinition;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.integerBox.definition.IntegerBoxFieldDefinition;
 import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.slider.definition.DoubleSliderDefinition;
 import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.slider.definition.IntegerSliderDefinition;
 import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.textArea.definition.TextAreaFieldDefinition;
@@ -56,6 +60,8 @@ public class BasicInputHelpersTest extends AbstractInputHelperTest {
         fields.add( initFieldDefinition( new IntegerSliderDefinition() ) );
         fields.add( initFieldDefinition( new DoubleSliderDefinition() ) );
         fields.add( initFieldDefinition( new TextAreaFieldDefinition() ) );
+        fields.add( initFieldDefinition( new IntegerBoxFieldDefinition() ) );
+        fields.add( initFieldDefinition( new DecimalBoxFieldDefinition() ) );
 
         return fields;
     }
@@ -69,6 +75,8 @@ public class BasicInputHelpersTest extends AbstractInputHelperTest {
         helpers.add( new DatePickerHelper() );
         helpers.add( new SliderHelper() );
         helpers.add( new TextAreaHelper() );
+        helpers.add( new IntegerBoxHelper() );
+        helpers.add( new DecimalBoxHelper() );
 
         return helpers;
     }

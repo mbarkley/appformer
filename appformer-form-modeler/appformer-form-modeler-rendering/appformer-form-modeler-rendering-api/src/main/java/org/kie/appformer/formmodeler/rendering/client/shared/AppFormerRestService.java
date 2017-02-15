@@ -34,6 +34,10 @@ public interface AppFormerRestService<M> {
    @Consumes("application/json")
    @Produces("application/json") M create(M model);
 
+   @Path("/{id}")
+   @GET
+   @Produces("application/json") M lookup(@PathParam("id") long id);
+
    @Path("load")
    @GET
    @Produces("application/json") List<M> load();

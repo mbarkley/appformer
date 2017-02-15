@@ -26,31 +26,39 @@ import org.kie.appformer.formmodeler.rendering.client.shared.query.QueryCriteria
 
 public abstract class RoasterRestServiceSourceGenerator<O extends JavaSource<O>> implements JavaSourceGenerator {
 
-    protected void setCreateMethodSignature( SourceGenerationContext context,
-                                             MethodSource<O> create ) {
+    protected void setCreateMethodSignature( final SourceGenerationContext context,
+                                             final MethodSource<O> create ) {
         create.setName( "create" )
               .setPublic()
               .setReturnType( context.getEntityName() )
               .addParameter( context.getEntityName(), "model" );
     }
 
-    protected void setLoadMethodSignature( SourceGenerationContext context,
-                                           MethodSource<O> load ) {
+    protected void setLookupMethodSignature( final SourceGenerationContext context,
+                                             final MethodSource<O> lookup ) {
+        lookup.setName( "lookup" )
+              .setPublic()
+              .setReturnType( context.getEntityName() )
+              .addParameter( long.class, "id" );
+    }
+
+    protected void setLoadMethodSignature( final SourceGenerationContext context,
+                                           final MethodSource<O> load ) {
         load.setName( "load" )
             .setPublic()
             .setReturnType( "List<" + context.getEntityName() + ">" );
     }
 
-    protected void setUpdateMethodSignature( SourceGenerationContext context,
-                                             MethodSource<O> update ) {
+    protected void setUpdateMethodSignature( final SourceGenerationContext context,
+                                             final MethodSource<O> update ) {
         update.setName( "update" )
               .setPublic()
               .setReturnType( Boolean.class )
               .addParameter( context.getEntityName(), "model" );
     }
 
-    protected void setDeleteMethodSignature( SourceGenerationContext context,
-                                             MethodSource<O> delete ) {
+    protected void setDeleteMethodSignature( final SourceGenerationContext context,
+                                             final MethodSource<O> delete ) {
         delete.setName( "delete" )
               .setPublic()
               .setReturnType( Boolean.class );
@@ -58,8 +66,8 @@ public abstract class RoasterRestServiceSourceGenerator<O extends JavaSource<O>>
         delete.addParameter( context.getEntityName(), "model" );
     }
 
-    protected void setListMethodSignature( SourceGenerationContext context,
-                                             MethodSource<O> list ) {
+    protected void setListMethodSignature( final SourceGenerationContext context,
+                                             final MethodSource<O> list ) {
         list.setName( "list" )
                 .setPublic()
                 .setReturnType( "List<" + context.getEntityName() + ">" )
@@ -68,8 +76,8 @@ public abstract class RoasterRestServiceSourceGenerator<O extends JavaSource<O>>
 
     protected abstract String getPackageName( SourceGenerationContext context );
 
-    protected void addImports( SourceGenerationContext context,
-                               O restIface ) {
+    protected void addImports( final SourceGenerationContext context,
+                               final O restIface ) {
         restIface.addImport( context.getSharedPackage().getPackageName() + "." + context.getEntityName() );
         restIface.addImport( List.class );
     }

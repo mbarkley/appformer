@@ -40,6 +40,7 @@ import org.kie.appformer.client.resources.i18n.AppConstants;
 import org.kie.appformer.provisioning.shared.AppReady;
 import org.kie.workbench.common.screens.social.hp.config.SocialConfigurationService;
 import org.kie.workbench.common.services.shared.service.PlaceManagerActivityService;
+import org.kie.workbench.common.stunner.client.widgets.menu.dev.MenuDevCommandsBuilder;
 import org.kie.workbench.common.workbench.client.authz.PermissionTreeSetup;
 import org.kie.workbench.common.workbench.client.menu.DefaultWorkbenchFeaturesMenusHelper;
 import org.mockito.ArgumentCaptor;
@@ -101,7 +102,11 @@ public class AppFormerEntryPointTest {
     @Mock
     private PermissionTreeSetup permissionTreeSetup;
 
+    @Mock
+    private MenuDevCommandsBuilder menuDevCommandsBuilder;
+
     private AppFormerEntryPoint entryPoint;
+
 
     @Before
     public void setup() {
@@ -128,7 +133,8 @@ public class AppFormerEntryPointTest {
                                                             iocManager,
                                                             workbench,
                                                             placeManager,
-                                                            permissionTreeSetup ) );
+                                                            permissionTreeSetup,
+                                                            menuDevCommandsBuilder) );
         mockMenuHelper();
         mockConstants();
         IocTestingUtils.mockIocManager( iocManager );
@@ -195,3 +201,4 @@ public class AppFormerEntryPointTest {
     }
 
 }
+
