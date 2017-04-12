@@ -56,15 +56,9 @@ public abstract class BasePart implements FlowDefinition {
     @Labels
     protected final Set<String> labels = new HashSet<String>() {{
         add("all");
-        add("sequence_start");
-        add("sequence_end");
-        add("from_task_event");
-        add("to_task_event");
-        add("FromEventbasedGateway");
-        add("messageflow_start");
-        add("messageflow_end");
-        add("fromtoall");
-        add("ActivitiesMorph");
+        add("sequenceable");
+        add("linear_in");
+        add("linear_out");
     }};
 
     @NonPortable

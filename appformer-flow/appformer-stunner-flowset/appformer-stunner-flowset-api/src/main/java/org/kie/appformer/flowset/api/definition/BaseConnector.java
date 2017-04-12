@@ -63,7 +63,7 @@ public abstract class BaseConnector implements FlowDefinition {
     @Labels
     protected final Set<String> labels = new HashSet<String>() {{
         add("all");
-        add("ConnectingObjectsMorph");
+        add("connector");
     }};
 
     protected BaseConnector() {

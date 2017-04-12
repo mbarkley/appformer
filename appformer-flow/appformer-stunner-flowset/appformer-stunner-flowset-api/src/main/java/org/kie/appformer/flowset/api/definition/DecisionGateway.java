@@ -62,7 +62,8 @@ public class DecisionGateway extends BaseGateway {
     }
 
     {
-        labels.add( "initial_gateway" );
+        labels.add( "linear_in" );
+        labels.add( "fan_out" );
     }
 
     public DecisionGateway() {

@@ -16,8 +16,6 @@
 
 package org.kie.appformer.flowset.api.definition;
 
-import static org.kie.workbench.common.forms.adf.definitions.annotations.field.selector.SelectorDataProvider.ProviderType.CLIENT;
-
 import org.jboss.errai.common.client.api.annotations.MapsTo;
 import org.jboss.errai.common.client.api.annotations.NonPortable;
 import org.jboss.errai.common.client.api.annotations.Portable;
@@ -30,9 +28,7 @@ import org.kie.appformer.flowset.api.definition.property.gateway.MatchedOperatio
 import org.kie.appformer.flowset.api.definition.property.general.FlowGeneralSet;
 import org.kie.workbench.common.forms.adf.definitions.annotations.FormDefinition;
 import org.kie.workbench.common.forms.adf.definitions.annotations.FormField;
-import org.kie.workbench.common.forms.adf.definitions.annotations.field.selector.SelectorDataProvider;
 import org.kie.workbench.common.forms.adf.definitions.settings.FieldPolicy;
-import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.selectors.listBox.type.ListBoxFieldType;
 import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.textBox.type.TextBoxFieldType;
 import org.kie.workbench.common.stunner.core.definition.annotation.Definition;
 import org.kie.workbench.common.stunner.core.definition.annotation.Description;
@@ -75,7 +71,8 @@ public class MatcherGateway extends BaseGateway {
     }
 
     {
-        labels.add( "intermediate_gateway" );
+        labels.add( "linear_out" );
+        labels.add( "linear_in" );
     }
 
     public MatcherGateway() {

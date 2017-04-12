@@ -36,10 +36,13 @@ import org.kie.workbench.common.stunner.core.rule.annotation.EdgeOccurrences;
 @Bindable
 @Definition(graphFactory = EdgeFactory.class, builder = SequenceFlow.SequenceFlowBuilder.class)
 // *** Connection rules for sequence flows ****
-@CanConnect(startRole = "all", endRole = "all")
+@CanConnect(startRole = "sequenceable", endRole = "sequenceable")
 // **** Cardinality rules for connectors ****
-@EdgeOccurrences(role = "initial_gateway", type = EdgeOccurrences.EdgeType.INCOMING, max = 1)
-@EdgeOccurrences(role = "terminal_gateway", type = EdgeOccurrences.EdgeType.OUTGOING, max = 1)
+@EdgeOccurrences(role = "fan_out", type = EdgeOccurrences.EdgeType.OUTGOING, max = -1)
+@EdgeOccurrences(role = "fan_in", type = EdgeOccurrences.EdgeType.INCOMING, max = -1)
+@EdgeOccurrences(role = "linear_out", type = EdgeOccurrences.EdgeType.OUTGOING, max = 1)
+@EdgeOccurrences(role = "linear_in", type = EdgeOccurrences.EdgeType.INCOMING, max = 1)
+@EdgeOccurrences(role = "start", type = EdgeOccurrences.EdgeType.INCOMING, max = 0)
 @FormDefinition(
         startElement = "general"
 )

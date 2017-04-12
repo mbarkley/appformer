@@ -62,7 +62,8 @@ public class JoinGateway extends BaseGateway {
     }
 
     {
-        labels.add( "terminal_gateway" );
+        labels.add( "fan_in" );
+        labels.add( "linear_out" );
     }
 
     public JoinGateway() {

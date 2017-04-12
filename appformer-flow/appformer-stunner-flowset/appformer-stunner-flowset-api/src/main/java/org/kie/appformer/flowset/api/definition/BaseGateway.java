@@ -58,7 +58,9 @@ public abstract class BaseGateway implements FlowDefinition {
 
     @Labels
     protected final Set<String> labels = new HashSet<String>() {{
+        add("gateway");
         add("all");
+        add("sequenceable");
     }};
 
     @NonPortable

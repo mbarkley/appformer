@@ -98,13 +98,9 @@ public class StartNoneEvent implements FlowDefinition {
     @Labels
     protected final Set<String> labels = new HashSet<String>() {{
             add("all");
-            add("Startevents_all");
-            add("sequence_start");
-            add("choreography_sequence_start");
-            add("to_task_event");
-            add("from_task_event");
-            add("fromtoall");
-            add("StartEventsMorph");
+            add("start");
+            add("sequenceable");
+            add("linear_out");
         }};
 
     public StartNoneEvent() {

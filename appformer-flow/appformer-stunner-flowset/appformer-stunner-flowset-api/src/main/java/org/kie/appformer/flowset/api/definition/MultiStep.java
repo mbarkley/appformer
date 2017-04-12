@@ -48,7 +48,7 @@ import org.kie.workbench.common.stunner.core.rule.annotation.CanContain;
 @Portable
 @Bindable
 @Definition(graphFactory = NodeFactory.class, builder = MultiStep.MultiStepBuilder.class)
-@CanContain(roles = {"all"})
+@CanContain(roles = "form_step")
 @FormDefinition(
         startElement = "general",
         policy = FieldPolicy.ONLY_MARKED

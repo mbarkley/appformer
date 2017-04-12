@@ -79,6 +79,10 @@ public class FormPart extends BasePart {
     @FormField(type = TextBoxFieldType.class)
     private PropertyExpression property;
 
+    {
+        labels.add( "form_step" );
+    }
+
     public FormPart() {
         super();
     }

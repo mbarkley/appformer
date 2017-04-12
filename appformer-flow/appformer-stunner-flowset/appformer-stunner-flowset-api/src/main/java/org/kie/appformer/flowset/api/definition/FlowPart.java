@@ -73,6 +73,10 @@ public class FlowPart extends BasePart {
     @Valid
     private Name name;
 
+    {
+        labels.add( "flow_step" );
+    }
+
     public FlowPart() {
         super();
     }
