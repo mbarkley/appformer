@@ -53,6 +53,10 @@ public abstract class BaseEntityService {
         }
     }
 
+    public <E> E lookup( final Class<E> entityClass, final long id ) {
+        return em.find( entityClass, id );
+    }
+
     public <E> E create( final E entity ) {
         return em.merge( entity );
     }

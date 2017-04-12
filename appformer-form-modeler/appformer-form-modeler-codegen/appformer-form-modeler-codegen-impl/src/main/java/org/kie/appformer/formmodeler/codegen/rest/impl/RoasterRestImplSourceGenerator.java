@@ -16,7 +16,7 @@
 
 package org.kie.appformer.formmodeler.codegen.rest.impl;
 
-import static org.kie.appformer.formmodeler.codegen.util.SourceGenerationUtil.*;
+import static org.kie.appformer.formmodeler.codegen.util.SourceGenerationUtil.EJB_STATELESS;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -26,9 +26,6 @@ import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 import org.kie.appformer.formmodeler.codegen.SourceGenerationContext;
 import org.kie.appformer.formmodeler.codegen.rest.RestImpl;
-import org.kie.workbench.common.forms.model.FormDefinition;
-import org.kie.workbench.common.forms.model.FormModel;
-import org.kie.workbench.common.forms.model.IsJavaModel;
 
 
 @ApplicationScoped
@@ -74,6 +71,7 @@ public class RoasterRestImplSourceGenerator extends RoasterRestServiceSourceGene
     private void addCrudMethodImpls( final SourceGenerationContext context,
                                      final JavaClassSource restImpl ) {
         addCreateMethodImpl( context, restImpl );
+        addLookupMethodImpl( context, restImpl );
         addLoadMethodImpl( context, restImpl );
         addRangedLoadMethodImpl( context, restImpl );
         addUpdateMethodImpl( context, restImpl );
@@ -223,6 +221,13 @@ public class RoasterRestImplSourceGenerator extends RoasterRestServiceSourceGene
         setCreateMethodBody( context, create );
     }
 
+    private void addLookupMethodImpl( final SourceGenerationContext context,
+                                      final JavaClassSource restImpl ) {
+        final MethodSource<JavaClassSource> lookup = restImpl.addMethod();
+        setLookupMethodSignature( context, lookup );
+        setLookupMethodBody( context, lookup );
+    }
+
     @Override
     protected void setCreateMethodSignature( final SourceGenerationContext context,
                                              final MethodSource<JavaClassSource> create ) {
@@ -238,6 +243,18 @@ public class RoasterRestImplSourceGenerator extends RoasterRestServiceSourceGene
                 .append( ".create( model );" );
 
         create.setBody( body.toString() );
+    }
+
+    private void setLookupMethodBody( final SourceGenerationContext context,
+                                      final MethodSource<JavaClassSource> lookup ) {
+        final StringBuilder body = new StringBuilder();
+        body.append( "return " )
+                .append( ENTITY_SERVICE )
+                .append( ".lookup( " )
+                .append( context.getEntityName() )
+                .append( ".class, id );" );
+
+        lookup.setBody( body.toString() );
     }
 
     private void addTypeSignature( final SourceGenerationContext context,
