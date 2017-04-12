@@ -55,7 +55,8 @@ public class FlowPartProvider implements SelectorDataProvider {
             .projectEntityNames( context )
             .flatMap( entityName ->
                 Stream.of(
-                          "Load" + entityName,
+                          "Lookup" + entityName,
+                          "Load" + entityName + "List",
                           "Save" + entityName,
                           "Update" + entityName,
                           "Delete" + entityName,

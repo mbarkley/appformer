@@ -22,6 +22,8 @@ import static org.jboss.errai.common.client.dom.DOMUtil.removeFromParent;
 import static org.kie.appformer.flow.api.CrudOperation.CREATE;
 import static org.kie.appformer.flow.api.FormOperation.CANCEL;
 import static org.kie.appformer.flow.api.FormOperation.SUBMIT;
+import static org.kie.appformer.flow.api.NetworkOperation.FAILURE;
+import static org.kie.appformer.flow.api.NetworkOperation.SUCCESS;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -31,6 +33,7 @@ import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import org.jboss.errai.common.client.api.Caller;
+import org.jboss.errai.common.client.api.ErrorCallback;
 import org.jboss.errai.common.client.api.IsElement;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.kie.appformer.flow.api.AppFlow;
@@ -38,6 +41,7 @@ import org.kie.appformer.flow.api.AppFlowFactory;
 import org.kie.appformer.flow.api.Command;
 import org.kie.appformer.flow.api.CrudOperation;
 import org.kie.appformer.flow.api.FormOperation;
+import org.kie.appformer.flow.api.NetworkOperation;
 import org.kie.appformer.flow.api.Step;
 import org.kie.appformer.flow.api.UIComponent;
 import org.kie.appformer.flow.api.Unit;
@@ -50,6 +54,8 @@ import org.kie.appformer.formmodeler.rendering.client.view.StandaloneFormWrapper
 import org.kie.appformer.formmodeler.rendering.client.view.UIComponentCleanUpWrapper;
 import org.kie.workbench.common.forms.crud.client.component.formDisplay.FormDisplayer.FormDisplayerCallback;
 import org.kie.workbench.common.forms.crud.client.component.formDisplay.modal.ModalFormDisplayer;
+
+import com.google.gwt.http.client.Response;
 
 public abstract class FlowProducer<MODEL,
                                    FORM_MODEL extends FormModel<MODEL>,
@@ -149,6 +155,34 @@ public abstract class FlowProducer<MODEL,
             public void execute( final Unit input,
                                  final Consumer<FlowDataProvider<MODEL>> callback ) {
                 callback.accept( new RestCallerDataProvider<>( restService ) );
+            }
+
+            @Override
+            public String getName() {
+                return "LoadList";
+            }
+        };
+    }
+
+    public Step<Long, Command<NetworkOperation, MODEL>> lookup() {
+        return new Step<Long, Command<NetworkOperation,MODEL>>() {
+
+            @Override
+            public void execute( final Long id,
+                                 final Consumer<Command<NetworkOperation, MODEL>> callback ) {
+                restService.call( (final MODEL model) -> {
+                    if ( model != null ) {
+                        callback.accept( new Command<>( SUCCESS, model ) );
+                    }
+                    else {
+                        // The flow engine doens't handle nulls so we put a dummy value here.
+                        callback.accept( new Command<>( FAILURE, newModel() ) );
+                    }
+                }, (ErrorCallback<Response>) ( final Response r, final Throwable t) -> {
+                    // The flow engine doens't handle nulls so we put a dummy value here.
+                    callback.accept( new Command<>( FAILURE, newModel() ) );
+                    return true;
+                } ).lookup( id );
             }
 
             @Override
