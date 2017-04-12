@@ -21,8 +21,8 @@ import javax.enterprise.context.ApplicationScoped;
 import org.jboss.errai.common.client.api.annotations.NonPortable;
 import org.jboss.errai.databinding.client.api.Bindable;
 import org.kie.appformer.flowset.api.definition.DecisionGateway;
-import org.kie.appformer.flowset.api.definition.FlowPart;
-import org.kie.appformer.flowset.api.definition.FormPart;
+import org.kie.appformer.flowset.api.definition.SimpleStep;
+import org.kie.appformer.flowset.api.definition.FormStep;
 import org.kie.appformer.flowset.api.definition.JoinGateway;
 import org.kie.appformer.flowset.api.definition.MatcherGateway;
 import org.kie.appformer.flowset.api.definition.MultiStep;
@@ -40,8 +40,8 @@ import org.kie.workbench.common.stunner.core.rule.annotation.Occurrences;
 @DefinitionSet(
         graphFactory = FlowGraphFactory.class,
         definitions = {
-                FlowPart.class,
-                FormPart.class,
+                SimpleStep.class,
+                FormStep.class,
                 MultiStep.class,
                 StartNoneEvent.class,
                 DecisionGateway.class,

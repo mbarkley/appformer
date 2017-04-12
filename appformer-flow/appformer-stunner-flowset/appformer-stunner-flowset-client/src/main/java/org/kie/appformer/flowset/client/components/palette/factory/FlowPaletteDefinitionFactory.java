@@ -24,7 +24,7 @@ import javax.inject.Inject;
 
 import org.kie.appformer.flowset.api.FlowDefinitionSet;
 import org.kie.appformer.flowset.api.definition.BaseGateway;
-import org.kie.appformer.flowset.api.definition.BasePart;
+import org.kie.appformer.flowset.api.definition.BaseStep;
 import org.kie.appformer.flowset.api.definition.Categories;
 import org.kie.appformer.flowset.api.definition.DecisionGateway;
 import org.kie.appformer.flowset.api.definition.MultiStep;
@@ -63,7 +63,7 @@ public class FlowPaletteDefinitionFactory extends BindableDefSetPaletteDefinitio
     }};
 
     private static final Map<String, String> MORPH_GROUP_TITLES = new HashMap<String, String>() {{
-        put(BasePart.class.getName(),
+        put(BaseStep.class.getName(),
             "Tasks");
         put(BaseGateway.class.getName(),
             "Gateways");

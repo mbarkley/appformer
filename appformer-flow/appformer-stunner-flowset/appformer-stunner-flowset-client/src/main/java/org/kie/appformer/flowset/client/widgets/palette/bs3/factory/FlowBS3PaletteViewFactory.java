@@ -25,8 +25,8 @@ import javax.inject.Inject;
 import org.kie.appformer.flowset.api.FlowDefinitionSet;
 import org.kie.appformer.flowset.api.definition.Categories;
 import org.kie.appformer.flowset.api.definition.DecisionGateway;
-import org.kie.appformer.flowset.api.definition.FlowPart;
-import org.kie.appformer.flowset.api.definition.FormPart;
+import org.kie.appformer.flowset.api.definition.SimpleStep;
+import org.kie.appformer.flowset.api.definition.FormStep;
 import org.kie.appformer.flowset.api.definition.JoinGateway;
 import org.kie.appformer.flowset.api.definition.MatcherGateway;
 import org.kie.appformer.flowset.api.definition.MultiStep;
@@ -56,9 +56,9 @@ public class FlowBS3PaletteViewFactory extends BindableBS3PaletteGlyphViewFactor
     }};
 
     private final static Map<String, IconResource> DEFINITION_RERNDERERS_SETTINGS = new HashMap<String, IconResource>() {{
-        put(FlowPart.class.getName(),
+        put(SimpleStep.class.getName(),
             new IconResource(FlowImageResources.INSTANCE.taskBusinessRule()));
-        put(FormPart.class.getName(),
+        put(FormStep.class.getName(),
             new IconResource(FlowImageResources.INSTANCE.taskScript()));
         put(StartNoneEvent.class.getName(),
             new IconResource(FlowImageResources.INSTANCE.eventStart()));

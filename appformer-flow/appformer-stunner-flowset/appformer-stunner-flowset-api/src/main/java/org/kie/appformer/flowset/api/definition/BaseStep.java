@@ -32,7 +32,7 @@ import org.kie.workbench.common.stunner.core.definition.annotation.definition.Ca
 import org.kie.workbench.common.stunner.core.definition.annotation.definition.Labels;
 import org.kie.workbench.common.stunner.core.definition.builder.Builder;
 
-public abstract class BasePart implements FlowDefinition {
+public abstract class BaseStep implements FlowDefinition {
 
     @Category
     public static final transient String category = Categories.ACTIVITIES;
@@ -62,7 +62,7 @@ public abstract class BasePart implements FlowDefinition {
     }};
 
     @NonPortable
-    static abstract class BasePartBuilder<T extends BasePart> implements Builder<T> {
+    static abstract class BasePartBuilder<T extends BaseStep> implements Builder<T> {
 
         public static final String COLOR = "#f9fad2";
         public static final Double WIDTH = 136d;
@@ -71,10 +71,10 @@ public abstract class BasePart implements FlowDefinition {
         public static final String BORDER_COLOR = "#000000";
     }
 
-    protected BasePart() {
+    protected BaseStep() {
     }
 
-    public BasePart(final BackgroundSet backgroundSet,
+    public BaseStep(final BackgroundSet backgroundSet,
                     final FontSet fontSet,
                     final RectangleDimensionsSet dimensionsSet) {
         this.backgroundSet = backgroundSet;

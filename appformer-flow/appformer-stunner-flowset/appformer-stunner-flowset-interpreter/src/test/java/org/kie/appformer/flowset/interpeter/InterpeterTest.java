@@ -50,8 +50,8 @@ import org.kie.appformer.flow.api.Unit;
 import org.kie.appformer.flow.impl.RuntimeAppFlowExecutor;
 import org.kie.appformer.flow.impl.RuntimeAppFlowFactory;
 import org.kie.appformer.flowset.api.definition.DecisionGateway;
-import org.kie.appformer.flowset.api.definition.FlowPart;
-import org.kie.appformer.flowset.api.definition.FormPart;
+import org.kie.appformer.flowset.api.definition.SimpleStep;
+import org.kie.appformer.flowset.api.definition.FormStep;
 import org.kie.appformer.flowset.api.definition.JoinGateway;
 import org.kie.appformer.flowset.api.definition.MatcherGateway;
 import org.kie.appformer.flowset.api.definition.MultiStep;
@@ -129,9 +129,9 @@ public class InterpeterTest {
         flowParts.put( "double", flowFactory.buildFromFunction( (final Integer x) -> 2*x ) );
         flowParts.put( "toString", flowFactory.buildFromFunction( Object::toString ) );
         final NodeImpl<View<StartNoneEvent>> start = addNode( start() );
-        final NodeImpl<View<FlowPart>> one = addNode( flowPartWithName( "one" ) );
-        final NodeImpl<View<FlowPart>> doubleNode = addNode( flowPartWithName( "double" ) );
-        final NodeImpl<View<FlowPart>> toString = addNode( flowPartWithName( "toString" ) );
+        final NodeImpl<View<SimpleStep>> one = addNode( flowPartWithName( "one" ) );
+        final NodeImpl<View<SimpleStep>> doubleNode = addNode( flowPartWithName( "double" ) );
+        final NodeImpl<View<SimpleStep>> toString = addNode( flowPartWithName( "toString" ) );
         sequence( start, one );
         sequence( one, doubleNode );
         sequence( doubleNode, toString );
@@ -159,9 +159,9 @@ public class InterpeterTest {
         final NodeImpl<View<MatcherGateway>> createMatcher = addNode( matcherWithOperation( CREATE ) );
         final NodeImpl<View<MatcherGateway>> updateMatcher = addNode( matcherWithOperation( UPDATE ) );
         final NodeImpl<View<MatcherGateway>> deleteMatcher = addNode( matcherWithOperation( DELETE ) );
-        final NodeImpl<View<FlowPart>> one = addNode( flowPartWithName( "one" ) );
-        final NodeImpl<View<FlowPart>> two = addNode( flowPartWithName( "two" ) );
-        final NodeImpl<View<FlowPart>> three = addNode( flowPartWithName( "three" ) );
+        final NodeImpl<View<SimpleStep>> one = addNode( flowPartWithName( "one" ) );
+        final NodeImpl<View<SimpleStep>> two = addNode( flowPartWithName( "two" ) );
+        final NodeImpl<View<SimpleStep>> three = addNode( flowPartWithName( "three" ) );
         final NodeImpl<View<JoinGateway>> join = addNode( join() );
         sequence( start, decision );
         sequence( decision, createMatcher );
@@ -195,8 +195,8 @@ public class InterpeterTest {
         final NodeImpl<View<DecisionGateway>> decision = addNode( decision() );
         final NodeImpl<View<MatcherGateway>> oneMatcher = addNode( matcherWithOperation( ONE ) );
         final NodeImpl<View<MatcherGateway>> twoMatcher = addNode( matcherWithOperation( TWO ) );
-        final NodeImpl<View<FlowPart>> one = addNode( flowPartWithName( "one" ) );
-        final NodeImpl<View<FlowPart>> two = addNode( flowPartWithName( "two" ) );
+        final NodeImpl<View<SimpleStep>> one = addNode( flowPartWithName( "one" ) );
+        final NodeImpl<View<SimpleStep>> two = addNode( flowPartWithName( "two" ) );
         final NodeImpl<View<JoinGateway>> join = addNode( join() );
         sequence( start, decision );
         sequence( decision, oneMatcher );
@@ -226,14 +226,14 @@ public class InterpeterTest {
         flowParts.put( "two", flowFactory.buildFromFunction( (final String s) -> "two:" + s ) );
         flowParts.put( "three", flowFactory.buildFromFunction( (final String s) -> "three:" + s ) );
         final NodeImpl<View<StartNoneEvent>> start = addNode( start() );
-        final NodeImpl<View<FlowPart>> toCommand = addNode( flowPartWithName( "toCommand" ) );
+        final NodeImpl<View<SimpleStep>> toCommand = addNode( flowPartWithName( "toCommand" ) );
         final NodeImpl<View<DecisionGateway>> decision = addNode( decision() );
         final NodeImpl<View<MatcherGateway>> createMatcher = addNode( matcherWithOperation( CREATE ) );
         final NodeImpl<View<MatcherGateway>> updateMatcher = addNode( matcherWithOperation( UPDATE ) );
         final NodeImpl<View<MatcherGateway>> deleteMatcher = addNode( matcherWithOperation( DELETE ) );
-        final NodeImpl<View<FlowPart>> one = addNode( flowPartWithName( "one" ) );
-        final NodeImpl<View<FlowPart>> two = addNode( flowPartWithName( "two" ) );
-        final NodeImpl<View<FlowPart>> three = addNode( flowPartWithName( "three" ) );
+        final NodeImpl<View<SimpleStep>> one = addNode( flowPartWithName( "one" ) );
+        final NodeImpl<View<SimpleStep>> two = addNode( flowPartWithName( "two" ) );
+        final NodeImpl<View<SimpleStep>> three = addNode( flowPartWithName( "three" ) );
         sequence( start, toCommand );
         sequence( toCommand, decision );
         sequence( decision, createMatcher );
@@ -266,9 +266,9 @@ public class InterpeterTest {
         final NodeImpl<View<MatcherGateway>> createMatcher = addNode( matcherWithOperation( CREATE ) );
         final NodeImpl<View<MatcherGateway>> updateMatcher = addNode( matcherWithOperation( UPDATE ) );
         final NodeImpl<View<MatcherGateway>> deleteMatcher = addNode( matcherWithOperation( DELETE ) );
-        final NodeImpl<View<FlowPart>> one = addNode( flowPartWithName( "one" ) );
-        final NodeImpl<View<FlowPart>> two = addNode( flowPartWithName( "two" ) );
-        final NodeImpl<View<FlowPart>> three = addNode( flowPartWithName( "three" ) );
+        final NodeImpl<View<SimpleStep>> one = addNode( flowPartWithName( "one" ) );
+        final NodeImpl<View<SimpleStep>> two = addNode( flowPartWithName( "two" ) );
+        final NodeImpl<View<SimpleStep>> three = addNode( flowPartWithName( "three" ) );
         final NodeImpl<View<JoinGateway>> join = addNode( join() );
         sequence( start, decision );
         sequence( decision, createMatcher );
@@ -319,11 +319,11 @@ public class InterpeterTest {
         formSteps.put( "primaryAddress", primaryUI );
         formSteps.put( "mailAddress", mailUI );
         final NodeImpl<View<StartNoneEvent>> start = addNode( start() );
-        final NodeImpl<View<FlowPart>> newUser = addNode( flowPartWithName( "newUser" ) );
+        final NodeImpl<View<SimpleStep>> newUser = addNode( flowPartWithName( "newUser" ) );
         final NodeImpl<View<MultiStep>> multi = addNode( multiStep() );
-        final NodeImpl<View<FormPart>> nameStep = addNode( formPart( "name", "name" ) );
-        final NodeImpl<View<FormPart>> primaryStep = addNode( formPart( "primaryAddress", "primary" ) );
-        final NodeImpl<View<FormPart>> mailingStep = addNode( formPart( "mailAddress", "mailing" ) );
+        final NodeImpl<View<FormStep>> nameStep = addNode( formPart( "name", "name" ) );
+        final NodeImpl<View<FormStep>> primaryStep = addNode( formPart( "primaryAddress", "primary" ) );
+        final NodeImpl<View<FormStep>> mailingStep = addNode( formPart( "mailAddress", "mailing" ) );
         sequence( start, newUser );
         sequence( newUser, nameStep );
         sequence( nameStep, primaryStep );
@@ -377,11 +377,11 @@ public class InterpeterTest {
         formSteps.put( "primaryAddress", primaryUI );
         formSteps.put( "mailAddress", mailUI );
         final NodeImpl<View<StartNoneEvent>> start = addNode( start() );
-        final NodeImpl<View<FlowPart>> newUser = addNode( flowPartWithName( "newUser" ) );
+        final NodeImpl<View<SimpleStep>> newUser = addNode( flowPartWithName( "newUser" ) );
         final NodeImpl<View<MultiStep>> multi = addNode( multiStep() );
-        final NodeImpl<View<FormPart>> nameStep = addNode( formPart( "name", "name" ) );
-        final NodeImpl<View<FormPart>> primaryStep = addNode( formPart( "primaryAddress", "primary" ) );
-        final NodeImpl<View<FormPart>> mailingStep = addNode( formPart( "mailAddress", "mailing" ) );
+        final NodeImpl<View<FormStep>> nameStep = addNode( formPart( "name", "name" ) );
+        final NodeImpl<View<FormStep>> primaryStep = addNode( formPart( "primaryAddress", "primary" ) );
+        final NodeImpl<View<FormStep>> mailingStep = addNode( formPart( "mailAddress", "mailing" ) );
         sequence( start, newUser );
         sequence( newUser, nameStep );
         sequence( nameStep, primaryStep );
@@ -442,11 +442,11 @@ public class InterpeterTest {
         formSteps.put( "primaryAddress", primaryUI );
         formSteps.put( "mailAddress", mailUI );
         final NodeImpl<View<StartNoneEvent>> start = addNode( start() );
-        final NodeImpl<View<FlowPart>> newUser = addNode( flowPartWithName( "newUser" ) );
+        final NodeImpl<View<SimpleStep>> newUser = addNode( flowPartWithName( "newUser" ) );
         final NodeImpl<View<MultiStep>> multi = addNode( multiStep() );
-        final NodeImpl<View<FormPart>> nameStep = addNode( formPart( "name", "name" ) );
-        final NodeImpl<View<FormPart>> primaryStep = addNode( formPart( "primaryAddress", "primary" ) );
-        final NodeImpl<View<FormPart>> mailingStep = addNode( formPart( "mailAddress", "mailing" ) );
+        final NodeImpl<View<FormStep>> nameStep = addNode( formPart( "name", "name" ) );
+        final NodeImpl<View<FormStep>> primaryStep = addNode( formPart( "primaryAddress", "primary" ) );
+        final NodeImpl<View<FormStep>> mailingStep = addNode( formPart( "mailAddress", "mailing" ) );
         sequence( start, newUser );
         sequence( newUser, nameStep );
         sequence( nameStep, primaryStep );
@@ -472,8 +472,8 @@ public class InterpeterTest {
         assertEquals( expected.toString(), observed.value.toString() );
     }
 
-    private FormPart formPart( final String name, final String property ) {
-        final FormPart part = new FormPart.FormPartBuilder().build();
+    private FormStep formPart( final String name, final String property ) {
+        final FormStep part = new FormStep.FormPartBuilder().build();
         part.setName( new Name( name ) );
         part.setProperty( new PropertyExpression( property ) );
 
@@ -504,8 +504,8 @@ public class InterpeterTest {
         return new StartNoneEvent.StartNoneEventBuilder().build();
     }
 
-    private FlowPart flowPartWithName( final String name ) {
-        final FlowPart part = new FlowPart.FlowPartBuilder().build();
+    private SimpleStep flowPartWithName( final String name ) {
+        final SimpleStep part = new SimpleStep.FlowPartBuilder().build();
         part.setName( new Name( name ) );
         return part;
     }

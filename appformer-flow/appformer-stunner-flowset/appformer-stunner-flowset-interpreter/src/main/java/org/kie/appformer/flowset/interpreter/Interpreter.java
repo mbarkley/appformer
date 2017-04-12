@@ -42,11 +42,11 @@ import org.kie.appformer.flow.api.Sequenced;
 import org.kie.appformer.flow.api.Step;
 import org.kie.appformer.flow.api.UIComponent;
 import org.kie.appformer.flowset.api.definition.DecisionGateway;
-import org.kie.appformer.flowset.api.definition.FlowPart;
-import org.kie.appformer.flowset.api.definition.FormPart;
+import org.kie.appformer.flowset.api.definition.FormStep;
 import org.kie.appformer.flowset.api.definition.JoinGateway;
 import org.kie.appformer.flowset.api.definition.MatcherGateway;
 import org.kie.appformer.flowset.api.definition.MultiStep;
+import org.kie.appformer.flowset.api.definition.SimpleStep;
 import org.kie.appformer.flowset.api.definition.StartNoneEvent;
 import org.kie.workbench.common.stunner.core.graph.Edge;
 import org.kie.workbench.common.stunner.core.graph.Graph;
@@ -101,12 +101,12 @@ public class Interpreter<V extends Sequenced> {
         flows.push( factory.buildFromFunction( Function.identity() ) );
         while ( curNode != null ) {
             final Object content = getContent( curNode );
-            if ( content instanceof FlowPart ) {
+            if ( content instanceof SimpleStep ) {
                 curNode = processFlowPart( curNode,
                                            flows,
-                                           (FlowPart) content );
-            } else if ( content instanceof FormPart ) {
-                curNode = processFormPart( curNode, flows, (FormPart) content );
+                                           (SimpleStep) content );
+            } else if ( content instanceof FormStep ) {
+                curNode = processFormStep( curNode, flows, (FormStep) content );
             } else if ( content instanceof DecisionGateway ) {
                 curNode = processDecisionGateway( curNode,
                                                   flows,
@@ -138,11 +138,11 @@ public class Interpreter<V extends Sequenced> {
         return flows.peek();
     }
 
-    private Node<?, Edge> processFormPart( final Node<?, Edge> firstStep,
+    private Node<?, Edge> processFormStep( final Node<?, Edge> firstStep,
                                            final Deque<AppFlow> flows,
-                                           final FormPart content ) {
-        final List<FormPart> formSequence = getFormStepSequence( firstStep );
-        final List<FormStep> steps = getFormSteps( formSequence );
+                                           final FormStep content ) {
+        final List<FormStep> formSequence = getFormStepSequence( firstStep );
+        final List<FormStepWrapper> steps = getFormStepWrappers( formSequence );
         final List<String> properties = getStepPropertyExpressions( formSequence );
 
         final AppFlow<Object, Object> multiStepFlow = createMultiStepFlow( steps, properties );
@@ -152,7 +152,7 @@ public class Interpreter<V extends Sequenced> {
         return getNodeAfterMultiStepForm( firstStep );
     }
 
-    private AppFlow<Object, Object> createMultiStepFlow( final List<FormStep> steps, final List<String> properties ) {
+    private AppFlow<Object, Object> createMultiStepFlow( final List<FormStepWrapper> steps, final List<String> properties ) {
         @SuppressWarnings( { "unchecked", "rawtypes" } )
         final AppFlow<Object, Object> multiStepFlow = factory
                 .buildFromTransition( multiModel -> {
@@ -169,7 +169,7 @@ public class Interpreter<V extends Sequenced> {
                     final List<AppFlow> formFlows = new ArrayList<>();
                     for ( int i = 0; i < steps.size(); i++ ) {
                         final Object model = stepModels.get( i );
-                        final FormStep step = steps.get( i );
+                        final FormStepWrapper step = steps.get( i );
                         final int flowIndex = i;
                         formFlows.add( factory
                             .buildFromConstant( model )
@@ -260,7 +260,7 @@ public class Interpreter<V extends Sequenced> {
         }
     }
 
-    private List<String> getStepPropertyExpressions( final List<FormPart> formSequence ) {
+    private List<String> getStepPropertyExpressions( final List<FormStep> formSequence ) {
         final List<String> properties = formSequence
         .stream()
         .map( step -> step.getProperty().getValue() )
@@ -268,14 +268,14 @@ public class Interpreter<V extends Sequenced> {
         return properties;
     }
 
-    private List<FormStep> getFormSteps( final List<FormPart> formSequence ) {
-        final List<FormStep> steps = formSequence
+    private List<FormStepWrapper> getFormStepWrappers( final List<FormStep> formSequence ) {
+        final List<FormStepWrapper> steps = formSequence
         .stream()
         .map( step -> step.getName().getValue() )
         .map( name -> formSteps
               .apply( name )
               .orElseThrow( () -> new IllegalArgumentException( "Unrecognized component [" + name + "]." ) ) )
-        .map( c -> new FormStep( c ) )
+        .map( c -> new FormStepWrapper( c ) )
         .collect( toList() );
 
         ((Sequenced) steps.get( 0 ).component.asComponent()).setStart();
@@ -285,23 +285,23 @@ public class Interpreter<V extends Sequenced> {
 
     private Node<?, Edge> getNodeAfterMultiStepForm( Node<?, Edge> cur ) {
         final Node parent = getParentMultiStep( cur );
-        while ( cur != null && getContent( cur ) instanceof FormPart && getParentMultiStep( cur ) == parent ) {
+        while ( cur != null && getContent( cur ) instanceof FormStep && getParentMultiStep( cur ) == parent ) {
             cur = getNextNodeViaSingleEdge( cur ).orElse( null );
         }
 
         return cur;
     }
 
-    private List<FormPart> getFormStepSequence( final Node<?, Edge> firstStep ) {
-        final List<FormPart> formSequence = new ArrayList<>();
+    private List<FormStep> getFormStepSequence( final Node<?, Edge> firstStep ) {
+        final List<FormStep> formSequence = new ArrayList<>();
         Node<?, Edge> cur = firstStep;
         final Node multi = getParentMultiStep( cur );
         while ( cur != null ) {
             final Node curParent = getParentMultiStep( cur );
             if ( curParent == multi ) {
-                formSequence.add( (FormPart) getContent( cur ) );
+                formSequence.add( (FormStep) getContent( cur ) );
                 cur = getNextNodeViaSingleEdge( cur )
-                        .filter( node -> getContent( node ) instanceof FormPart )
+                        .filter( node -> getContent( node ) instanceof FormStep )
                         .orElse( null );
             }
             else {
@@ -420,7 +420,7 @@ public class Interpreter<V extends Sequenced> {
 
     private Node<?, Edge> processFlowPart( Node<?, Edge> curNode,
                                            final Deque<AppFlow> flows,
-                                           final FlowPart content ) {
+                                           final SimpleStep content ) {
         final String name = content.getName().getValue();
         final AppFlow<?, ?> flow = flowParts.get( name );
         if ( flow != null ) {
@@ -482,9 +482,9 @@ public class Interpreter<V extends Sequenced> {
         }
     }
 
-    private class FormStep<M> implements Step<M, Command<FormOperation, M>> {
+    private class FormStepWrapper<M> implements Step<M, Command<FormOperation, M>> {
         private final UIComponent<M, Command<FormOperation, M>, ? extends V> component;
-        public FormStep( final UIComponent<M, Command<FormOperation, M>, ? extends V> component ) {
+        public FormStepWrapper( final UIComponent<M, Command<FormOperation, M>, ? extends V> component ) {
             this.component = component;
         }
 

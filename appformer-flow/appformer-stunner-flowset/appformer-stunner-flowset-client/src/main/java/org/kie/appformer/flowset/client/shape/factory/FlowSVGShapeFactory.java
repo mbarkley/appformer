@@ -21,8 +21,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.kie.appformer.flowset.api.definition.DecisionGateway;
-import org.kie.appformer.flowset.api.definition.FlowPart;
-import org.kie.appformer.flowset.api.definition.FormPart;
+import org.kie.appformer.flowset.api.definition.SimpleStep;
+import org.kie.appformer.flowset.api.definition.FormStep;
 import org.kie.appformer.flowset.api.definition.JoinGateway;
 import org.kie.appformer.flowset.api.definition.MatcherGateway;
 import org.kie.appformer.flowset.api.definition.MultiStep;
@@ -70,11 +70,11 @@ public class FlowSVGShapeFactory extends DelegateShapeFactory<Object, AbstractCa
         addDelegate( svgShapeFactory );
         addDelegate( basicShapesFactory );
         // Register the shapes and definitions.
-        svgShapeFactory.addShapeDef( FlowPart.class,
+        svgShapeFactory.addShapeDef( SimpleStep.class,
                                      new FlowPartShapeDef() );
         svgShapeFactory.addShapeDef( StartNoneEvent.class,
                                      new StartNoneEventShapeDef() );
-        svgShapeFactory.addShapeDef( FormPart.class,
+        svgShapeFactory.addShapeDef( FormStep.class,
                                      new FlowPartShapeDef() );
         svgShapeFactory.addShapeDef( DecisionGateway.class,
                                      new GatewayShapeDef() );

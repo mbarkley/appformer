@@ -24,7 +24,6 @@ import org.jboss.errai.databinding.client.api.Bindable;
 import org.kie.appformer.flowset.api.definition.property.background.BackgroundSet;
 import org.kie.appformer.flowset.api.definition.property.dimensions.RectangleDimensionsSet;
 import org.kie.appformer.flowset.api.definition.property.font.FontSet;
-import org.kie.appformer.flowset.api.definition.property.form.PropertyExpression;
 import org.kie.appformer.flowset.api.definition.property.general.Name;
 import org.kie.workbench.common.forms.adf.definitions.annotations.FormDefinition;
 import org.kie.workbench.common.forms.adf.definitions.annotations.FormField;
@@ -32,7 +31,6 @@ import org.kie.workbench.common.forms.adf.definitions.annotations.field.selector
 import org.kie.workbench.common.forms.adf.definitions.annotations.field.selector.SelectorDataProvider.ProviderType;
 import org.kie.workbench.common.forms.adf.definitions.settings.FieldPolicy;
 import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.selectors.listBox.type.ListBoxFieldType;
-import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.textBox.type.TextBoxFieldType;
 import org.kie.workbench.common.stunner.core.definition.annotation.Definition;
 import org.kie.workbench.common.stunner.core.definition.annotation.Property;
 import org.kie.workbench.common.stunner.core.definition.annotation.definition.Title;
@@ -40,71 +38,57 @@ import org.kie.workbench.common.stunner.core.factory.graph.NodeFactory;
 
 @Portable
 @Bindable
-@Definition(graphFactory = NodeFactory.class, builder = FormPart.FormPartBuilder.class)
+@Definition(graphFactory = NodeFactory.class, builder = SimpleStep.FlowPartBuilder.class)
 @FormDefinition(
         startElement = "general",
         policy = FieldPolicy.ONLY_MARKED
 )
-public class FormPart extends BasePart {
+public class SimpleStep extends BaseStep {
 
     @Title
-    public static final transient String title = "Form Part";
+    public static final transient String title = "Simple Step";
 
     @NonPortable
-    public static class FormPartBuilder extends BasePartBuilder<FormPart> {
+    public static class FlowPartBuilder extends BasePartBuilder<SimpleStep> {
 
         @Override
-        public FormPart build() {
-            return new FormPart( new Name( "Form Part" ),
-                                 new PropertyExpression(),
-                                 new BackgroundSet( COLOR,
-                                                    BORDER_COLOR,
-                                                    BORDER_SIZE ),
-                                 new FontSet(),
-                                 new RectangleDimensionsSet( WIDTH,
-                                                             HEIGHT ) );
+        public SimpleStep build() {
+            return new SimpleStep(new Name("Simple Step"),
+                                        new BackgroundSet(COLOR,
+                                                          BORDER_COLOR,
+                                                          BORDER_SIZE),
+                                        new FontSet(),
+                                        new RectangleDimensionsSet(WIDTH,
+                                                                   HEIGHT)
+            );
         }
     }
 
     @Property
     @FormField(type = ListBoxFieldType.class)
     @SelectorDataProvider(
-                          className = "org.kie.appformer.flowset.backend.FormPartProvider",
+                          className = "org.kie.appformer.flowset.backend.FlowPartProvider",
                           type = ProviderType.REMOTE
                          )
     @Valid
     private Name name;
 
-    @Property
-    @FormField(type = TextBoxFieldType.class)
-    private PropertyExpression property;
-
     {
-        labels.add( "form_step" );
+        labels.add( "flow_step" );
     }
 
-    public FormPart() {
+    public SimpleStep() {
         super();
     }
 
-    public FormPart( final @MapsTo( "name" ) Name name,
-                     final @MapsTo( "property" ) PropertyExpression property,
-                     final @MapsTo( "backgroundSet" ) BackgroundSet backgroundSet,
-                     final @MapsTo( "fontSet" ) FontSet fontSet,
-                     final @MapsTo( "dimensionsSet" ) RectangleDimensionsSet dimensionsSet ) {
+    public SimpleStep(final @MapsTo("name") Name name,
+                            final @MapsTo("backgroundSet") BackgroundSet backgroundSet,
+                            final @MapsTo("fontSet") FontSet fontSet,
+                            final @MapsTo("dimensionsSet") RectangleDimensionsSet dimensionsSet) {
         super(backgroundSet,
               fontSet,
               dimensionsSet);
         this.name = name;
-        this.property = property;
-    }
-
-    public void setProperty( final PropertyExpression property ) {
-        this.property = property;
-    }
-
-    public PropertyExpression getProperty() {
-        return property;
     }
 
     public String getTitle() {
