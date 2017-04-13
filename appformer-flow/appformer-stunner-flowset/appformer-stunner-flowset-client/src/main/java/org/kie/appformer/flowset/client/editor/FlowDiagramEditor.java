@@ -20,13 +20,9 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
-import com.google.gwt.user.client.ui.IsWidget;
-import com.google.gwt.user.client.ui.Widget;
-
 import org.kie.appformer.flowset.api.factory.FlowGraphFactory;
 import org.kie.appformer.flowset.client.type.FlowDiagramResourceType;
 import org.kie.workbench.common.stunner.client.widgets.presenters.session.SessionPresenterFactory;
-import org.kie.workbench.common.stunner.client.widgets.views.session.ScreenErrorView;
 import org.kie.workbench.common.stunner.core.client.api.SessionManager;
 import org.kie.workbench.common.stunner.core.client.session.command.impl.SessionCommandFactory;
 import org.kie.workbench.common.stunner.core.client.session.impl.AbstractClientFullSession;
@@ -55,6 +51,9 @@ import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.workbench.model.menu.Menus;
 
+import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Widget;
+
 @Dependent
 @WorkbenchEditor(identifier = FlowDiagramEditor.EDITOR_ID, supportedTypes = {FlowDiagramResourceType.class})
 public class FlowDiagramEditor extends AbstractProjectDiagramEditor<FlowDiagramResourceType> {
@@ -71,7 +70,6 @@ public class FlowDiagramEditor extends AbstractProjectDiagramEditor<FlowDiagramR
                              final ClientProjectDiagramService projectDiagramServices,
                              final SessionManager sessionManager,
                              final SessionPresenterFactory<Diagram, AbstractClientReadOnlySession, AbstractClientFullSession> sessionPresenterFactory,
-                             final ScreenErrorView editorErrorView,
                              final ClientSessionUtils sessionUtils,
                              final SessionCommandFactory sessionCommandFactory,
                              final ProjectDiagramEditorMenuItemsBuilder menuItemsBuilder) {
@@ -84,7 +82,6 @@ public class FlowDiagramEditor extends AbstractProjectDiagramEditor<FlowDiagramR
               projectDiagramServices,
               sessionManager,
               sessionPresenterFactory,
-              editorErrorView,
               sessionUtils,
               sessionCommandFactory,
               menuItemsBuilder);

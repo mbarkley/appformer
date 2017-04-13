@@ -45,8 +45,8 @@ import org.kie.workbench.common.stunner.core.rule.RuleManager;
 import org.kie.workbench.common.stunner.core.util.UUID;
 
 /**
- * The custom factory for BPMN graphs.
- * It initializes the BPMN graph with a new Diagram node instance, which represents the main process.
+ * The custom factory for Flow graphs.
+ * It initializes the Flow graph with a new Diagram node instance, which represents the main process.
  * This class uses the Commands API in order to avoid adding nodes/edges and setting bean values manually on the graph structure,
  * so this will avoid further errors, but in fact there should be not need to check runtime rules when executing
  * these commands.
@@ -127,5 +127,15 @@ public class FlowGraphFactoryImpl
                 factoryManager,
                 ruleManager,
                 index);
+    }
+
+    @Override
+    public boolean accepts( final String source ) {
+        return true;
+    }
+
+    @Override
+    protected DefinitionManager getDefinitionManager() {
+        return definitionManager;
     }
 }
