@@ -24,7 +24,7 @@ import org.kie.workbench.common.stunner.core.api.DefinitionManager;
 import org.kie.workbench.common.stunner.core.api.FactoryManager;
 import org.kie.workbench.common.stunner.core.command.impl.CompositeCommandImpl;
 import org.kie.workbench.common.stunner.core.factory.graph.ElementFactory;
-import org.kie.workbench.common.stunner.core.factory.impl.AbstractElementFactory;
+import org.kie.workbench.common.stunner.core.factory.impl.AbstractGraphFactory;
 import org.kie.workbench.common.stunner.core.graph.Edge;
 import org.kie.workbench.common.stunner.core.graph.Graph;
 import org.kie.workbench.common.stunner.core.graph.Node;
@@ -34,13 +34,8 @@ import org.kie.workbench.common.stunner.core.graph.command.GraphCommandManager;
 import org.kie.workbench.common.stunner.core.graph.command.impl.GraphCommandFactory;
 import org.kie.workbench.common.stunner.core.graph.content.definition.Definition;
 import org.kie.workbench.common.stunner.core.graph.content.definition.DefinitionSet;
-import org.kie.workbench.common.stunner.core.graph.content.definition.DefinitionSetImpl;
-import org.kie.workbench.common.stunner.core.graph.content.view.BoundImpl;
-import org.kie.workbench.common.stunner.core.graph.content.view.BoundsImpl;
-import org.kie.workbench.common.stunner.core.graph.impl.GraphImpl;
 import org.kie.workbench.common.stunner.core.graph.processing.index.GraphIndexBuilder;
 import org.kie.workbench.common.stunner.core.graph.processing.index.Index;
-import org.kie.workbench.common.stunner.core.graph.store.GraphNodeStoreImpl;
 import org.kie.workbench.common.stunner.core.rule.RuleManager;
 import org.kie.workbench.common.stunner.core.util.UUID;
 
@@ -53,8 +48,11 @@ import org.kie.workbench.common.stunner.core.util.UUID;
  */
 @ApplicationScoped
 public class FlowGraphFactoryImpl
-        extends AbstractElementFactory<String, DefinitionSet, Graph<DefinitionSet, Node>>
+        extends AbstractGraphFactory
         implements FlowGraphFactory {
+
+    private static final double INITIAL_X = 50d;
+    private static final double INITIAL_Y = 50d;
 
     private final DefinitionManager definitionManager;
     private final GraphCommandManager graphCommandManager;
@@ -70,6 +68,16 @@ public class FlowGraphFactoryImpl
              null,
              null,
              null);
+    }
+
+    @Override
+    protected double getWidth() {
+        return FlowGraphFactory.GRAPH_DEFAULT_WIDTH;
+    }
+
+    @Override
+    protected double getHeight() {
+        return FlowGraphFactory.GRAPH_DEFAULT_HEIGHT;
     }
 
     @Inject
@@ -96,31 +104,25 @@ public class FlowGraphFactoryImpl
     @SuppressWarnings("unchecked")
     public Graph<DefinitionSet, Node> build(final String uuid,
                                             final String definitionSetId) {
-        final GraphImpl graph = new GraphImpl<>(uuid,
-                                                new GraphNodeStoreImpl());
-        final DefinitionSet content = new DefinitionSetImpl(definitionSetId);
-        graph.setContent(content);
-        if (null == content.getBounds()) {
-            content.setBounds(new BoundsImpl(
-                    new BoundImpl(0d,
-                                  0d),
-                    new BoundImpl(FlowGraphFactory.GRAPH_DEFAULT_WIDTH,
-                                  FlowGraphFactory.GRAPH_DEFAULT_HEIGHT)
-            ));
-        }
-        final Node<Definition<StartNoneEvent>, Edge> startEventNode = (Node<Definition<StartNoneEvent>, Edge>) factoryManager.newElement(UUID.uuid(),
-                                                                                                                                   StartNoneEvent.class);
+        final Graph<DefinitionSet, Node> graph = super.build(uuid,
+                                                             definitionSetId);
+        final Node<Definition<StartNoneEvent>, Edge> startEventNode =
+                (Node<Definition<StartNoneEvent>, Edge>) factoryManager.newElement(UUID.uuid(),
+                                                                                   StartNoneEvent.class);
+        // Append an initial node and update its shape view's  location close to the canvas top left.
         graphCommandManager.execute(createGraphContext(graph),
                                     new CompositeCommandImpl.CompositeCommandBuilder()
-                                            .addCommand( graphCommandFactory.addNode( startEventNode ) )
+                                            .addCommand(graphCommandFactory.addNode(startEventNode))
+                                            .addCommand(graphCommandFactory.updatePosition(startEventNode,
+                                                                                           INITIAL_X,
+                                                                                           INITIAL_Y))
                                             .build()
         );
-
         return graph;
     }
 
     @SuppressWarnings("unchecked")
-    private GraphCommandExecutionContext createGraphContext(final GraphImpl graph) {
+    private GraphCommandExecutionContext createGraphContext(final Graph<DefinitionSet, Node> graph) {
         final Index<?, ?> index = (Index) indexBuilder.build(graph);
         return new EmptyRulesCommandExecutionContext(
                 definitionManager,
@@ -130,7 +132,7 @@ public class FlowGraphFactoryImpl
     }
 
     @Override
-    public boolean accepts( final String source ) {
+    public boolean accepts(final String source) {
         return true;
     }
 
@@ -139,3 +141,4 @@ public class FlowGraphFactoryImpl
         return definitionManager;
     }
 }
+
