@@ -176,12 +176,13 @@ public class Interpreter<V extends Sequenced> {
                             .andThen( step )
                             .transitionTo( o -> {
                                 final Command<FormOperation, Object> c = (Command<FormOperation, Object>) o;
-                                return interStepTransition( multiModel,
-                                                            workingMultiModel,
-                                                            formFlows,
-                                                            flowIndex,
-                                                            c );
-                                } ) );
+                                final Object o1 = interStepTransition(multiModel,
+                                                                workingMultiModel,
+                                                                formFlows,
+                                                                flowIndex,
+                                                                c);
+                                return (AppFlow) o1;
+                            } ) );
                     }
 
                     return formFlows.get( 0 );
@@ -272,10 +273,8 @@ public class Interpreter<V extends Sequenced> {
         final List<FormStepWrapper> steps = formSequence
         .stream()
         .map( step -> step.getName().getValue() )
-        .map( name -> formSteps
-              .apply( name )
-              .orElseThrow( () -> new IllegalArgumentException( "Unrecognized component [" + name + "]." ) ) )
-        .map( c -> new FormStepWrapper( c ) )
+        .map(formSteps::apply)
+        .map( c -> new FormStepWrapper( c.get() ) )
         .collect( toList() );
 
         ((Sequenced) steps.get( 0 ).component.asComponent()).setStart();
