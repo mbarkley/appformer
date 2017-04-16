@@ -32,6 +32,7 @@ import org.kie.appformer.provisioning.shared.AppReady;
 import org.kie.workbench.common.screens.search.client.menu.SearchMenuBuilder;
 import org.kie.workbench.common.screens.social.hp.config.SocialConfigurationService;
 import org.kie.workbench.common.services.shared.service.PlaceManagerActivityService;
+import org.kie.workbench.common.stunner.client.widgets.menu.dev.MenuDevCommandsBuilder;
 import org.kie.workbench.common.workbench.client.authz.PermissionTreeSetup;
 import org.kie.workbench.common.workbench.client.entrypoint.DefaultWorkbenchEntryPoint;
 import org.kie.workbench.common.workbench.client.menu.DefaultWorkbenchFeaturesMenusHelper;
@@ -71,6 +72,8 @@ public class AppFormerEntryPoint extends DefaultWorkbenchEntryPoint {
 
     protected PermissionTreeSetup permissionTreeSetup;
 
+    private MenuDevCommandsBuilder menuDevCommandsBuilder;
+
     @Inject
     public AppFormerEntryPoint( Caller<AppConfigService> appConfigService,
                                 Caller<PlaceManagerActivityService> pmas,
@@ -83,7 +86,8 @@ public class AppFormerEntryPoint extends DefaultWorkbenchEntryPoint {
                                 SyncBeanManager iocManager,
                                 Workbench workbench,
                                 PlaceManager placeManager,
-                                PermissionTreeSetup permissionTreeSetup ) {
+                                PermissionTreeSetup permissionTreeSetup,
+                                MenuDevCommandsBuilder menuDevCommandsBuilder) {
         super( appConfigService, pmas, activityBeansCache );
         this.homeProducer = homeProducer;
         this.socialConfigurationService = socialConfigurationService;
@@ -94,6 +98,7 @@ public class AppFormerEntryPoint extends DefaultWorkbenchEntryPoint {
         this.workbench = workbench;
         this.placeManager = placeManager;
         this.permissionTreeSetup = permissionTreeSetup;
+        this.menuDevCommandsBuilder = menuDevCommandsBuilder;
     }
 
     @PostConstruct
@@ -101,6 +106,7 @@ public class AppFormerEntryPoint extends DefaultWorkbenchEntryPoint {
         workbench.addStartupBlocker( AppFormerEntryPoint.class );
         homeProducer.init();
         permissionTreeSetup.configureTree();
+        enableStunnerDevLogging();
     }
 
     protected void onAppReady( @Observes AppReady appReady ) {
@@ -150,4 +156,14 @@ public class AppFormerEntryPoint extends DefaultWorkbenchEntryPoint {
 
         return result;
     }
+
+    /**
+     * Enables a menu option for the Stunner editor which
+     * provides some debugging features.
+     */
+    private void enableStunnerDevLogging() {
+        menuDevCommandsBuilder.enable();
+    }
+
 }
+
