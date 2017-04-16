@@ -59,20 +59,21 @@ public class MatcherGateway extends BaseGateway {
     public static class JoinGatewayBuilder extends BaseGatewayBuilder<MatcherGateway> {
 
         @Override
-        public MatcherGateway build() {
-            return new MatcherGateway(new FlowGeneralSet("Matcher"),
-                                       new BackgroundSet(COLOR,
-                                                         BORDER_COLOR,
-                                                         BORDER_SIZE),
-                                       new FontSet(),
-                                       new CircleDimensionSet(new Radius(RADIUS)),
-                                       new MatchedOperation());
+        protected String[] getAdditionalLabels() {
+            return new String[] { "linear_out", "linear_in" };
         }
-    }
 
-    {
-        labels.add( "linear_out" );
-        labels.add( "linear_in" );
+        @Override
+        protected MatcherGateway doBuild() {
+            return new MatcherGateway(new FlowGeneralSet("Matcher"),
+                                      new BackgroundSet(COLOR,
+                                                        BORDER_COLOR,
+                                                        BORDER_SIZE),
+                                      new FontSet(),
+                                      new CircleDimensionSet(new Radius(RADIUS)),
+                                      new MatchedOperation());
+        }
+
     }
 
     public MatcherGateway() {

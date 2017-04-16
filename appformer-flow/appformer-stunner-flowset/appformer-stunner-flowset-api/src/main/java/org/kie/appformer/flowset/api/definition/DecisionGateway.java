@@ -51,7 +51,12 @@ public class DecisionGateway extends BaseGateway {
     public static class DecisionGatewayBuilder extends BaseGatewayBuilder<DecisionGateway> {
 
         @Override
-        public DecisionGateway build() {
+        protected String[] getAdditionalLabels() {
+            return new String[] { "linear_in", "fan_out" };
+        }
+
+        @Override
+        protected DecisionGateway doBuild() {
             return new DecisionGateway(new FlowGeneralSet("Decision"),
                                        new BackgroundSet(COLOR,
                                                          BORDER_COLOR,
@@ -59,11 +64,7 @@ public class DecisionGateway extends BaseGateway {
                                        new FontSet(),
                                        new CircleDimensionSet(new Radius(RADIUS)));
         }
-    }
 
-    {
-        labels.add( "linear_in" );
-        labels.add( "fan_out" );
     }
 
     public DecisionGateway() {

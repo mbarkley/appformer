@@ -53,7 +53,7 @@ public class SimpleStep extends BaseStep {
 
         @Override
         public SimpleStep build() {
-            return new SimpleStep(new Name("Simple Step"),
+            final SimpleStep instance =new SimpleStep(new Name("Simple Step"),
                                         new BackgroundSet(COLOR,
                                                           BORDER_COLOR,
                                                           BORDER_SIZE),
@@ -61,6 +61,8 @@ public class SimpleStep extends BaseStep {
                                         new RectangleDimensionsSet(WIDTH,
                                                                    HEIGHT)
             );
+            instance.getLabels().add("flow_step");
+            return instance;
         }
     }
 
@@ -72,10 +74,6 @@ public class SimpleStep extends BaseStep {
                          )
     @Valid
     private Name name;
-
-    {
-        labels.add( "flow_step" );
-    }
 
     public SimpleStep() {
         super();

@@ -16,6 +16,7 @@
 
 package org.kie.appformer.flowset.api.definition;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -71,6 +72,17 @@ public abstract class BaseGateway implements FlowDefinition {
         public static final transient String BORDER_COLOR = "#000000";
         public static final Double BORDER_SIZE = 1d;
         public static final Double RADIUS = 20d;
+
+        protected abstract String[] getAdditionalLabels();
+
+        protected abstract T doBuild();
+
+        @Override
+        public T build() {
+            final T instance = doBuild();
+            instance.getLabels().addAll(Arrays.asList(getAdditionalLabels()));
+            return instance;
+        }
     }
 
     public BaseGateway() {

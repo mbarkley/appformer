@@ -51,19 +51,20 @@ public class JoinGateway extends BaseGateway {
     public static class JoinGatewayBuilder extends BaseGatewayBuilder<JoinGateway> {
 
         @Override
-        public JoinGateway build() {
-            return new JoinGateway(new FlowGeneralSet("Join"),
-                                       new BackgroundSet(COLOR,
-                                                         BORDER_COLOR,
-                                                         BORDER_SIZE),
-                                       new FontSet(),
-                                       new CircleDimensionSet(new Radius(RADIUS)));
+        protected String[] getAdditionalLabels() {
+            return new String[]{ "fan_in", "linear_out" };
         }
-    }
 
-    {
-        labels.add( "fan_in" );
-        labels.add( "linear_out" );
+        @Override
+        protected JoinGateway doBuild() {
+            return  new JoinGateway(new FlowGeneralSet("Join"),
+                                    new BackgroundSet(COLOR,
+                                                      BORDER_COLOR,
+                                                      BORDER_SIZE),
+                                    new FontSet(),
+                                    new CircleDimensionSet(new Radius(RADIUS)));
+        }
+
     }
 
     public JoinGateway() {

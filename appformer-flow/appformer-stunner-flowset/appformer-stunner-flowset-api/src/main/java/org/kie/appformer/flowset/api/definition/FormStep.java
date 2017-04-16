@@ -55,7 +55,7 @@ public class FormStep extends BaseStep {
 
         @Override
         public FormStep build() {
-            return new FormStep( new Name( "Form Step" ),
+            final FormStep instance = new FormStep( new Name( "Form Step" ),
                                  new PropertyExpression(),
                                  new BackgroundSet( COLOR,
                                                     BORDER_COLOR,
@@ -63,6 +63,8 @@ public class FormStep extends BaseStep {
                                  new FontSet(),
                                  new RectangleDimensionsSet( WIDTH,
                                                              HEIGHT ) );
+            instance.getLabels().add("form_step");
+            return instance;
         }
     }
 
@@ -78,10 +80,6 @@ public class FormStep extends BaseStep {
     @Property
     @FormField(type = TextBoxFieldType.class)
     private PropertyExpression property;
-
-    {
-        labels.add( "form_step" );
-    }
 
     public FormStep() {
         super();
