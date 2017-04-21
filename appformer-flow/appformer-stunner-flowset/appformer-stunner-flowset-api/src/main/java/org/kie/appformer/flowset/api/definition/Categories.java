@@ -17,14 +17,7 @@
 package org.kie.appformer.flowset.api.definition;
 
 public class Categories {
-
-    public static final String MULTISTEP = "MultiStep";
-
-    public static final String ACTIVITIES = "Activities";
-
-    public static final String EVENTS = "Events";
-
-    public static final String CONNECTING_OBJECTS = "Connecting Objects";
-
-    public static final String GATEWAYS = "Gateways";
+    public static final String FORM = "Form";
+    public static final String FLOW = "Flow";
+    public static final String CONNECTING_OBJECTS = null;
 }

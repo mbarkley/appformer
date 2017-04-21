@@ -16,11 +16,14 @@
 
 package org.kie.appformer.flowset.interpreter;
 
+import static java.util.Collections.newSetFromMap;
+import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -41,14 +44,18 @@ import org.kie.appformer.flow.api.FormOperation;
 import org.kie.appformer.flow.api.Sequenced;
 import org.kie.appformer.flow.api.Step;
 import org.kie.appformer.flow.api.UIComponent;
+import org.kie.appformer.flowset.api.definition.DataStep;
 import org.kie.appformer.flowset.api.definition.DecisionGateway;
+import org.kie.appformer.flowset.api.definition.EntityStep;
 import org.kie.appformer.flowset.api.definition.FormStep;
 import org.kie.appformer.flowset.api.definition.JoinGateway;
-import org.kie.appformer.flowset.api.definition.MatcherGateway;
+import org.kie.appformer.flowset.api.definition.MatcherStep;
 import org.kie.appformer.flowset.api.definition.MultiStep;
-import org.kie.appformer.flowset.api.definition.SimpleStep;
+import org.kie.appformer.flowset.api.definition.RootStep;
+import org.kie.appformer.flowset.api.definition.SequenceFlow;
 import org.kie.appformer.flowset.api.definition.StartNoneEvent;
 import org.kie.workbench.common.stunner.core.graph.Edge;
+import org.kie.workbench.common.stunner.core.graph.Element;
 import org.kie.workbench.common.stunner.core.graph.Graph;
 import org.kie.workbench.common.stunner.core.graph.Node;
 import org.kie.workbench.common.stunner.core.graph.content.definition.Definition;
@@ -95,25 +102,23 @@ public class Interpreter<V extends Sequenced> {
     }
 
     private AppFlow<?, ?> convert( final Node<Definition<StartNoneEvent>, Edge> start ) {
-        Node<?, Edge> curNode = getNextNodeViaSingleEdge( start ).orElse( null );
+        Node<?, Edge> curNode = getSingleNextNodeInSequence( start ).orElse( null );
         final Deque<AppFlow> flows = new LinkedList<>();
         final Deque<DecisionFrame> decisionStack = new LinkedList<>();
         flows.push( factory.buildFromFunction( Function.identity() ) );
         while ( curNode != null ) {
             final Object content = getContent( curNode );
-            if ( content instanceof SimpleStep ) {
+            if ( content instanceof RootStep ) {
+                curNode = processRootStep( curNode, flows, (RootStep) content );
+            }
+            else if ( content instanceof DataStep ) {
                 curNode = processFlowPart( curNode,
                                            flows,
-                                           (SimpleStep) content );
-            } else if ( content instanceof FormStep ) {
-                curNode = processFormStep( curNode, flows, (FormStep) content );
+                                           (DataStep) content );
             } else if ( content instanceof DecisionGateway ) {
                 curNode = processDecisionGateway( curNode,
                                                   flows,
                                                   decisionStack );
-            } else if ( content instanceof MatcherGateway ) {
-                // Always processed when DescisionGateway is found
-                throw new IllegalStateException( "MatcherGateway must have a single inbound edge from a DecisionGateway." );
             } else if ( content instanceof JoinGateway ) {
                 curNode = processTopOfDecisionStack( Optional.of( curNode ), flows, decisionStack ).orElse( null );
             } else if ( content instanceof StartNoneEvent ) {
@@ -121,6 +126,12 @@ public class Interpreter<V extends Sequenced> {
                 final AppFlow flow = flows.pop();
                 flows.push( flow.andThen( () -> flows.getFirst() ) );
                 curNode = null;
+            } else if ( content instanceof MatcherStep ) {
+                // Always processed when DescisionGateway is found
+                throw new IllegalStateException( "MatcherGateway must have a single inbound edge from a DecisionGateway." );
+            } else if ( content instanceof FormStep ) {
+                throw new IllegalStateException(
+                        "FormSteps must be contained by a RootStep or MultiStep node and should not be sequenced directly by other non-FormSteps." );
             } else {
                 throw new IllegalStateException( "Found unexpected node of type ["
                                                  + (content != null ? content.getClass().getSimpleName() : "null")
@@ -138,18 +149,64 @@ public class Interpreter<V extends Sequenced> {
         return flows.peek();
     }
 
-    private Node<?, Edge> processFormStep( final Node<?, Edge> firstStep,
+    private String getPartName( final EntityStep content ) {
+        final String nameWihtoutType = Optional
+            .ofNullable( content.getName() )
+            .map( n -> n.getValue() )
+            .filter( s -> !s.isEmpty() )
+            .orElseThrow( () -> new IllegalArgumentException( "RootStep must have a name." ) );
+        final String typeSuffix = Optional
+            .ofNullable( content.getEntityType() )
+            .map( t -> t.getValue() )
+            .filter( s -> !s.isEmpty() )
+            .map( s -> ":" + s )
+            .orElse( "" );
+
+        return nameWihtoutType + typeSuffix;
+    }
+
+    private Node<?, Edge> processRootStep( final Node<?, Edge> curNode,
                                            final Deque<AppFlow> flows,
-                                           final FormStep content ) {
-        final List<FormStep> formSequence = getFormStepSequence( firstStep );
+                                           final RootStep content ) {
+        final AppFlow<?, ?> flowPart = lookupFlowPart( getPartName( content ) );
+        final AppFlow cur = flows.pop();
+        flows.push( cur.andThen( flowPart ) );
+
+        getSingleNextContainedNode( curNode )
+            .ifPresent( child -> {
+                final Object childContent = getContent( child );
+                if ( childContent instanceof MultiStep ) {
+                    final List<FormStep> sequence = getFormStepSequence( child );
+                    processFormSteps( sequence, flows );
+                }
+                else if ( childContent instanceof FormStep ) {
+                    final FormStep singleStep = (FormStep) childContent;
+                    processSingleFormStep( singleStep, flows );
+                }
+                else {
+                    throw new IllegalStateException( "Unexpected node type [" + childContent.getClass().getSimpleName()
+                                                     + "] in RootStep." );
+                }
+            } );
+
+        return getSingleNextNodeInSequence( curNode ).orElse( null );
+    }
+
+    private void processSingleFormStep( final FormStep singleStep, final Deque<AppFlow> flows ) {
+        final FormStepWrapper wrapper = getFormStepWrappers( singletonList( singleStep ) ).get( 0 );
+        final AppFlow formFlow = factory.buildFromStep( wrapper );
+        flows.push( flows.pop().andThen( formFlow ) );
+
+    }
+
+    private void processFormSteps( final List<FormStep> formSequence,
+                                   final Deque<AppFlow> flows ) {
         final List<FormStepWrapper> steps = getFormStepWrappers( formSequence );
         final List<String> properties = getStepPropertyExpressions( formSequence );
 
         final AppFlow<Object, Object> multiStepFlow = createMultiStepFlow( steps, properties );
 
         flows.push( flows.pop().andThen( multiStepFlow ) );
-
-        return getNodeAfterMultiStepForm( firstStep );
     }
 
     private AppFlow<Object, Object> createMultiStepFlow( final List<FormStepWrapper> steps, final List<String> properties ) {
@@ -264,7 +321,7 @@ public class Interpreter<V extends Sequenced> {
     private List<String> getStepPropertyExpressions( final List<FormStep> formSequence ) {
         final List<String> properties = formSequence
         .stream()
-        .map( step -> step.getProperty().getValue() )
+        .map( step -> step.getName().getValue() )
         .collect( toList() );
         return properties;
     }
@@ -272,9 +329,11 @@ public class Interpreter<V extends Sequenced> {
     private List<FormStepWrapper> getFormStepWrappers( final List<FormStep> formSequence ) {
         final List<FormStepWrapper> steps = formSequence
         .stream()
-        .map( step -> step.getName().getValue() )
-        .map(formSteps::apply)
-        .map( c -> new FormStepWrapper( c.get() ) )
+        .map( step -> step.getEntityType().getValue() )
+        .map(name -> formSteps
+                         .apply( name )
+                         .orElseThrow( () -> new IllegalStateException( "No Form Step found for [" + name + "]." ) ))
+        .map( step -> new FormStepWrapper( step ) )
         .collect( toList() );
 
         ((Sequenced) steps.get( 0 ).component.asComponent()).setStart();
@@ -282,51 +341,92 @@ public class Interpreter<V extends Sequenced> {
         return steps;
     }
 
-    private Node<?, Edge> getNodeAfterMultiStepForm( Node<?, Edge> cur ) {
-        final Node parent = getParentMultiStep( cur );
-        while ( cur != null && getContent( cur ) instanceof FormStep && getParentMultiStep( cur ) == parent ) {
-            cur = getNextNodeViaSingleEdge( cur ).orElse( null );
-        }
+    private List<FormStep> getFormStepSequence( final Node<?, Edge> multi ) {
+        final Set<Node> childNodes = multi
+            .getOutEdges()
+            .stream()
+            .filter( edge -> edge.getContent() instanceof Child )
+            .map( edge -> edge.getTargetNode() )
+            .peek( child -> {
+                if ( !(getContent( child ) instanceof FormStep)  ) {
+                        throw new IllegalStateException( "MultiStep must only have FormSteps as children, not ["
+                                                         + getContent( child ).getClass().getSimpleName()
+                                                         + "]." );
+                    }
+            } )
+            .collect( Collectors.toCollection( () -> newSetFromMap( new IdentityHashMap<>() ) ) );
 
-        return cur;
+        if ( childNodes.isEmpty() ) {
+            throw new IllegalStateException( "MultiStep must have at least one FormStep child." );
+        }
+        else {
+            final LinkedList<Node<?, Edge>> orderedChildren = new LinkedList<>();
+            final Node<?, Edge> someChild = childNodes.iterator().next();
+            orderedChildren.add( someChild );
+            appendFollowingSteps( childNodes, someChild, orderedChildren );
+            prependPrecedingSteps( childNodes, someChild, orderedChildren );
+
+            return orderedChildren.stream().map( node -> (FormStep) getContent( node ) ).collect( toList() );
+        }
     }
 
-    private List<FormStep> getFormStepSequence( final Node<?, Edge> firstStep ) {
-        final List<FormStep> formSequence = new ArrayList<>();
-        Node<?, Edge> cur = firstStep;
-        final Node multi = getParentMultiStep( cur );
-        while ( cur != null ) {
-            final Node curParent = getParentMultiStep( cur );
-            if ( curParent == multi ) {
-                formSequence.add( (FormStep) getContent( cur ) );
-                cur = getNextNodeViaSingleEdge( cur )
-                        .filter( node -> getContent( node ) instanceof FormStep )
-                        .orElse( null );
+    private void prependPrecedingSteps( final Set<Node> childNodes,
+                                        final Node<?, Edge> someChild,
+                                        final LinkedList<Node<?, Edge>> orderedChildren ) {
+        consumeFormStepsInSequence( childNodes,
+                                    someChild,
+                                    this::getInSeqEdges,
+                                    orderedChildren::addFirst,
+                                    Edge::getSourceNode );
+    }
+
+    private void appendFollowingSteps( final Set<Node> childNodes,
+                                       final Node<?, Edge> someChild,
+                                       final LinkedList<Node<?, Edge>> orderedChildren ) {
+        consumeFormStepsInSequence( childNodes,
+                                    someChild,
+                                    this::getOutSeqEdges,
+                                    orderedChildren::addLast,
+                                    Edge::getTargetNode );
+    }
+
+    private void consumeFormStepsInSequence( final Set<Node> childNodes,
+                               final Node<?, Edge> someChild,
+                               final Function<Node<?, Edge>, List<Edge>> edgeGetter,
+                               final Consumer<Node<?, Edge>> nodeConsumer,
+                               final Function<Edge, Node<?, Edge>> nextNodeGetter ) {
+        List<Edge> curEdges = edgeGetter.apply( someChild );
+        while ( !curEdges.isEmpty() ) {
+            if ( curEdges.size() > 1 ) {
+                throw new IllegalStateException( "FormSteps must have at most one outbound edge." );
             }
             else {
-                cur = null;
+                final Node<?, Edge> next = nextNodeGetter.apply( curEdges.get( 0 ) );
+                if ( childNodes.contains( next ) ) {
+                    nodeConsumer.accept( next );
+                    curEdges = edgeGetter.apply( next );
+                }
+                else {
+                    throw new IllegalStateException( "FromSteps can only have edges to other FromSteps in the same MultiStep." );
+                }
             }
         }
-        return formSequence;
     }
 
-    private Node getParentMultiStep( final Node<?, Edge> cur ) {
-        // Don't remove these assignments. Can cause type errors with some compilers.
-        final Optional<Node> oNode = cur
-         .getInEdges()
-         .stream()
-         .filter( edge -> edge.getContent() instanceof Child )
-         .findFirst()
-         .map( edge -> edge.getSourceNode() )
-         .filter( node -> getContent( node ) instanceof MultiStep );
-
-        final Node retVal = oNode
-         .orElseThrow( () -> new IllegalStateException( "Form steps must be contained in a MultiStep." ) );
-
-        return retVal;
+    private List<Edge> getSequenceEdges( final List<Edge> edges ) {
+        return edges.stream().filter( edge -> edge.getContent() instanceof Definition
+                                              && getContent( edge ) instanceof SequenceFlow ).collect( toList() );
     }
 
-    private Object getContent( final Node<?, Edge> curNode ) {
+    private List<Edge> getInSeqEdges( final Node<?, Edge> node ) {
+        return getSequenceEdges( node.getInEdges() );
+    }
+
+    private List<Edge> getOutSeqEdges( final Node<?, Edge> node ) {
+        return getSequenceEdges( node.getOutEdges() );
+    }
+
+    private Object getContent( final Element<?> curNode ) {
         return ((Definition) curNode.getContent()).getDefinition();
     }
 
@@ -339,7 +439,7 @@ public class Interpreter<V extends Sequenced> {
             return Optional.ofNullable(prepareToProcessNextDecisionPath( flows, curFrame ));
         } else {
             processDecisionTransition( flows, decisionStack, curFrame );
-            return oJoin.flatMap( join -> getNextNodeViaSingleEdge( join ) );
+            return oJoin.flatMap( join -> getSingleNextNodeInSequence( join ) );
         }
     }
 
@@ -376,7 +476,7 @@ public class Interpreter<V extends Sequenced> {
                                                                  final DecisionFrame curFrame ) {
         final Map<Enum<?>, AppFlow> mappedFlows = new HashMap<>( curFrame.node.getOutEdges().size() );
         for ( int i = curFrame.node.getOutEdges().size() - 1; i > -1; i-- ) {
-            final MatcherGateway matcher = (MatcherGateway) getContent( curFrame.node.getOutEdges().get( i ).getTargetNode() );
+            final MatcherStep matcher = (MatcherStep) getContent( curFrame.node.getOutEdges().get( i ).getTargetNode() );
             final AppFlow flow = flows.pop();
             final Enum<?> op = getEnumValue( matcher );
             if ( mappedFlows.putIfAbsent( op,
@@ -388,9 +488,9 @@ public class Interpreter<V extends Sequenced> {
         return mappedFlows;
     }
 
-    private Enum<?> getEnumValue( final MatcherGateway matcher ) {
-        final String enumType = matcher.getGeneral().getName().getValue();
-        final String op = matcher.getOperation().getValue();
+    private Enum<?> getEnumValue( final MatcherStep matcher ) {
+        final String op = matcher.getGeneral().getName().getValue();
+        final String enumType = matcher.getOperation().getValue();
 
         final Class<? extends Enum<?>> type = enumsBySimpleName.get( enumType );
         if ( type == null ) {
@@ -419,31 +519,35 @@ public class Interpreter<V extends Sequenced> {
 
     private Node<?, Edge> processFlowPart( Node<?, Edge> curNode,
                                            final Deque<AppFlow> flows,
-                                           final SimpleStep content ) {
-        final String name = content.getName().getValue();
+                                           final DataStep content ) {
+        final String name = getPartName( content );
+        final AppFlow<?, ?> flow = lookupFlowPart( name );
+        final AppFlow cur = flows.pop();
+        flows.push( cur.andThen( flow ) );
+        curNode = getSingleNextNodeInSequence( curNode ).orElse( null );
+        return curNode;
+    }
+
+    private AppFlow<?, ?> lookupFlowPart( final String name ) {
         final AppFlow<?, ?> flow = flowParts.get( name );
-        if ( flow != null ) {
-            final AppFlow cur = flows.pop();
-            flows.push( cur.andThen( flow ) );
-            curNode = getNextNodeViaSingleEdge( curNode ).orElse( null );
-        } else {
+        if ( flow == null ) {
             throw new IllegalStateException( "No flow part in context for [" + name + "]." );
         }
-        return curNode;
+        return flow;
     }
 
     private Node<?, Edge> validateIndexEdgeIsMatcherAndGetNextNode( final DecisionFrame frame ) {
         Node<?, Edge> curNode;
-        final Node<MatcherGateway, Edge> matcherNode = validateIndexedEdgeTargetsMatcher( frame );
-        curNode = getNextNodeViaSingleEdge( matcherNode ).orElse( null );
+        final Node<MatcherStep, Edge> matcherNode = validateIndexedEdgeTargetsMatcher( frame );
+        curNode = getSingleNextNodeInSequence( matcherNode ).orElse( null );
         return curNode;
     }
 
-    private Node<MatcherGateway, Edge> validateIndexedEdgeTargetsMatcher( final DecisionFrame frame ) {
+    private Node<MatcherStep, Edge> validateIndexedEdgeTargetsMatcher( final DecisionFrame frame ) {
         final List<Edge> outEdges = frame.node.getOutEdges();
         if ( frame.index < outEdges.size() ) {
             final Node target = outEdges.get( frame.index ).getTargetNode();
-            if ( getContent( target ) instanceof MatcherGateway ) {
+            if ( getContent( target ) instanceof MatcherStep ) {
                 return target;
             } else {
                 throw new IllegalStateException( "DecisionGateway must be immediately followed by MatcherGateway but found "
@@ -454,16 +558,40 @@ public class Interpreter<V extends Sequenced> {
         }
     }
 
-    private Optional<Node<?, Edge>> getNextNodeViaSingleEdge( final Node<?, Edge> node ) {
-        if ( node.getOutEdges().isEmpty() ) {
+    private Optional<Node<?, Edge>> getSingleNextNodeInSequence( final Node<?, Edge> node ) {
+        final List<Edge> sequenceEdges = node
+                .getOutEdges()
+                .stream()
+                .filter( edge -> edge.getContent() instanceof Definition
+                                 && getContent( edge ) instanceof SequenceFlow )
+                .collect( Collectors.toList() );
+        if ( sequenceEdges.isEmpty() ) {
             return Optional.empty();
         }
-        if ( node.getOutEdges().size() == 1 ) {
+        if ( sequenceEdges.size() == 1 ) {
+            return Optional.of( sequenceEdges.get( 0 ).getTargetNode() );
+        } else {
+            throw new IllegalStateException( "Expected node of type ["
+                                             + (getContent( node ) != null ? getContent( node ).getClass().getSimpleName() : "null")
+                                             + "] to have 1 outbound edge but had " + sequenceEdges.size() + "." );
+        }
+    }
+
+    private Optional<Node<?, Edge>> getSingleNextContainedNode( final Node<?, Edge> node ) {
+        final List<Edge> childEdges = node
+                .getOutEdges()
+                .stream()
+                .filter( edge -> edge.getContent() instanceof Child )
+                .collect( Collectors.toList() );
+        if ( childEdges.isEmpty() ) {
+            return Optional.empty();
+        }
+        if ( childEdges.size() == 1 ) {
             return Optional.of( node.getOutEdges().get( 0 ).getTargetNode() );
         } else {
             throw new IllegalStateException( "Expected node of type ["
                                              + (getContent( node ) != null ? getContent( node ).getClass().getSimpleName() : "null")
-                                             + "] to have 1 outbound edge but had " + node.getOutEdges().size() + "." );
+                                             + "] to have 1 outbound edge but had " + childEdges.size() + "." );
         }
     }
 

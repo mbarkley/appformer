@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.kie.appformer.flowset.api.definition.property.font;
+package org.kie.appformer.flowset.api.definition.property.general;
 
 import org.jboss.errai.common.client.api.annotations.Portable;
 import org.jboss.errai.databinding.client.api.Bindable;
@@ -30,7 +30,6 @@ import org.kie.workbench.common.stunner.core.definition.annotation.property.Capt
 import org.kie.workbench.common.stunner.core.definition.annotation.property.DefaultValue;
 import org.kie.workbench.common.stunner.core.definition.annotation.property.Optional;
 import org.kie.workbench.common.stunner.core.definition.annotation.property.ReadOnly;
-import org.kie.workbench.common.stunner.core.definition.annotation.property.Type;
 import org.kie.workbench.common.stunner.core.definition.annotation.property.Value;
 import org.kie.workbench.common.stunner.core.definition.property.PropertyType;
 import org.kie.workbench.common.stunner.core.definition.property.type.StringType;
@@ -39,14 +38,14 @@ import org.kie.workbench.common.stunner.core.definition.property.type.StringType
 @Bindable
 @Property
 @FieldDefinition(labelMode = LabelMode.OVERRIDE_I18N_KEY)
-public class FontFamily implements FlowProperty {
+public class Type implements FlowProperty {
 
     @Caption
     @FieldLabel
-    public static final transient String caption = "Font Family";
+    public static final transient String caption = "An entity type";
 
     @Description
-    public static final transient String description = "The Font Family";
+    public static final transient String description = "An expression for a property in a model";
 
     @ReadOnly
     @FieldReadOnly
@@ -55,20 +54,20 @@ public class FontFamily implements FlowProperty {
     @Optional
     public static final Boolean optional = false;
 
-    @Type
+    @org.kie.workbench.common.stunner.core.definition.annotation.property.Type
     public static final PropertyType type = new StringType();
 
     @DefaultValue
-    public static final transient String defaultValue = "Open Sans";
+    public static final transient String defaultValue = "";
 
     @Value
     @FieldValue
     private String value = defaultValue;
 
-    public FontFamily() {
+    public Type() {
     }
 
-    public FontFamily(final String value) {
+    public Type(final String value) {
         this.value = value;
     }
 

@@ -109,7 +109,16 @@ public class Address {
 
         @Override
         public Object workingCopy( final Object model ) {
-            throw new RuntimeException( "Not yet implemented." );
+            if ( model instanceof Address ) {
+                final Address original = (Address) model;
+                final Address copy = new Address();
+                copy.setNumber( original.getNumber() );
+                copy.setStreet( original.getStreet() );
+                return copy;
+            }
+            else {
+                throw new IllegalArgumentException();
+            }
         }
 
         @Override

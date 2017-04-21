@@ -16,7 +16,11 @@
 
 package org.kie.appformer.flowset.client.shape.def;
 
-import org.kie.appformer.flowset.api.definition.MultiStep;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.kie.appformer.flowset.api.definition.BaseGateway;
+import org.kie.appformer.flowset.api.definition.JoinGateway;
 import org.kie.appformer.flowset.api.shape.def.FlowPictures;
 import org.kie.appformer.flowset.client.resources.FlowSVGViewFactory;
 import org.kie.workbench.common.stunner.core.client.shape.view.HasTitle;
@@ -26,92 +30,92 @@ import org.kie.workbench.common.stunner.shapes.def.picture.PictureGlyphDef;
 import org.kie.workbench.common.stunner.svg.client.shape.def.SVGMutableShapeDef;
 import org.kie.workbench.common.stunner.svg.client.shape.view.SVGShapeView;
 
-public class MultiStepShapeDef
-        extends AbstractShapeDef<MultiStep>
-        implements SVGMutableShapeDef<MultiStep, FlowSVGViewFactory> {
+public class JoinShapeDef
+        extends AbstractShapeDef<BaseGateway>
+        implements SVGMutableShapeDef<BaseGateway, FlowSVGViewFactory> {
 
     @Override
-    public double getAlpha(final MultiStep element) {
+    public double getAlpha(final BaseGateway element) {
         return 1d;
     }
 
     @Override
-    public String getBackgroundColor(final MultiStep element) {
+    public String getBackgroundColor(final BaseGateway element) {
         return element.getBackgroundSet().getBgColor().getValue();
     }
 
     @Override
-    public double getBackgroundAlpha(final MultiStep element) {
-        return 0.1d;
-    }
-
-    @Override
-    public String getBorderColor(final MultiStep element) {
-        return element.getBackgroundSet().getBorderColor().getValue();
-    }
-
-    @Override
-    public double getBorderSize(final MultiStep element) {
-        return element.getBackgroundSet().getBorderSize().getValue();
-    }
-
-    @Override
-    public double getBorderAlpha(final MultiStep element) {
+    public double getBackgroundAlpha(final BaseGateway element) {
         return 1;
     }
 
     @Override
-    public String getFontFamily(final MultiStep element) {
+    public String getBorderColor(final BaseGateway element) {
+        return element.getBackgroundSet().getBorderColor().getValue();
+    }
+
+    @Override
+    public double getBorderSize(final BaseGateway element) {
+        return element.getBackgroundSet().getBorderSize().getValue();
+    }
+
+    @Override
+    public double getBorderAlpha(final BaseGateway element) {
+        return 1;
+    }
+
+    @Override
+    public String getFontFamily(final BaseGateway element) {
         return element.getFontSet().getFontFamily().getValue();
     }
 
     @Override
-    public String getFontColor(final MultiStep element) {
+    public String getFontColor(final BaseGateway element) {
         return element.getFontSet().getFontColor().getValue();
     }
 
     @Override
-    public double getFontSize(final MultiStep element) {
+    public double getFontSize(final BaseGateway element) {
         return element.getFontSet().getFontSize().getValue();
     }
 
     @Override
-    public double getFontBorderSize(final MultiStep element) {
+    public double getFontBorderSize(final BaseGateway element) {
         return element.getFontSet().getFontBorderSize().getValue();
     }
 
     @Override
-    public HasTitle.Position getFontPosition(final MultiStep element) {
-        return HasTitle.Position.TOP;
+    public HasTitle.Position getFontPosition(final BaseGateway element) {
+        return HasTitle.Position.BOTTOM;
     }
 
     @Override
-    public double getFontRotation(final MultiStep element) {
-        return 0d;
+    public double getFontRotation(final BaseGateway element) {
+        return 0;
     }
 
     @Override
-    public double getWidth(final MultiStep element) {
-        return element.getDimensionsSet().getWidth().getValue();
+    public double getWidth(final BaseGateway element) {
+        return element.getDimensionsSet().getRadius().getValue() * 2;
     }
 
     @Override
-    public double getHeight(final MultiStep element) {
-        return element.getDimensionsSet().getHeight().getValue();
+    public double getHeight(final BaseGateway element) {
+        return element.getDimensionsSet().getRadius().getValue() * 2;
     }
 
     @Override
     public boolean isSVGViewVisible(final String viewName,
-                                    final MultiStep element) {
-        return false;
+                                    final BaseGateway element) {
+        return true;
     }
 
     @Override
     public SVGShapeView<?> newViewInstance(final FlowSVGViewFactory factory,
-                                           final MultiStep lane) {
-        return factory.multiStep(getWidth(lane),
-                                 getHeight(lane),
-                                 true);
+                                           final BaseGateway gateway) {
+        return factory.join(getWidth(gateway),
+                            getHeight(gateway),
+                            false);
     }
 
     @Override
@@ -119,20 +123,26 @@ public class MultiStepShapeDef
         return FlowSVGViewFactory.class;
     }
 
-    @Override
-    public GlyphDef<MultiStep> getGlyphDef() {
-        return GLYPH_DEF;
-    }
+    private static final PictureGlyphDef<BaseGateway, FlowPictures> TASK_GLYPH_DEF = new PictureGlyphDef<BaseGateway, FlowPictures>() {
 
-    private static final PictureGlyphDef<MultiStep, FlowPictures> GLYPH_DEF = new PictureGlyphDef<MultiStep, FlowPictures>() {
+        private final Map<Class<?>, FlowPictures> PICTURES = new HashMap<Class<?>, FlowPictures>() {{
+            put(JoinGateway.class,
+                FlowPictures.JOIN_ICON);
+        }};
+
+        @Override
+        public String getGlyphDescription(final BaseGateway element) {
+            return element.getName().getValue();
+        }
+
         @Override
         public FlowPictures getSource(final Class<?> type) {
-            return FlowPictures.MULTI_STEP;
-        }
-
-        @Override
-        public String getGlyphDescription(final MultiStep element) {
-            return element.getDescription();
+            return PICTURES.get(type);
         }
     };
+
+    @Override
+    public GlyphDef<BaseGateway> getGlyphDef() {
+        return TASK_GLYPH_DEF;
+    }
 }

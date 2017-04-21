@@ -23,8 +23,12 @@ import org.jboss.errai.databinding.client.api.Bindable;
 import org.kie.appformer.flowset.api.definition.property.background.BackgroundSet;
 import org.kie.appformer.flowset.api.definition.property.dimensions.CircleDimensionSet;
 import org.kie.appformer.flowset.api.definition.property.dimensions.Radius;
+import org.kie.appformer.flowset.api.definition.property.font.FontBorderSize;
+import org.kie.appformer.flowset.api.definition.property.font.FontColor;
+import org.kie.appformer.flowset.api.definition.property.font.FontFamily;
 import org.kie.appformer.flowset.api.definition.property.font.FontSet;
-import org.kie.appformer.flowset.api.definition.property.general.FlowGeneralSet;
+import org.kie.appformer.flowset.api.definition.property.font.FontSize;
+import org.kie.appformer.flowset.api.definition.property.general.Name;
 import org.kie.workbench.common.forms.adf.definitions.annotations.FormDefinition;
 import org.kie.workbench.common.forms.adf.definitions.settings.FieldPolicy;
 import org.kie.workbench.common.stunner.core.definition.annotation.Definition;
@@ -36,7 +40,6 @@ import org.kie.workbench.common.stunner.core.factory.graph.NodeFactory;
 @Bindable
 @Definition(graphFactory = NodeFactory.class, builder = JoinGateway.JoinGatewayBuilder.class)
 @FormDefinition(
-        startElement = "general",
         policy = FieldPolicy.ONLY_MARKED
 )
 public class JoinGateway extends BaseGateway {
@@ -57,12 +60,15 @@ public class JoinGateway extends BaseGateway {
 
         @Override
         protected JoinGateway doBuild() {
-            return  new JoinGateway(new FlowGeneralSet("Join"),
-                                    new BackgroundSet(COLOR,
-                                                      BORDER_COLOR,
+            return  new JoinGateway(new Name(""),
+                                    new BackgroundSet("#CCC",
+                                                      "#CCC",
                                                       BORDER_SIZE),
-                                    new FontSet(),
-                                    new CircleDimensionSet(new Radius(RADIUS)));
+                                    new FontSet(FontFamily.defaultValue,
+                                                FontColor.defaultValue,
+                                                FontSize.defaultValue,
+                                                FontBorderSize.defaultValue),
+                                    new CircleDimensionSet(new Radius(15d)));
         }
 
     }
@@ -70,11 +76,11 @@ public class JoinGateway extends BaseGateway {
     public JoinGateway() {
     }
 
-    public JoinGateway(final @MapsTo("general") FlowGeneralSet general,
+    public JoinGateway(final @MapsTo("name") Name name,
                            final @MapsTo("backgroundSet") BackgroundSet backgroundSet,
                            final @MapsTo("fontSet") FontSet fontSet,
                            final @MapsTo("dimensionsSet") CircleDimensionSet dimensionsSet) {
-        super(general,
+        super(name,
               backgroundSet,
               fontSet,
               dimensionsSet);

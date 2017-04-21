@@ -50,7 +50,7 @@ public class FontBorderSize implements FlowProperty {
 
     @ReadOnly
     @FieldReadOnly
-    private Boolean readOnly = false;
+    private final Boolean readOnly = false;
 
     @Optional
     public static final Boolean optional = false;
@@ -59,7 +59,7 @@ public class FontBorderSize implements FlowProperty {
     public static final PropertyType type = new DoubleType();
 
     @DefaultValue
-    public static final Double defaultValue = 0.5d;
+    public static final Double defaultValue = 0d;
 
     @Value
     @FieldValue

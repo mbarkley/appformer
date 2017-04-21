@@ -27,8 +27,9 @@ import org.jboss.errai.common.client.api.annotations.NonPortable;
 import org.kie.appformer.flowset.api.definition.property.background.BackgroundSet;
 import org.kie.appformer.flowset.api.definition.property.dimensions.CircleDimensionSet;
 import org.kie.appformer.flowset.api.definition.property.font.FontSet;
-import org.kie.appformer.flowset.api.definition.property.general.FlowGeneralSet;
+import org.kie.appformer.flowset.api.definition.property.general.Name;
 import org.kie.workbench.common.forms.adf.definitions.annotations.FormField;
+import org.kie.workbench.common.stunner.core.definition.annotation.Property;
 import org.kie.workbench.common.stunner.core.definition.annotation.PropertySet;
 import org.kie.workbench.common.stunner.core.definition.annotation.definition.Category;
 import org.kie.workbench.common.stunner.core.definition.annotation.definition.Labels;
@@ -37,17 +38,13 @@ import org.kie.workbench.common.stunner.core.definition.builder.Builder;
 public abstract class BaseGateway implements FlowDefinition {
 
     @Category
-    public static final transient String category = Categories.GATEWAYS;
+    public static final transient String category = Categories.FLOW;
+
+    @Property
+    protected Name name;
 
     @PropertySet
     @FormField
-    @Valid
-    protected FlowGeneralSet general;
-
-    @PropertySet
-    @FormField(
-            afterElement = "general"
-    )
     @Valid
     protected BackgroundSet backgroundSet;
 
@@ -67,11 +64,7 @@ public abstract class BaseGateway implements FlowDefinition {
     @NonPortable
     static abstract class BaseGatewayBuilder<T extends BaseGateway> implements Builder<T> {
 
-        public static final transient String COLOR = "#f2ea9e";
-        public static final transient String ICON_COLOR = "#ae8104";
-        public static final transient String BORDER_COLOR = "#000000";
-        public static final Double BORDER_SIZE = 1d;
-        public static final Double RADIUS = 20d;
+        public static final Double BORDER_SIZE = 0d;
 
         protected abstract String[] getAdditionalLabels();
 
@@ -88,11 +81,11 @@ public abstract class BaseGateway implements FlowDefinition {
     public BaseGateway() {
     }
 
-    public BaseGateway(final @MapsTo("general") FlowGeneralSet general,
+    public BaseGateway(final @MapsTo("name") Name name,
                        final @MapsTo("backgroundSet") BackgroundSet backgroundSet,
                        final @MapsTo("fontSet") FontSet fontSet,
                        final @MapsTo("dimensionsSet") CircleDimensionSet dimensionsSet) {
-        this.general = general;
+        this.name = name;
         this.backgroundSet = backgroundSet;
         this.fontSet = fontSet;
         this.dimensionsSet = dimensionsSet;
@@ -106,8 +99,12 @@ public abstract class BaseGateway implements FlowDefinition {
         return labels;
     }
 
-    public FlowGeneralSet getGeneral() {
-        return general;
+    public Name getName() {
+        return name;
+    }
+
+    public void setName(final Name name) {
+        this.name = name;
     }
 
     public BackgroundSet getBackgroundSet() {
@@ -116,10 +113,6 @@ public abstract class BaseGateway implements FlowDefinition {
 
     public FontSet getFontSet() {
         return fontSet;
-    }
-
-    public void setGeneral(final FlowGeneralSet general) {
-        this.general = general;
     }
 
     public void setBackgroundSet(final BackgroundSet backgroundSet) {

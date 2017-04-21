@@ -57,8 +57,8 @@ public class SequenceFlow extends BaseConnector {
         @Override
         public SequenceFlow build() {
             return new SequenceFlow(new FlowGeneralSet("Sequence"),
-                                    new BackgroundSet(COLOR,
-                                                      BORDER_COLOR,
+                                    new BackgroundSet("#CCC",
+                                                      "#CCC",
                                                       BORDER_SIZE),
                                     new FontSet());
         }

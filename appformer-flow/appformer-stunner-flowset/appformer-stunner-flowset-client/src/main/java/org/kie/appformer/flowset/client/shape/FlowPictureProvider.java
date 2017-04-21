@@ -15,53 +15,44 @@
 
 package org.kie.appformer.flowset.client.shape;
 
+import static org.uberfire.commons.validation.PortablePreconditions.checkNotNull;
+
 import java.util.HashMap;
 import java.util.Map;
-import javax.enterprise.context.ApplicationScoped;
 
-import com.google.gwt.safehtml.shared.SafeUri;
+import javax.enterprise.context.ApplicationScoped;
 
 import org.kie.appformer.flowset.api.shape.def.FlowPictures;
 import org.kie.appformer.flowset.client.resources.FlowImageResources;
 import org.kie.workbench.common.stunner.shapes.def.picture.PictureProvider;
 
-import static org.uberfire.commons.validation.PortablePreconditions.checkNotNull;
+import com.google.gwt.safehtml.shared.SafeUri;
 
 @ApplicationScoped
 public class FlowPictureProvider implements PictureProvider<FlowPictures> {
 
     private static final Map<FlowPictures, SafeUri> PICTURE_URIS =
             new HashMap<FlowPictures, SafeUri>() {{
-                put(FlowPictures.TASK_USER,
-                    FlowImageResources.INSTANCE.taskUser().getSafeUri());
-                put(FlowPictures.TASK_SCRIPT,
-                    FlowImageResources.INSTANCE.taskScript().getSafeUri());
-                put(FlowPictures.FLOW_PART,
-                    FlowImageResources.INSTANCE.taskBusinessRule().getSafeUri());
-                put(FlowPictures.CANCEL,
-                    FlowImageResources.INSTANCE.cancel().getSafeUri());
-                put(FlowPictures.CIRCLE,
-                    FlowImageResources.INSTANCE.circle().getSafeUri());
-                put(FlowPictures.CLOCK_O,
-                    FlowImageResources.INSTANCE.clockO().getSafeUri());
-                put(FlowPictures.EVENT_END,
-                    FlowImageResources.INSTANCE.eventEnd().getSafeUri());
-                put(FlowPictures.EVENT_INTERMEDIATE,
-                    FlowImageResources.INSTANCE.eventIntermediate().getSafeUri());
-                put(FlowPictures.EVENT_START,
-                    FlowImageResources.INSTANCE.eventStart().getSafeUri());
-                put(FlowPictures.LANE,
-                    FlowImageResources.INSTANCE.lane().getSafeUri());
-                put(FlowPictures.PLUS_QUARE,
-                    FlowImageResources.INSTANCE.plusSquare().getSafeUri());
-                put(FlowPictures.SUB_PROCESS,
-                    FlowImageResources.INSTANCE.subProcess().getSafeUri());
-                put(FlowPictures.PARALLEL_EVENT,
-                    FlowImageResources.INSTANCE.gatewayParallelEvent().getSafeUri());
-                put(FlowPictures.PARALLEL_MULTIPLE,
-                    FlowImageResources.INSTANCE.gatewayParallelMultiple().getSafeUri());
-                put(FlowPictures.EXCLUSIVE,
-                    FlowImageResources.INSTANCE.gatewayExclusive().getSafeUri());
+                put(FlowPictures.DATA_STEP,
+                    FlowImageResources.INSTANCE.dataStep().getSafeUri());
+                put(FlowPictures.FORM_STEP,
+                    FlowImageResources.INSTANCE.formStep().getSafeUri());
+                put(FlowPictures.ROOT_STEP,
+                    FlowImageResources.INSTANCE.rootStep().getSafeUri());
+                put(FlowPictures.START,
+                    FlowImageResources.INSTANCE.start().getSafeUri());
+                put(FlowPictures.MULTI_STEP,
+                    FlowImageResources.INSTANCE.multiStep().getSafeUri());
+                put(FlowPictures.DECISION,
+                    FlowImageResources.INSTANCE.decision().getSafeUri());
+                put(FlowPictures.DECISION_ICON,
+                    FlowImageResources.INSTANCE.decisionIcon().getSafeUri());
+                put(FlowPictures.MATCHER,
+                    FlowImageResources.INSTANCE.dataStep().getSafeUri());
+                put(FlowPictures.JOIN,
+                    FlowImageResources.INSTANCE.join().getSafeUri());
+                put(FlowPictures.JOIN_ICON,
+                    FlowImageResources.INSTANCE.joinIcon().getSafeUri());
             }};
 
     @Override
@@ -71,7 +62,7 @@ public class FlowPictureProvider implements PictureProvider<FlowPictures> {
 
     @Override
     public boolean thumbFor(final FlowPictures source) {
-        return null != get(source);
+        return get(source) != null;
     }
 
     @Override

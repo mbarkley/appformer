@@ -28,7 +28,7 @@ import org.kie.workbench.common.stunner.project.client.type.AbstractStunnerClien
 @ApplicationScoped
 public class FlowDiagramResourceType extends AbstractStunnerClientResourceType<FlowDefinitionSetResourceType> {
 
-    private static final Image ICON = new Image(FlowProjectImageResources.INSTANCE.bpmn2Icon());
+    private static final Image ICON = new Image(FlowProjectImageResources.INSTANCE.columns());
 
     protected FlowDiagramResourceType() {
         this(null);

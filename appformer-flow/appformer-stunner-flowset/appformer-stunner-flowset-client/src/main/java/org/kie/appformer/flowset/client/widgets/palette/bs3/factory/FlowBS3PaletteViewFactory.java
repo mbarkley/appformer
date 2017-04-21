@@ -16,6 +16,7 @@
 
 package org.kie.appformer.flowset.client.widgets.palette.bs3.factory;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,14 +25,6 @@ import javax.inject.Inject;
 
 import org.kie.appformer.flowset.api.FlowDefinitionSet;
 import org.kie.appformer.flowset.api.definition.Categories;
-import org.kie.appformer.flowset.api.definition.DecisionGateway;
-import org.kie.appformer.flowset.api.definition.SimpleStep;
-import org.kie.appformer.flowset.api.definition.FormStep;
-import org.kie.appformer.flowset.api.definition.JoinGateway;
-import org.kie.appformer.flowset.api.definition.MatcherGateway;
-import org.kie.appformer.flowset.api.definition.MultiStep;
-import org.kie.appformer.flowset.api.definition.SequenceFlow;
-import org.kie.appformer.flowset.api.definition.StartNoneEvent;
 import org.kie.appformer.flowset.client.resources.FlowImageResources;
 import org.kie.workbench.common.stunner.client.widgets.palette.factory.BindableBS3PaletteGlyphViewFactory;
 import org.kie.workbench.common.stunner.client.widgets.palette.factory.icons.IconRenderer;
@@ -43,35 +36,10 @@ import org.kie.workbench.common.stunner.core.client.api.ShapeManager;
 public class FlowBS3PaletteViewFactory extends BindableBS3PaletteGlyphViewFactory {
 
     private final static Map<String, IconResource> CATEGORY_RERNDERERS_SETTINGS = new HashMap<String, IconResource>() {{
-        put(Categories.ACTIVITIES,
-            new IconResource(FlowImageResources.INSTANCE.categoryActivity()));
-        put(Categories.MULTISTEP,
-            new IconResource(FlowImageResources.INSTANCE.categoryContainer()));
-        put(Categories.GATEWAYS,
-            new IconResource(FlowImageResources.INSTANCE.categoryGateway()));
-        put(Categories.EVENTS,
-            new IconResource(FlowImageResources.INSTANCE.circle()));
-        put(Categories.CONNECTING_OBJECTS,
-            new IconResource(FlowImageResources.INSTANCE.categorySequence()));
-    }};
-
-    private final static Map<String, IconResource> DEFINITION_RERNDERERS_SETTINGS = new HashMap<String, IconResource>() {{
-        put(SimpleStep.class.getName(),
-            new IconResource(FlowImageResources.INSTANCE.taskBusinessRule()));
-        put(FormStep.class.getName(),
-            new IconResource(FlowImageResources.INSTANCE.taskScript()));
-        put(StartNoneEvent.class.getName(),
-            new IconResource(FlowImageResources.INSTANCE.eventStart()));
-        put(DecisionGateway.class.getName(),
-            new IconResource(FlowImageResources.INSTANCE.gatewayParallelEvent()));
-        put(JoinGateway.class.getName(),
-            new IconResource(FlowImageResources.INSTANCE.gatewayParallelEvent()));
-        put(MatcherGateway.class.getName(),
-            new IconResource(FlowImageResources.INSTANCE.gatewayParallelEvent()));
-        put(SequenceFlow.class.getName(),
-            new IconResource(FlowImageResources.INSTANCE.plusSquare()));
-        put(MultiStep.class.getName(),
-            new IconResource(FlowImageResources.INSTANCE.lane()));
+        put(Categories.FORM,
+            new IconResource<>(FlowImageResources.INSTANCE.columns()));
+        put(Categories.FLOW,
+            new IconResource<>(FlowImageResources.INSTANCE.horizontalArrows()));
     }};
 
     protected FlowBS3PaletteViewFactory() {
@@ -100,6 +68,6 @@ public class FlowBS3PaletteViewFactory extends BindableBS3PaletteGlyphViewFactor
 
     @Override
     protected Map<String, IconResource> getDefinitionIconResources() {
-        return DEFINITION_RERNDERERS_SETTINGS;
+        return Collections.emptyMap();
     }
 }

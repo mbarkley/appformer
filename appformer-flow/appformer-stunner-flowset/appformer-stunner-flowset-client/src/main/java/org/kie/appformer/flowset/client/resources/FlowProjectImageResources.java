@@ -23,6 +23,6 @@ public interface FlowProjectImageResources extends ClientBundleWithLookup {
 
     public static final FlowProjectImageResources INSTANCE = GWT.create(FlowProjectImageResources.class);
 
-    @Source("images/bpmn2icon.png")
-    ImageResource bpmn2Icon();
+    @Source("images/icons/columns.png")
+    ImageResource columns();
 }

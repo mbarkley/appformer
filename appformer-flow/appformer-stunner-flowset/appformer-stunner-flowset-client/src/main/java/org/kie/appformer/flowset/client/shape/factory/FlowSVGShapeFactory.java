@@ -20,19 +20,23 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.kie.appformer.flowset.api.definition.DataStep;
 import org.kie.appformer.flowset.api.definition.DecisionGateway;
-import org.kie.appformer.flowset.api.definition.SimpleStep;
 import org.kie.appformer.flowset.api.definition.FormStep;
 import org.kie.appformer.flowset.api.definition.JoinGateway;
-import org.kie.appformer.flowset.api.definition.MatcherGateway;
+import org.kie.appformer.flowset.api.definition.MatcherStep;
 import org.kie.appformer.flowset.api.definition.MultiStep;
+import org.kie.appformer.flowset.api.definition.RootStep;
 import org.kie.appformer.flowset.api.definition.SequenceFlow;
 import org.kie.appformer.flowset.api.definition.StartNoneEvent;
-import org.kie.appformer.flowset.client.shape.def.FlowPartShapeDef;
-import org.kie.appformer.flowset.client.shape.def.GatewayShapeDef;
+import org.kie.appformer.flowset.client.shape.def.DataStepShapeDef;
+import org.kie.appformer.flowset.client.shape.def.FormStepShapeDef;
+import org.kie.appformer.flowset.client.shape.def.JoinShapeDef;
+import org.kie.appformer.flowset.client.shape.def.DecisionShapeDef;
 import org.kie.appformer.flowset.client.shape.def.MultiStepShapeDef;
+import org.kie.appformer.flowset.client.shape.def.RootStepShapeDef;
 import org.kie.appformer.flowset.client.shape.def.SequenceFlowConnectorDef;
-import org.kie.appformer.flowset.client.shape.def.StartNoneEventShapeDef;
+import org.kie.appformer.flowset.client.shape.def.StartEventShapeDef;
 import org.kie.workbench.common.stunner.core.api.DefinitionManager;
 import org.kie.workbench.common.stunner.core.client.canvas.AbstractCanvasHandler;
 import org.kie.workbench.common.stunner.core.client.shape.Shape;
@@ -70,18 +74,20 @@ public class FlowSVGShapeFactory extends DelegateShapeFactory<Object, AbstractCa
         addDelegate( svgShapeFactory );
         addDelegate( basicShapesFactory );
         // Register the shapes and definitions.
-        svgShapeFactory.addShapeDef( SimpleStep.class,
-                                     new FlowPartShapeDef() );
+        svgShapeFactory.addShapeDef( RootStep.class,
+                                     new RootStepShapeDef() );
+        svgShapeFactory.addShapeDef( DataStep.class,
+                                     new DataStepShapeDef() );
         svgShapeFactory.addShapeDef( StartNoneEvent.class,
-                                     new StartNoneEventShapeDef() );
+                                     new StartEventShapeDef() );
         svgShapeFactory.addShapeDef( FormStep.class,
-                                     new FlowPartShapeDef() );
+                                     new FormStepShapeDef() );
         svgShapeFactory.addShapeDef( DecisionGateway.class,
-                                     new GatewayShapeDef() );
+                                     new DecisionShapeDef() );
         svgShapeFactory.addShapeDef( JoinGateway.class,
-                                     new GatewayShapeDef() );
-        svgShapeFactory.addShapeDef( MatcherGateway.class,
-                                     new GatewayShapeDef() );
+                                     new JoinShapeDef() );
+        svgShapeFactory.addShapeDef( MatcherStep.class,
+                                     new DataStepShapeDef() );
         svgShapeFactory.addShapeDef( MultiStep.class,
                                      new MultiStepShapeDef() );
         basicShapesFactory.addShapeDef( SequenceFlow.class,

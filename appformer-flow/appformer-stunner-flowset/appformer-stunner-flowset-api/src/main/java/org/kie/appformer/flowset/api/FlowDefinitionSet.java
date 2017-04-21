@@ -21,11 +21,12 @@ import javax.enterprise.context.ApplicationScoped;
 import org.jboss.errai.common.client.api.annotations.NonPortable;
 import org.jboss.errai.databinding.client.api.Bindable;
 import org.kie.appformer.flowset.api.definition.DecisionGateway;
-import org.kie.appformer.flowset.api.definition.SimpleStep;
+import org.kie.appformer.flowset.api.definition.DataStep;
 import org.kie.appformer.flowset.api.definition.FormStep;
 import org.kie.appformer.flowset.api.definition.JoinGateway;
-import org.kie.appformer.flowset.api.definition.MatcherGateway;
+import org.kie.appformer.flowset.api.definition.MatcherStep;
 import org.kie.appformer.flowset.api.definition.MultiStep;
+import org.kie.appformer.flowset.api.definition.RootStep;
 import org.kie.appformer.flowset.api.definition.SequenceFlow;
 import org.kie.appformer.flowset.api.definition.StartNoneEvent;
 import org.kie.appformer.flowset.api.factory.FlowGraphFactory;
@@ -40,13 +41,14 @@ import org.kie.workbench.common.stunner.core.rule.annotation.Occurrences;
 @DefinitionSet(
         graphFactory = FlowGraphFactory.class,
         definitions = {
-                SimpleStep.class,
+                RootStep.class,
+                DataStep.class,
                 FormStep.class,
                 MultiStep.class,
                 StartNoneEvent.class,
                 DecisionGateway.class,
                 JoinGateway.class,
-                MatcherGateway.class,
+                MatcherStep.class,
                 SequenceFlow.class
         },
         builder = FlowDefinitionSet.FlowDefinitionSetBuilder.class

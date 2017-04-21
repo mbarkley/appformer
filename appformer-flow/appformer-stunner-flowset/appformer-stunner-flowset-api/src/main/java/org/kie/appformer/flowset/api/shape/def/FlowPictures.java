@@ -18,19 +18,14 @@
 package org.kie.appformer.flowset.api.shape.def;
 
 public enum FlowPictures {
-    TASK_USER,
-    TASK_SCRIPT,
-    FLOW_PART,
-    CANCEL,
-    CIRCLE,
-    CLOCK_O,
-    EVENT_END,
-    EVENT_INTERMEDIATE,
-    EVENT_START,
-    LANE,
-    PLUS_QUARE,
-    SUB_PROCESS,
-    PARALLEL_EVENT,
-    PARALLEL_MULTIPLE,
-    EXCLUSIVE
+    DATA_STEP,
+    ROOT_STEP,
+    FORM_STEP,
+    START,
+    MULTI_STEP,
+    DECISION,
+    MATCHER,
+    JOIN,
+    DECISION_ICON,
+    JOIN_ICON
 }

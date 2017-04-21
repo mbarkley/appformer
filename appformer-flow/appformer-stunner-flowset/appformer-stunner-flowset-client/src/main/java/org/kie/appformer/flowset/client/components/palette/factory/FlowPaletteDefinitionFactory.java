@@ -23,11 +23,8 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import org.kie.appformer.flowset.api.FlowDefinitionSet;
-import org.kie.appformer.flowset.api.definition.BaseGateway;
-import org.kie.appformer.flowset.api.definition.BaseStep;
 import org.kie.appformer.flowset.api.definition.Categories;
-import org.kie.appformer.flowset.api.definition.DecisionGateway;
-import org.kie.appformer.flowset.api.definition.MultiStep;
+import org.kie.appformer.flowset.api.definition.RootStep;
 import org.kie.appformer.flowset.api.definition.SequenceFlow;
 import org.kie.appformer.flowset.api.definition.StartNoneEvent;
 import org.kie.workbench.common.stunner.core.client.api.ShapeManager;
@@ -39,34 +36,21 @@ import org.kie.workbench.common.stunner.core.client.components.palette.model.def
 public class FlowPaletteDefinitionFactory extends BindableDefSetPaletteDefinitionFactory {
 
     private static final Map<String, String> CAT_TITLES = new HashMap<String, String>() {{
-        put(Categories.ACTIVITIES,
-            "Activities");
+        put(Categories.FLOW,
+            "Flow");
         put(Categories.CONNECTING_OBJECTS,
             "Connecting objects");
-        put(Categories.EVENTS,
-            "Events");
-        put(Categories.GATEWAYS,
-            "Gateways");
-        put(Categories.MULTISTEP,
-            "MultiStep");
+        put(Categories.FORM,
+            "Form");
     }};
 
     private static final Map<String, Class<?>> CAT_DEF_IDS = new HashMap<String, Class<?>>() {{
         put(Categories.CONNECTING_OBJECTS,
             SequenceFlow.class);
-        put(Categories.EVENTS,
+        put(Categories.FLOW,
             StartNoneEvent.class);
-        put(Categories.GATEWAYS,
-            DecisionGateway.class);
-        put(Categories.MULTISTEP,
-            MultiStep.class);
-    }};
-
-    private static final Map<String, String> MORPH_GROUP_TITLES = new HashMap<String, String>() {{
-        put(BaseStep.class.getName(),
-            "Tasks");
-        put(BaseGateway.class.getName(),
-            "Gateways");
+        put(Categories.FORM,
+            RootStep.class);
     }};
 
     @Inject
@@ -101,13 +85,13 @@ public class FlowPaletteDefinitionFactory extends BindableDefSetPaletteDefinitio
     @Override
     protected String getMorphGroupTitle(final String morphBaseId,
                                         final Object definition) {
-        return MORPH_GROUP_TITLES.get(morphBaseId);
+        return null;
     }
 
     @Override
     protected String getMorphGroupDescription(final String morphBaseId,
                                               final Object definition) {
-        return MORPH_GROUP_TITLES.get(morphBaseId);
+        return null;
     }
 
     @Override

@@ -56,7 +56,7 @@ import org.kie.workbench.common.stunner.core.rule.annotation.CanContain;
 public class MultiStep implements FlowDefinition {
 
     @Category
-    public static final transient String category = Categories.MULTISTEP;
+    public static final transient String category = Categories.FORM;
 
     @Title
     public static final transient String title = "MultiStep";
@@ -90,19 +90,19 @@ public class MultiStep implements FlowDefinition {
 
         public static final transient String COLOR = "#FFFFFF";
         public static final Double WIDTH = 450d;
-        public static final Double HEIGHT = 250d;
+        public static final Double HEIGHT = 300d;
         public static final Double BORDER_SIZE = 1.5d;
         public static final String BORDER_COLOR = "#000000";
 
         @Override
         public MultiStep build() {
-            return new MultiStep(new FlowGeneralSet("Lane"),
+            return new MultiStep(new FlowGeneralSet("Multi-step form"),
                             new BackgroundSet(COLOR,
-                                              BORDER_COLOR,
+                                              "#b7b7b7",
                                               BORDER_SIZE),
                             new FontSet(FontFamily.defaultValue,
                                         FontColor.defaultValue,
-                                        14d,
+                                        12d,
                                         FontBorderSize.defaultValue),
                             new RectangleDimensionsSet(WIDTH,
                                                        HEIGHT));

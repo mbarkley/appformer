@@ -28,6 +28,9 @@ import org.jboss.errai.databinding.client.api.Bindable;
 import org.kie.appformer.flowset.api.definition.property.background.BackgroundSet;
 import org.kie.appformer.flowset.api.definition.property.dimensions.CircleDimensionSet;
 import org.kie.appformer.flowset.api.definition.property.dimensions.Radius;
+import org.kie.appformer.flowset.api.definition.property.font.FontBorderSize;
+import org.kie.appformer.flowset.api.definition.property.font.FontColor;
+import org.kie.appformer.flowset.api.definition.property.font.FontFamily;
 import org.kie.appformer.flowset.api.definition.property.font.FontSet;
 import org.kie.appformer.flowset.api.definition.property.general.FlowGeneralSet;
 import org.kie.workbench.common.forms.adf.definitions.annotations.FormDefinition;
@@ -58,7 +61,7 @@ public class StartNoneEvent implements FlowDefinition {
     public static final transient String description = "Untyped start event";
 
     @Category
-    public static final transient String category = Categories.EVENTS;
+    public static final transient String category = Categories.FLOW;
 
     @NonPortable
     public static class StartNoneEventBuilder implements Builder<StartNoneEvent> {
@@ -66,7 +69,7 @@ public class StartNoneEvent implements FlowDefinition {
         public static final String BG_COLOR = "#FFFFFF";
         public static final Double BORDER_SIZE = 1.5d;
         public static final String BORDER_COLOR = "#000000";
-        public static final Double RADIUS = 15d;
+        public static final Double RADIUS = 20d;
 
         @Override
         public StartNoneEvent build() {
@@ -74,7 +77,10 @@ public class StartNoneEvent implements FlowDefinition {
                                       new BackgroundSet(BG_COLOR,
                                                         BORDER_COLOR,
                                                         BORDER_SIZE),
-                                      new FontSet(),
+                                      new FontSet(FontFamily.defaultValue,
+                                                  FontColor.defaultValue,
+                                                  10d,
+                                                  FontBorderSize.defaultValue),
                                       new CircleDimensionSet(new Radius(RADIUS)));
         }
     }

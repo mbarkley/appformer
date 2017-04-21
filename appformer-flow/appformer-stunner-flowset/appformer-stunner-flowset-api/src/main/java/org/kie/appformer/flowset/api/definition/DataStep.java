@@ -31,8 +31,10 @@ import org.kie.appformer.flowset.api.definition.property.general.Name;
 import org.kie.appformer.flowset.api.definition.property.general.Type;
 import org.kie.workbench.common.forms.adf.definitions.annotations.FormDefinition;
 import org.kie.workbench.common.forms.adf.definitions.annotations.FormField;
+import org.kie.workbench.common.forms.adf.definitions.annotations.field.selector.SelectorDataProvider;
+import org.kie.workbench.common.forms.adf.definitions.annotations.field.selector.SelectorDataProvider.ProviderType;
 import org.kie.workbench.common.forms.adf.definitions.settings.FieldPolicy;
-import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.textBox.type.TextBoxFieldType;
+import org.kie.workbench.common.forms.fields.shared.fieldTypes.basic.selectors.listBox.type.ListBoxFieldType;
 import org.kie.workbench.common.stunner.core.definition.annotation.Definition;
 import org.kie.workbench.common.stunner.core.definition.annotation.Property;
 import org.kie.workbench.common.stunner.core.definition.annotation.definition.Category;
@@ -41,50 +43,55 @@ import org.kie.workbench.common.stunner.core.factory.graph.NodeFactory;
 
 @Portable
 @Bindable
-@Definition(graphFactory = NodeFactory.class, builder = FormStep.FormPartBuilder.class)
+@Definition(graphFactory = NodeFactory.class, builder = DataStep.FlowPartBuilder.class)
 @FormDefinition(
         startElement = "name",
         policy = FieldPolicy.ONLY_MARKED
 )
-public class FormStep extends EntityStep {
+public class DataStep extends EntityStep {
 
     @Category
-    public static final transient String category = Categories.FORM;
+    public static final transient String category = Categories.FLOW;
 
     @Title
-    public static final transient String title = "Form Step";
+    public static final transient String title = "Data Step";
 
     @NonPortable
-    public static class FormPartBuilder extends BasePartBuilder<FormStep> {
+    public static class FlowPartBuilder extends BasePartBuilder<DataStep> {
 
         @Override
-        public FormStep build() {
-            final FormStep instance = new FormStep( new Name("property"),
-                                 new Type(),
-                                 new BackgroundSet( "#0088ce",
-                                                    "#0088ce",
-                                                    BORDER_SIZE ),
-                                 new FontSet(FontFamily.defaultValue,
-                                            FontColor.defaultValue,
-                                            12d,
-                                            FontBorderSize.defaultValue),
-                                 new RectangleDimensionsSet( 100d,
-                                                             30d ) );
-            instance.getLabels().add("form_step");
+        public DataStep build() {
+            final DataStep instance =new DataStep(new Name("Data Step"),
+                                                  new Type(),
+                                        new BackgroundSet("#CCC",
+                                                          "#CCC",
+                                                          BORDER_SIZE),
+                                        new FontSet(FontFamily.defaultValue,
+                                                    FontColor.defaultValue,
+                                                    12d,
+                                                    FontBorderSize.defaultValue),
+                                        new RectangleDimensionsSet(WIDTH,
+                                                                   HEIGHT)
+            );
+            instance.getLabels().add("flow_step");
             return instance;
         }
     }
 
     @Property
-    @FormField(type = TextBoxFieldType.class)
+    @FormField(type = ListBoxFieldType.class)
+    @SelectorDataProvider(
+                          className = "org.kie.appformer.flowset.backend.DataStepProvider",
+                          type = ProviderType.REMOTE
+                         )
     @Valid
     private Name name;
 
-    public FormStep() {
+    public DataStep() {
         super();
     }
 
-    public FormStep( final @MapsTo( "name" ) Name name,
+    public DataStep( final @MapsTo( "name" ) Name name,
                      final @MapsTo( "entityType" ) Type entityType,
                      final @MapsTo( "backgroundSet" ) BackgroundSet backgroundSet,
                      final @MapsTo( "fontSet" ) FontSet fontSet,

@@ -24,18 +24,13 @@ import org.jboss.errai.common.client.api.annotations.NonPortable;
 import org.kie.appformer.flowset.api.definition.property.background.BackgroundSet;
 import org.kie.appformer.flowset.api.definition.property.dimensions.RectangleDimensionsSet;
 import org.kie.appformer.flowset.api.definition.property.font.FontSet;
-import org.kie.appformer.flowset.api.definition.property.general.Name;
 import org.kie.workbench.common.forms.adf.definitions.annotations.FormField;
 import org.kie.workbench.common.stunner.core.definition.annotation.Description;
 import org.kie.workbench.common.stunner.core.definition.annotation.PropertySet;
-import org.kie.workbench.common.stunner.core.definition.annotation.definition.Category;
 import org.kie.workbench.common.stunner.core.definition.annotation.definition.Labels;
 import org.kie.workbench.common.stunner.core.definition.builder.Builder;
 
 public abstract class BaseStep implements FlowDefinition {
-
-    @Category
-    public static final transient String category = Categories.ACTIVITIES;
 
     @Description
     public static final transient String description = "A task is a unit of work - the job to be performed";
@@ -47,6 +42,9 @@ public abstract class BaseStep implements FlowDefinition {
     @Valid
     protected BackgroundSet backgroundSet;
 
+    @FormField(
+               afterElement = "backgroundSet"
+    )
     @PropertySet
     protected FontSet fontSet;
 
@@ -67,7 +65,7 @@ public abstract class BaseStep implements FlowDefinition {
         public static final String COLOR = "#f9fad2";
         public static final Double WIDTH = 136d;
         public static final Double HEIGHT = 48d;
-        public static final Double BORDER_SIZE = 1d;
+        public static final Double BORDER_SIZE = 0d;
         public static final String BORDER_COLOR = "#000000";
     }
 
@@ -82,13 +80,7 @@ public abstract class BaseStep implements FlowDefinition {
         this.dimensionsSet = dimensionsSet;
     }
 
-    public abstract void setName( final Name name );
-
-    public abstract Name getName();
-
-    public String getCategory() {
-        return category;
-    }
+    public abstract String getCategory();
 
     public String getDescription() {
         return description;
