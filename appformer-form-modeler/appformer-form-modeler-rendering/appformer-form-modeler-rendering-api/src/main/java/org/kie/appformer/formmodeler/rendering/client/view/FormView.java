@@ -65,8 +65,9 @@ public abstract class FormView<MODEL, FORM_MODEL extends FormModel> implements I
 
     @PostConstruct
     private void init() {
-        initForm();
+        // This must come first to prevent NPE with nested models.
         getModel().initModel();
+        initForm();
         beforeDisplay();
     }
 
