@@ -28,7 +28,7 @@ public class DocumentUploadFieldProvider extends BasicTypeFieldProvider<Document
 
     @Override
     public int getPriority() {
-        return 100;
+        return 1000;
     }
 
     @Override
