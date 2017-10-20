@@ -12,8 +12,8 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.guvnor</groupId>
-      <artifactId>guvnor-ala-wildfly-provider</artifactId>
+      <groupId>org.kie.workbench</groupId>
+      <artifactId>kie-wb-common-ala-wildfly-provider</artifactId>
     </dependency>
     <dependency>
       <groupId>org.kie.workbench.screens</groupId>
