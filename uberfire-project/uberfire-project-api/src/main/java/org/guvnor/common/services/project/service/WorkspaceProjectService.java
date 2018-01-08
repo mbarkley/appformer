@@ -17,6 +17,7 @@ package org.guvnor.common.services.project.service;
 
 import java.util.Collection;
 
+import org.guvnor.common.services.project.context.WorkspaceProjectContext;
 import org.guvnor.common.services.project.model.Module;
 import org.guvnor.common.services.project.model.POM;
 import org.guvnor.common.services.project.model.WorkspaceProject;
@@ -25,6 +26,7 @@ import org.guvnor.structure.repositories.Branch;
 import org.guvnor.structure.repositories.Repository;
 import org.jboss.errai.bus.server.annotations.Remote;
 import org.uberfire.backend.vfs.Path;
+import org.uberfire.spaces.Space;
 
 @Remote
 public interface WorkspaceProjectService {
@@ -42,13 +44,22 @@ public interface WorkspaceProjectService {
 
     WorkspaceProject resolveProject(final Repository repository);
 
-    WorkspaceProject resolveProject(final Branch branch);
+    WorkspaceProject resolveProject(final Space space, final Branch branch);
 
-    WorkspaceProject resolveProject(final Module module);
+    WorkspaceProject resolveProject(final Space space, final Module module);
 
     WorkspaceProject resolveProject(final Path module);
 
+    WorkspaceProject resolveProject(final Space space, final Path module);
+
+    WorkspaceProject resolveProject(final Space space, final String name);
+
+    /**
+     * Like {@link #resolveProject(Space, String)}, but looks in the active space.
+     * @return null if there is no active space.
+     * @see WorkspaceProjectContext
+     */
     WorkspaceProject resolveProject(final String name);
 
-    WorkspaceProject resolveProjectByRepositoryAlias(final String repositoryAlias);
+    WorkspaceProject resolveProjectByRepositoryAlias(final Space space, final String repositoryAlias);
 }

@@ -19,6 +19,9 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.regex.Pattern;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 
@@ -30,6 +33,9 @@ import org.uberfire.spaces.SpacesAPI;
 @ApplicationScoped
 @Startup(StartupType.BOOTSTRAP)
 public class SpacesAPIImpl implements SpacesAPI {
+
+    private static final String PATH_PATTERN = "^[A-Za-z]+://([^/]+)/.*";
+    private static final Pattern PATH_REGEX = Pattern.compile(PATH_PATTERN);
 
     private Map<String, Space> spaces = new HashMap<>();
 
@@ -46,6 +52,14 @@ public class SpacesAPIImpl implements SpacesAPI {
         spaces.putIfAbsent(name,
                            new Space(name));
         return spaces.get(name);
+    }
+
+    @Override
+    public Optional<Space> resolveSpace(String uri) {
+        return Optional
+        .ofNullable(PATH_REGEX.matcher(uri))
+        .filter(matcher -> matcher.matches())
+        .map(matcher -> matcher.group(1)).map(this::getSpace);
     }
 
 

@@ -43,6 +43,7 @@ import org.uberfire.ext.widgets.core.client.resources.i18n.CoreConstants;
 import org.uberfire.java.nio.base.version.VersionRecord;
 import org.uberfire.lifecycle.OnStartup;
 import org.uberfire.mvp.PlaceRequest;
+import org.uberfire.spaces.Space;
 import org.uberfire.workbench.events.NotificationEvent;
 
 @Dependent
@@ -119,7 +120,7 @@ public class RepositoryEditorPresenter {
                             }
                         }
 
-                ).resolveProjectByRepositoryAlias(repo.getAlias());
+                ).resolveProjectByRepositoryAlias(new Space(repo.getOwner()), repo.getAlias());
             }
         }).getRepositoryInfo(alias);
     }

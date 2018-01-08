@@ -44,7 +44,7 @@ public class WorkspaceProjectContext {
     private Module activeModule;
     private Package activePackage;
 
-    private Map<ProjectContextChangeHandle, WorkspaceProjectContextChangeHandler> changeHandlers = new HashMap<ProjectContextChangeHandle, WorkspaceProjectContextChangeHandler>();
+    private Map<ProjectContextChangeHandle, WorkspaceProjectContextChangeHandler> changeHandlers = new HashMap<>();
 
     private Event<WorkspaceProjectContextChangeEvent> contextChangeEvent;
 

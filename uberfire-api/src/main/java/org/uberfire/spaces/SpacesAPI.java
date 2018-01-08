@@ -1,11 +1,14 @@
 package org.uberfire.spaces;
 
 import java.util.Collection;
+import java.util.Optional;
+import java.util.regex.Pattern;
 
 public interface SpacesAPI {
 
     String DEFAULT_SPACE_NAME = "system";
     Space DEFAULT_SPACE = new Space(DEFAULT_SPACE_NAME);
+
 
     static String resolveFileSystemPath(Scheme scheme,
                                         Space space,
@@ -25,6 +28,8 @@ public interface SpacesAPI {
     Collection<Space> getSpaces();
 
     Collection<Space> getUserSpaces();
+
+    Optional<Space> resolveSpace(String uri);
 
     enum Scheme {
         DEFAULT("default"),

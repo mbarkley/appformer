@@ -15,12 +15,20 @@
  */
 package org.guvnor.common.services.project.backend.server;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+
 import javax.enterprise.inject.Instance;
 
+import org.guvnor.common.services.project.context.WorkspaceProjectContext;
 import org.guvnor.common.services.project.model.Module;
 import org.guvnor.common.services.project.model.WorkspaceProject;
 import org.guvnor.common.services.project.service.ModuleService;
@@ -31,17 +39,13 @@ import org.guvnor.structure.organizationalunit.impl.OrganizationalUnitImpl;
 import org.guvnor.structure.repositories.Branch;
 import org.guvnor.structure.repositories.Repository;
 import org.guvnor.structure.repositories.RepositoryService;
-import org.jboss.errai.security.shared.api.identity.User;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.mocks.EventSourceMock;
-import org.uberfire.security.authz.AuthorizationManager;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import org.uberfire.spaces.SpacesAPI;
 
 @RunWith(MockitoJUnitRunner.class)
 public class WorkspaceProjectServiceImplTest {
@@ -69,6 +73,12 @@ public class WorkspaceProjectServiceImplTest {
     @Mock
     ModuleService moduleService;
 
+    @Mock
+    WorkspaceProjectContext context;
+
+    @Mock
+    SpacesAPI spaces;
+
     private OrganizationalUnit ou1;
     private OrganizationalUnit ou2;
     private List<Repository> allRepositories;
@@ -84,6 +94,8 @@ public class WorkspaceProjectServiceImplTest {
 
         workspaceProjectService = new WorkspaceProjectServiceImpl(organizationalUnitService,
                                                                   repositoryService,
+                                                                  context,
+                                                                  spaces,
                                                                   new EventSourceMock<>(),
                                                                   moduleServices);
     }

@@ -15,10 +15,17 @@
  */
 package org.guvnor.common.services.project.backend.server;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+
 import java.util.HashMap;
 import java.util.Optional;
+
 import javax.enterprise.inject.Instance;
 
+import org.guvnor.common.services.project.context.WorkspaceProjectContext;
 import org.guvnor.common.services.project.model.Module;
 import org.guvnor.common.services.project.model.POM;
 import org.guvnor.common.services.project.model.WorkspaceProject;
@@ -30,19 +37,17 @@ import org.guvnor.structure.repositories.Branch;
 import org.guvnor.structure.repositories.Repository;
 import org.guvnor.structure.repositories.RepositoryService;
 import org.guvnor.structure.repositories.impl.git.GitRepository;
-import org.jboss.errai.security.shared.api.identity.User;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.PathFactory;
 import org.uberfire.mocks.EventSourceMock;
-import org.uberfire.security.authz.AuthorizationManager;
-
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import org.uberfire.spaces.Space;
+import org.uberfire.spaces.SpacesAPI;
 
 @RunWith(MockitoJUnitRunner.class)
 public class WorkspaceProjectServiceImplResolveWorkspaceWorkspaceProjectTest {
@@ -68,6 +73,12 @@ public class WorkspaceProjectServiceImplResolveWorkspaceWorkspaceProjectTest {
     Repository repository;
 
     @Mock
+    WorkspaceProjectContext context;
+
+    @Mock
+    SpacesAPI spaces;
+
+    @Mock
     Branch branch;
 
     @Mock
@@ -75,9 +86,9 @@ public class WorkspaceProjectServiceImplResolveWorkspaceWorkspaceProjectTest {
 
     private Path path;
     private Path branchRoot;
-    private Path otherBranchRoot;
     private Branch masterBranch;
-    private Branch otherBranch;
+
+    private Space space;
 
     @Before
     public void setUp() throws Exception {
@@ -85,35 +96,36 @@ public class WorkspaceProjectServiceImplResolveWorkspaceWorkspaceProjectTest {
                                    "file:///files/TestDataObject.java");
         branchRoot = PathFactory.newPath("testFile",
                                          "file:///branchRoot/");
-        otherBranchRoot = PathFactory.newPath("testFile",
-                                              "file:///otherBranchRoot/");
+        space = new Space("test-realm");
 
         doReturn(ou).when(organizationalUnitService).getParentOrganizationalUnit(repository);
+        doReturn(space.getName()).when(ou).getName();
+        doReturn(ou).when(organizationalUnitService).getOrganizationalUnit(space.getName());
 
         doReturn(Optional.of(branch)).when(repository).getDefaultBranch();
         doReturn(branchRoot).when(branch).getPath();
 
-        doReturn(repository).when(repositoryService).getRepository(any(Path.class));
+        doReturn(repository).when(repositoryService).getRepository(Mockito.eq(space), any(Path.class));
+        doReturn(space).when(repository).getSpace();
 
         doReturn(module).when(moduleService).resolveModule(any());
 
         masterBranch = new Branch("master",
                                   path);
 
-        otherBranch = new Branch("other",
-                                 otherBranchRoot);
-
         doReturn(moduleService).when(moduleServices).get();
 
         workspaceProjectService = new WorkspaceProjectServiceImpl(organizationalUnitService,
                                                                   repositoryService,
+                                                                  context,
+                                                                  spaces,
                                                                   new EventSourceMock<>(),
                                                                   moduleServices);
     }
 
     @Test
     public void resolveProjectPath() throws Exception {
-        final WorkspaceProject workspaceProject = workspaceProjectService.resolveProject(path);
+        final WorkspaceProject workspaceProject = workspaceProjectService.resolveProject(space, path);
 
         assertEquals(ou,
                      workspaceProject.getOrganizationalUnit());
@@ -128,7 +140,8 @@ public class WorkspaceProjectServiceImplResolveWorkspaceWorkspaceProjectTest {
     @Test
     public void resolveProjectModule() throws Exception {
 
-        final WorkspaceProject workspaceProject = workspaceProjectService.resolveProject(new Module(path,
+        final WorkspaceProject workspaceProject = workspaceProjectService.resolveProject(space,
+                                                                                         new Module(path,
                                                                                                     mock(Path.class),
                                                                                                     mock(POM.class)));
 
@@ -145,7 +158,7 @@ public class WorkspaceProjectServiceImplResolveWorkspaceWorkspaceProjectTest {
     @Test
     public void resolveProjectRepository() throws Exception {
 
-        final GitRepository repository = new GitRepository();
+        final GitRepository repository = new GitRepository("alias", space);
         final HashMap<String, Branch> branches = new HashMap<>();
         branches.put("master", new Branch("master",
                                           path));
@@ -166,7 +179,7 @@ public class WorkspaceProjectServiceImplResolveWorkspaceWorkspaceProjectTest {
     @Test
     public void resolveProjectBranch() throws Exception {
 
-        final WorkspaceProject workspaceProject = workspaceProjectService.resolveProject(masterBranch);
+        final WorkspaceProject workspaceProject = workspaceProjectService.resolveProject(space, masterBranch);
 
         assertEquals(ou,
                      workspaceProject.getOrganizationalUnit());

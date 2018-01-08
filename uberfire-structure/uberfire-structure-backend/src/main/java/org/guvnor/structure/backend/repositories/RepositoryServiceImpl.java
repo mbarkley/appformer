@@ -15,10 +15,15 @@
 
 package org.guvnor.structure.backend.repositories;
 
+import static org.guvnor.structure.repositories.EnvironmentParameters.SCHEME;
+import static org.guvnor.structure.server.config.ConfigType.REPOSITORY;
+import static org.uberfire.backend.server.util.Paths.convert;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
@@ -58,10 +63,6 @@ import org.uberfire.rpc.SessionInfo;
 import org.uberfire.security.authz.AuthorizationManager;
 import org.uberfire.spaces.Space;
 import org.uberfire.spaces.SpacesAPI;
-
-import static org.guvnor.structure.repositories.EnvironmentParameters.SCHEME;
-import static org.guvnor.structure.server.config.ConfigType.REPOSITORY;
-import static org.uberfire.backend.server.util.Paths.convert;
 
 @Service
 @ApplicationScoped
@@ -220,6 +221,12 @@ public class RepositoryServiceImpl implements RepositoryService {
     }
 
     @Override
+    public Repository getRepository(Space space, Path root) {
+        return configuredRepositories.getRepositoryByRootPath(space,
+                                                              root);
+    }
+
+    @Override
     public String normalizeRepositoryName(String name) {
         return TextUtil.normalizeRepositoryName(name);
     }
@@ -268,6 +275,7 @@ public class RepositoryServiceImpl implements RepositoryService {
 
             final Repository repository = createRepository(scheme,
                                                            alias,
+                                                           new Space(organizationalUnit.getName()),
                                                            repositoryEnvironmentConfigurations);
             if (organizationalUnit != null && repository != null) {
                 organizationalUnitService.addRepository(organizationalUnit,
@@ -296,7 +304,7 @@ public class RepositoryServiceImpl implements RepositoryService {
     }
 
     @Override
-    public void removeRepository(final String alias) {
+    public void removeRepository(Space space, String alias) {
         final ConfigGroup thisRepositoryConfig = findRepositoryConfig(alias);
 
         try {
@@ -305,7 +313,7 @@ public class RepositoryServiceImpl implements RepositoryService {
                 configurationService.removeConfiguration(thisRepositoryConfig);
             }
 
-            final Repository repo = configuredRepositories.remove(getCurrentSpace(),
+            final Repository repo = configuredRepositories.remove(space,
                                                                   alias);
             if (repo != null) {
                 repositoryRemovedEvent.fire(new RepositoryRemovedEvent(repo));
@@ -332,6 +340,11 @@ public class RepositoryServiceImpl implements RepositoryService {
         } finally {
             configurationService.endBatch();
         }
+    }
+
+    @Override
+    public void removeRepository(final String alias) {
+        removeRepository(getCurrentSpace(), alias);
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -381,9 +394,10 @@ public class RepositoryServiceImpl implements RepositoryService {
 
     private Repository createRepository(final String scheme,
                                         final String alias,
+                                        final Space space,
                                         final RepositoryEnvironmentConfigurations repositoryEnvironmentConfigurations) {
 
-        if (configuredRepositories.containsAlias(getCurrentSpace(),
+        if (configuredRepositories.containsAlias(space,
                                                  alias)) {
             throw new RepositoryAlreadyExistsException(alias);
         }
@@ -406,7 +420,7 @@ public class RepositoryServiceImpl implements RepositoryService {
                 repositoryConfig.addConfigItem(getRepositoryConfigItem(configuration));
             }
 
-            repo = createRepository(repositoryConfig);
+            repo = createRepository(repositoryConfig, space);
             return repo;
         } catch (final Exception e) {
             logger.error("Error during create repository",
@@ -420,10 +434,10 @@ public class RepositoryServiceImpl implements RepositoryService {
         }
     }
 
-    private Repository createRepository(final ConfigGroup repositoryConfig) {
+    private Repository createRepository(final ConfigGroup repositoryConfig, Space space) {
         final Repository repository = repositoryFactory.newRepository(repositoryConfig);
         configurationService.addConfiguration(repositoryConfig);
-        configuredRepositories.add(getCurrentSpace(),
+        configuredRepositories.add(space,
                                    repository);
         return repository;
     }

@@ -71,6 +71,9 @@ public class JobRequestHelper {
     private WorkspaceProjectService workspaceProjectService;
 
     @Inject
+    private RepositoryService repoService;
+
+    @Inject
     private BuildService buildService;
 
     @Inject
@@ -255,7 +258,7 @@ public class JobRequestHelper {
     }
 
     private List<String> buildResultsToDetailedStringMessages(List<BuildMessage> messages) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
         for (BuildMessage message : messages) {
             String detailedStringMessage = "level:" + message.getLevel() +
                     ", path:" + message.getPath() +
@@ -304,7 +307,7 @@ public class JobRequestHelper {
                     result.setStatus(JobStatus.DUPLICATE_RESOURCE);
                     result.setResult("Project's GAV [" + gae.getGAV() + "] already exists at [" + toString(gae.getRepositories()) + "]");
                 } else {
-                    List<String> errorResult = new ArrayList<String>();
+                    List<String> errorResult = new ArrayList<>();
                     errorResult.add(t.getMessage());
                     result.setDetailedResult(errorResult);
                     result.setStatus(JobStatus.FAIL);
@@ -474,7 +477,7 @@ public class JobRequestHelper {
             return result;
         }
 
-        List<org.guvnor.structure.repositories.Repository> repositories = new ArrayList<org.guvnor.structure.repositories.Repository>();
+        List<org.guvnor.structure.repositories.Repository> repositories = new ArrayList<>();
         if (repositoryNameList != null && repositoryNameList.size() > 0) {
             for (String repositoryAlias : repositoryNameList) {
                 org.uberfire.java.nio.file.Path repositoryPath = getRepositoryRootPath(repositoryAlias);

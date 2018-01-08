@@ -17,6 +17,7 @@ package org.guvnor.structure.repositories;
 
 import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.uberfire.backend.vfs.Path;
+import org.uberfire.spaces.Space;
 
 public interface RepositoryCopier {
 
@@ -32,7 +33,14 @@ public interface RepositoryCopier {
                     final String newRepositoryName,
                     final Path originRoot);
 
+    /**
+     * Like {@link #copy(Path, Path)} but assumes current active space.
+     */
     void copy(Path originRoot,
+              Path targetRoot);
+
+    void copy(Space space,
+              Path originRoot,
               Path targetRoot);
 
     String makeSafeRepositoryName(String oldName);

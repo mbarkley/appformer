@@ -53,6 +53,8 @@ public interface RepositoryService {
 
     Repository getRepository(final Path root);
 
+    Repository getRepository(final Space space, final Path root);
+
     /**
      * Get all the repositories. Security checks are omitted.
      */
@@ -84,4 +86,6 @@ public interface RepositoryService {
                      final String group);
 
     void removeRepository(final String alias);
+
+    void removeRepository(final Space space, final String alias);
 }

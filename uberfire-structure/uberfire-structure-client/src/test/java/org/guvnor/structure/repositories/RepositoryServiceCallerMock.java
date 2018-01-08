@@ -127,6 +127,13 @@ public class RepositoryServiceCallerMock
         }
 
         @Override
+        public Repository getRepository(Space space, Path root) {
+            Repository result = repositoryService.getRepository(space, root);
+            remoteCallback.callback(result);
+            return result;
+        }
+
+        @Override
         public Collection<Repository> getAllRepositories() {
             Collection<Repository> result = repositoryService.getAllRepositories();
             remoteCallback.callback(result);
@@ -191,6 +198,11 @@ public class RepositoryServiceCallerMock
         @Override
         public void removeRepository(String alias) {
             repositoryService.removeRepository(alias);
+        }
+
+        @Override
+        public void removeRepository(Space space, String alias) {
+            repositoryService.removeRepository(space, alias);
         }
     }
 }

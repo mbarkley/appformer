@@ -15,6 +15,8 @@
  */
 package org.uberfire.spaces;
 
+import java.util.Objects;
+
 import org.jboss.errai.common.client.api.annotations.Portable;
 
 @Portable
@@ -32,5 +34,20 @@ public class Space {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public String toString() {
+        return name;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Space && Objects.equals(name, ((Space) obj).getName());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(name);
     }
 }

@@ -38,6 +38,7 @@ import org.uberfire.java.nio.file.FileVisitor;
 import org.uberfire.java.nio.file.Files;
 import org.uberfire.java.nio.file.StandardCopyOption;
 import org.uberfire.java.nio.file.attribute.BasicFileAttributes;
+import org.uberfire.spaces.Space;
 
 public class RepositoryCopierImpl
         implements RepositoryCopier {
@@ -107,12 +108,52 @@ public class RepositoryCopierImpl
         }
     }
 
+    @Override
+    public void copy(Space space, Path originRoot, Path targetRoot) {
+
+        final boolean branchExisted = (repositoryService.getRepository(space, targetRoot) != null);
+
+        final org.uberfire.java.nio.file.Path nioTargetRepositoryRoot = Paths.convert(targetRoot);
+        final org.uberfire.java.nio.file.Path originRepositoryRoot = Paths.convert(originRoot);
+
+        ioService.startBatch(nioTargetRepositoryRoot.getFileSystem());
+
+        copyFolders(nioTargetRepositoryRoot,
+                    originRepositoryRoot);
+        copyRootFiles(targetRoot,
+                      originRepositoryRoot);
+
+        if (!branchExisted) {
+            fireNewBranchEvent(space,
+                               targetRoot,
+                               nioTargetRepositoryRoot);
+        }
+    }
+
     private void fireNewBranchEvent(final Path targetRoot,
                                     final org.uberfire.java.nio.file.Path nioTargetRepositoryRoot) {
 
         configuredRepositories.reloadRepositories();
 
         final Repository repository = repositoryService.getRepository(targetRoot);
+
+        final Optional<Branch> branch = repository.getBranch(Paths.convert(nioTargetRepositoryRoot.getRoot()));
+
+        if (branch.isPresent()) {
+            newBranchEventEvent.fire(new NewBranchEvent(repository,
+                                                        branch.get().getName()));
+        } else {
+            throw new IllegalStateException("Could not find a branch that was just created. The Path used was " + nioTargetRepositoryRoot.getRoot());
+        }
+    }
+
+    private void fireNewBranchEvent(final Space space,
+                                    final Path targetRoot,
+                                    final org.uberfire.java.nio.file.Path nioTargetRepositoryRoot) {
+
+        configuredRepositories.reloadRepositories();
+
+        final Repository repository = repositoryService.getRepository(space, targetRoot);
 
         final Optional<Branch> branch = repository.getBranch(Paths.convert(nioTargetRepositoryRoot.getRoot()));
 
