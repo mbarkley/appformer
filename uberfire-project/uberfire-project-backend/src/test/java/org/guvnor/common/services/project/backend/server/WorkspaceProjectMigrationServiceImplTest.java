@@ -46,13 +46,14 @@ import org.uberfire.backend.vfs.Path;
 import org.uberfire.backend.vfs.PathFactory;
 import org.uberfire.io.IOService;
 import org.uberfire.mocks.EventSourceMock;
+import org.uberfire.spaces.Space;
 import org.uberfire.spaces.SpacesAPI;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class WorkspaceWorkspaceProjectMigrationServiceImplTest {
+public class WorkspaceProjectMigrationServiceImplTest {
 
     private WorkspaceProjectMigrationServiceImpl service;
 
@@ -88,6 +89,9 @@ public class WorkspaceWorkspaceProjectMigrationServiceImplTest {
 
     @Mock
     private WorkspaceProjectService workspaceProjectService;
+
+    @Mock
+    private Space space;
 
     @Captor
     private ArgumentCaptor<Path> pathArgumentCaptor;
@@ -157,11 +161,14 @@ public class WorkspaceWorkspaceProjectMigrationServiceImplTest {
     @Test
     public void copy() throws Exception {
 
-        verify(repositoryCopier).copy(eq(legacyMasterBranchProject1RootPath),
+        verify(repositoryCopier).copy(eq(space),
+                                      eq(legacyMasterBranchProject1RootPath),
                                       pathArgumentCaptor.capture());
-        verify(repositoryCopier).copy(eq(legacyDevBranchProject1RootPath),
+        verify(repositoryCopier).copy(eq(space),
+                                      eq(legacyDevBranchProject1RootPath),
                                       pathArgumentCaptor.capture());
-        verify(repositoryCopier).copy(eq(legacyDevBranchProject2RootPath),
+        verify(repositoryCopier).copy(eq(space),
+                                      eq(legacyDevBranchProject2RootPath),
                                       pathArgumentCaptor.capture());
 
         final List<Path> allValues = pathArgumentCaptor.getAllValues();
@@ -230,6 +237,7 @@ public class WorkspaceWorkspaceProjectMigrationServiceImplTest {
                 final Repository newRepository = mock(Repository.class);
                 doReturn(invocationOnMock.getArguments()[2]).when(newRepository).getAlias();
                 doReturn(SpacesAPI.Scheme.FILE).when(newRepository).getScheme();
+                doReturn(space).when(newRepository).getSpace();
                 return newRepository;
             }
         }).when(repositoryService).createRepository(eq(organizationalUnit),

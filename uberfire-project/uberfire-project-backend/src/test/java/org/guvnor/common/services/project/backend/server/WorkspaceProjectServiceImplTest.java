@@ -15,12 +15,6 @@
  */
 package org.guvnor.common.services.project.backend.server;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -46,6 +40,12 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.spaces.SpacesAPI;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
 @RunWith(MockitoJUnitRunner.class)
 public class WorkspaceProjectServiceImplTest {
@@ -91,6 +91,7 @@ public class WorkspaceProjectServiceImplTest {
         setUpOUs();
 
         doReturn(moduleService).when(moduleServices).get();
+        doReturn(allRepositories).when(repositoryService).getAllRepositoriesFromAllUserSpaces();
 
         workspaceProjectService = new WorkspaceProjectServiceImpl(organizationalUnitService,
                                                                   repositoryService,
