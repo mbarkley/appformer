@@ -289,7 +289,7 @@ public class SystemConfigProducer implements Extension {
                 FileSystem fs;
                 try {
                     //@Question porcelli: this should be default right?
-                    fs = ioService.newFileSystem(spaces.resolveFileSystemURI(SpacesAPIImpl.Scheme.DEFAULT,
+                    fs = ioService.newFileSystem(spaces.resolveFileSystemURI(SpacesAPIImpl.Scheme.GIT,
                                                                                 SpacesAPI.DEFAULT_SPACE,
                                                                                 fsName),
                                                  new HashMap<String, Object>() {{
@@ -299,7 +299,7 @@ public class SystemConfigProducer implements Extension {
                                                          Boolean.TRUE);
                                                  }});
                 } catch (FileSystemAlreadyExistsException e) {
-                    fs = ioService.getFileSystem(spaces.resolveFileSystemURI(SpacesAPIImpl.Scheme.DEFAULT,
+                    fs = ioService.getFileSystem(spaces.resolveFileSystemURI(SpacesAPIImpl.Scheme.GIT,
                                                                              SpacesAPIImpl.DEFAULT_SPACE,
                                                                              fsName));
                 }
