@@ -20,8 +20,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.guvnor.common.services.project.client.context.WorkspaceProjectContext;
 import org.guvnor.structure.client.editors.context.GuvnorStructureContext;
 import org.guvnor.structure.client.editors.context.GuvnorStructureContextChangeHandler;
+import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.guvnor.structure.repositories.Branch;
 import org.guvnor.structure.repositories.NewBranchEvent;
 import org.guvnor.structure.repositories.Repository;
@@ -56,6 +58,9 @@ public class RepositoriesPresenterTest {
 
     @Mock
     private RepositoryService repositoryService;
+
+    @Mock
+    private WorkspaceProjectContext projContext;
 
     @Mock
     private EventSourceMock<NotificationEvent> notification;
@@ -104,14 +109,18 @@ public class RepositoriesPresenterTest {
         r4 = createRepository("r4",
                               "space");
 
+        OrganizationalUnit ou = mock(OrganizationalUnit.class);
+        when(ou.getName()).thenReturn("space");
+        when(projContext.getActiveOrganizationalUnit()).thenReturn(ou);
+
         repositories = new ArrayList<>();
 
         repositories.add(r1);
         repositories.add(r2);
         repositories.add(r3);
 
-        this.guvnorStructureContext = new GuvnorStructureContext(new CallerMock<RepositoryService>(
-                repositoryService)) {
+        this.guvnorStructureContext = new GuvnorStructureContext(new CallerMock<>(
+                repositoryService), projContext) {
             @Override
             public GuvnorStructureContextChangeHandler.HandlerRegistration addGuvnorStructureContextChangeHandler(
                     GuvnorStructureContextChangeHandler handler) {
@@ -150,7 +159,7 @@ public class RepositoriesPresenterTest {
         presenter = new RepositoriesPresenter(view,
                                               guvnorStructureContext);
 
-        when(repositoryService.getRepositories()).thenReturn(repositories);
+        when(repositoryService.getRepositories(eq(new Space("space")))).thenReturn(repositories);
 
         when(view.addRepository(r1,
                                 "master")).thenReturn(itemPresenter1);

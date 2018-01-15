@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-package org.guvnor.common.services.project.context;
+package org.guvnor.common.services.project.client.context;
 
+import org.guvnor.common.services.project.client.context.WorkspaceProjectContext;
+import org.guvnor.common.services.project.context.ProjectContextChangeHandle;
+import org.guvnor.common.services.project.context.WorkspaceProjectContextChangeEvent;
+import org.guvnor.common.services.project.context.WorkspaceProjectContextChangeHandler;
 import org.guvnor.common.services.project.model.Module;
 import org.guvnor.common.services.project.model.Package;
 import org.guvnor.common.services.project.model.WorkspaceProject;

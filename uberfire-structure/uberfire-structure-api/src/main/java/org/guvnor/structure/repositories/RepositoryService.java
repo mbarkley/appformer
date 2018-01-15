@@ -35,18 +35,18 @@ import org.uberfire.spaces.Space;
  */
 public interface RepositoryService {
 
-    RepositoryInfo getRepositoryInfo(final String alias);
+    RepositoryInfo getRepositoryInfo(final Space space, final String alias);
 
-    List<VersionRecord> getRepositoryHistory(final String alias,
+    List<VersionRecord> getRepositoryHistory(final Space space,
+                                             final String alias,
                                              final int startIndex);
 
-    List<VersionRecord> getRepositoryHistory(final String alias,
+    List<VersionRecord> getRepositoryHistory(final Space space,
+                                             final String alias,
                                              final int startIndex,
                                              final int endIndex);
 
-    List<VersionRecord> getRepositoryHistoryAll(final String alias);
-
-    Repository getRepository(final String alias);
+    List<VersionRecord> getRepositoryHistoryAll(final Space space, final String alias);
 
     Repository getRepositoryFromSpace(final Space currentSpace,
                                       final String alias);
@@ -58,7 +58,7 @@ public interface RepositoryService {
     /**
      * Get all the repositories. Security checks are omitted.
      */
-    Collection<Repository> getAllRepositories();
+    Collection<Repository> getAllRepositories(final Space space);
 
     /**
      * Get all the repositories from all user spaces. Security checks are omitted.
@@ -68,7 +68,7 @@ public interface RepositoryService {
     /**
      * Get only those repositories available within the current security context.
      */
-    Collection<Repository> getRepositories();
+    Collection<Repository> getRepositories(final Space space);
 
     Repository createRepository(final OrganizationalUnit organizationalUnit,
                                 final String scheme,
@@ -84,8 +84,6 @@ public interface RepositoryService {
 
     void removeGroup(final Repository repository,
                      final String group);
-
-    void removeRepository(final String alias);
 
     void removeRepository(final Space space, final String alias);
 }

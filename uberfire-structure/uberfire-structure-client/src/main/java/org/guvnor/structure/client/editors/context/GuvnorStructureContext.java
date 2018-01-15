@@ -24,6 +24,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import org.guvnor.common.services.project.client.context.WorkspaceProjectContext;
 import org.guvnor.structure.repositories.Branch;
 import org.guvnor.structure.repositories.NewBranchEvent;
 import org.guvnor.structure.repositories.NewRepositoryEvent;
@@ -33,6 +34,7 @@ import org.guvnor.structure.repositories.RepositoryService;
 import org.jboss.errai.common.client.api.Caller;
 import org.jboss.errai.common.client.api.RemoteCallback;
 import org.uberfire.client.callbacks.Callback;
+import org.uberfire.spaces.Space;
 
 /**
  * Context that keeps track of repositories and branches. Used in Guvnor Administration perspective,
@@ -46,16 +48,22 @@ public class GuvnorStructureContext {
     private final HashMap<String, String> aliasBranch = new HashMap<>();
 
     private Caller<RepositoryService> repositoryService;
+    private WorkspaceProjectContext context;
 
     public GuvnorStructureContext() {
     }
 
     @Inject
-    public GuvnorStructureContext(final Caller<RepositoryService> repositoryService) {
+    public GuvnorStructureContext(final Caller<RepositoryService> repositoryService, final WorkspaceProjectContext context) {
         this.repositoryService = repositoryService;
+        this.context = context;
     }
 
     public void getRepositories(final Callback<Collection<Repository>> callback) {
+        String ouName = Optional
+        .ofNullable(context.getActiveOrganizationalUnit())
+        .map(ou -> ou.getName())
+        .orElseThrow(() -> new IllegalStateException("Cannot lookup repositories without active organizational unit."));
         repositoryService.call(new RemoteCallback<Collection<Repository>>() {
             @Override
             public void callback(final Collection<Repository> response) {
@@ -66,7 +74,7 @@ public class GuvnorStructureContext {
 
                 callback.callback(response);
             }
-        }).getRepositories();
+        }).getRepositories(new Space(ouName));
     }
 
     private Collection<String> updateRepositories(final Collection<Repository> response) {

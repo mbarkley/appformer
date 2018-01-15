@@ -17,7 +17,6 @@ package org.guvnor.common.services.project.service;
 
 import java.util.Collection;
 
-import org.guvnor.common.services.project.context.WorkspaceProjectContext;
 import org.guvnor.common.services.project.model.Module;
 import org.guvnor.common.services.project.model.POM;
 import org.guvnor.common.services.project.model.WorkspaceProject;
@@ -53,13 +52,6 @@ public interface WorkspaceProjectService {
     WorkspaceProject resolveProject(final Space space, final Path module);
 
     WorkspaceProject resolveProject(final Space space, final String name);
-
-    /**
-     * Like {@link #resolveProject(Space, String)}, but looks in the active space.
-     * @return null if there is no active space.
-     * @see WorkspaceProjectContext
-     */
-    WorkspaceProject resolveProject(final String name);
 
     WorkspaceProject resolveProjectByRepositoryAlias(final Space space, final String repositoryAlias);
 }

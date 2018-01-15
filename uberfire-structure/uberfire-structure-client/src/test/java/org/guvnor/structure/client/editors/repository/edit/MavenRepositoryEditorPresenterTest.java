@@ -20,8 +20,10 @@ import java.util.Collections;
 import java.util.List;
 
 import com.google.gwtmockito.GwtMockitoTestRunner;
+import org.guvnor.common.services.project.client.context.WorkspaceProjectContext;
 import org.guvnor.common.services.project.client.security.ProjectController;
 import org.guvnor.common.services.project.service.WorkspaceProjectService;
+import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.guvnor.structure.repositories.PublicURI;
 import org.guvnor.structure.repositories.Repository;
 import org.guvnor.structure.repositories.RepositoryInfo;
@@ -40,6 +42,7 @@ import org.uberfire.mocks.CallerMock;
 import org.uberfire.mocks.EventSourceMock;
 import org.uberfire.mvp.PlaceRequest;
 import org.uberfire.mvp.impl.DefaultPlaceRequest;
+import org.uberfire.spaces.Space;
 import org.uberfire.workbench.events.NotificationEvent;
 
 import static org.mockito.Mockito.*;
@@ -70,6 +73,9 @@ public class MavenRepositoryEditorPresenterTest {
     @Mock
     private Path root;
 
+    @Mock
+    private WorkspaceProjectContext context;
+
     private RepositoryInfo repositoryInfo;
     private List<VersionRecord> repositoryHistory;
     private PlaceRequest place = new DefaultPlaceRequest();
@@ -77,12 +83,13 @@ public class MavenRepositoryEditorPresenterTest {
     @Before
     public void before() {
         presenter = new RepositoryEditorPresenter(view,
-                                                  new CallerMock<RepositoryService>(repositoryService),
-                                                  new CallerMock<WorkspaceProjectService>(mock(WorkspaceProjectService.class)),
-                                                  new CallerMock<RepositoryServiceEditor>(repositoryServiceEditor),
+                                                  new CallerMock<>(repositoryService),
+                                                  new CallerMock<>(mock(WorkspaceProjectService.class)),
+                                                  new CallerMock<>(repositoryServiceEditor),
                                                   notification,
                                                   placeManager,
-                                                  projectController);
+                                                  projectController,
+                                                  context);
 
         repositoryInfo = new RepositoryInfo("repository",
                                             "repository",
@@ -92,13 +99,17 @@ public class MavenRepositoryEditorPresenterTest {
                                             new ArrayList<VersionRecord>());
         repositoryHistory = Collections.EMPTY_LIST;
 
-        when(repositoryService.getRepositoryInfo(any(String.class))).thenReturn(repositoryInfo);
-        when(repositoryService.getRepositoryHistory(any(String.class),
+        when(repositoryService.getRepositoryInfo(any(Space.class), any(String.class))).thenReturn(repositoryInfo);
+        when(repositoryService.getRepositoryHistory(any(Space.class),
+                                                    any(String.class),
                                                     any(Integer.class))).thenReturn(repositoryHistory);
         when(repositoryServiceEditor.revertHistory(any(String.class),
                                                    eq(root),
                                                    any(String.class),
                                                    any(VersionRecord.class))).thenReturn(repositoryHistory);
+        OrganizationalUnit ou = mock(OrganizationalUnit.class);
+        when(ou.getName()).thenReturn("owner");
+        when(context.getActiveOrganizationalUnit()).thenReturn(ou);
 
         //Each test needs the Presenter to be initialised
         place.addParameter("alias",
@@ -109,7 +120,7 @@ public class MavenRepositoryEditorPresenterTest {
     @Test
     public void testOnStartup() {
         verify(repositoryService,
-               times(1)).getRepositoryInfo(eq("repository"));
+               times(1)).getRepositoryInfo(eq(new Space(repositoryInfo.getOwner())), eq("repository"));
 
         verify(view,
                times(1)).setRepositoryInfo(eq(repositoryInfo.getAlias()),
@@ -125,7 +136,8 @@ public class MavenRepositoryEditorPresenterTest {
         presenter.onLoadMoreHistory(0);
 
         verify(repositoryService,
-               times(1)).getRepositoryHistory(eq("repository"),
+               times(1)).getRepositoryHistory(eq(new Space(repositoryInfo.getOwner())),
+                                              eq("repository"),
                                               eq(0));
 
         verify(view,

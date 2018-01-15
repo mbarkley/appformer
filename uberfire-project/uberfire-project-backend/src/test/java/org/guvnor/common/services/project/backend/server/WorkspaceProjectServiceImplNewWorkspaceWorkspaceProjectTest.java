@@ -26,7 +26,6 @@ import java.util.Optional;
 
 import javax.enterprise.inject.Instance;
 
-import org.guvnor.common.services.project.context.WorkspaceProjectContext;
 import org.guvnor.common.services.project.events.NewProjectEvent;
 import org.guvnor.common.services.project.model.GAV;
 import org.guvnor.common.services.project.model.Module;
@@ -79,9 +78,6 @@ public class WorkspaceProjectServiceImplNewWorkspaceWorkspaceProjectTest {
     private EventSourceMock<NewProjectEvent> newProjectEvent;
 
     @Mock
-    private WorkspaceProjectContext context;
-
-    @Mock
     private Module module;
 
     @Mock
@@ -107,12 +103,9 @@ public class WorkspaceProjectServiceImplNewWorkspaceWorkspaceProjectTest {
                               "version"));
 
         doReturn(moduleService).when(moduleServices).get();
-        doReturn(repositoryRoot).when(context).getActiveRepositoryRoot();
-        doReturn(ou).when(context).getActiveOrganizationalUnit();
 
         workspaceProjectService = new WorkspaceProjectServiceImpl(mock(OrganizationalUnitService.class),
                                                                   repositoryService,
-                                                                  context,
                                                                   spaces,
                                                                   newProjectEvent,
                                                                   moduleServices);

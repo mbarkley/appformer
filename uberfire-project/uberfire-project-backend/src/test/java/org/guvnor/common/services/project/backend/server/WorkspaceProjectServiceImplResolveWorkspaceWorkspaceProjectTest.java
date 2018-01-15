@@ -25,7 +25,6 @@ import java.util.Optional;
 
 import javax.enterprise.inject.Instance;
 
-import org.guvnor.common.services.project.context.WorkspaceProjectContext;
 import org.guvnor.common.services.project.model.Module;
 import org.guvnor.common.services.project.model.POM;
 import org.guvnor.common.services.project.model.WorkspaceProject;
@@ -73,9 +72,6 @@ public class WorkspaceProjectServiceImplResolveWorkspaceWorkspaceProjectTest {
     Repository repository;
 
     @Mock
-    WorkspaceProjectContext context;
-
-    @Mock
     SpacesAPI spaces;
 
     @Mock
@@ -117,7 +113,6 @@ public class WorkspaceProjectServiceImplResolveWorkspaceWorkspaceProjectTest {
 
         workspaceProjectService = new WorkspaceProjectServiceImpl(organizationalUnitService,
                                                                   repositoryService,
-                                                                  context,
                                                                   spaces,
                                                                   new EventSourceMock<>(),
                                                                   moduleServices);

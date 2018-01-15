@@ -17,11 +17,14 @@
 package org.guvnor.structure.client.editors.repository.edit;
 
 import java.util.List;
+import java.util.Optional;
+
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import org.guvnor.common.services.project.client.context.WorkspaceProjectContext;
 import org.guvnor.common.services.project.client.security.ProjectController;
 import org.guvnor.common.services.project.model.WorkspaceProject;
 import org.guvnor.common.services.project.service.WorkspaceProjectService;
@@ -61,6 +64,7 @@ public class RepositoryEditorPresenter {
     private String alias = null;
     private Path root = null;
     private PlaceRequest place;
+    private WorkspaceProjectContext context;
 
     public interface View
             extends UberView<RepositoryEditorPresenter> {
@@ -87,7 +91,8 @@ public class RepositoryEditorPresenter {
                                      final Caller<RepositoryServiceEditor> repositoryServiceEditor,
                                      final Event<NotificationEvent> notification,
                                      final PlaceManager placeManager,
-                                     final ProjectController projectController) {
+                                     final ProjectController projectController,
+                                     final WorkspaceProjectContext context) {
         this.view = view;
         this.repositoryService = repositoryService;
         this.projectService = projectService;
@@ -95,12 +100,17 @@ public class RepositoryEditorPresenter {
         this.notification = notification;
         this.placeManager = placeManager;
         this.projectController = projectController;
+        this.context = context;
     }
 
     @OnStartup
     public void onStartup(final PlaceRequest place) {
         this.place = place;
         this.alias = place.getParameters().get("alias");
+        String ouName = Optional
+                               .ofNullable(context.getActiveOrganizationalUnit())
+                               .map(ou -> ou.getName())
+                               .orElseThrow(() -> new IllegalStateException("Cannot lookup repository [" + alias + "] without active organizational unit."));
 
         repositoryService.call(new RemoteCallback<RepositoryInfo>() {
             @Override
@@ -122,7 +132,7 @@ public class RepositoryEditorPresenter {
 
                 ).resolveProjectByRepositoryAlias(new Space(repo.getOwner()), repo.getAlias());
             }
-        }).getRepositoryInfo(alias);
+        }).getRepositoryInfo(new Space(ouName), alias);
     }
 
     @WorkbenchPartTitle
@@ -136,12 +146,17 @@ public class RepositoryEditorPresenter {
     }
 
     void onLoadMoreHistory(final int lastIndex) {
+        String ouName = Optional
+                                .ofNullable(context.getActiveOrganizationalUnit())
+                                .map(ou -> ou.getName())
+                                .orElseThrow(() -> new IllegalStateException("Cannot lookup repository [" + alias + "] without active organizational unit."));
         repositoryService.call(new RemoteCallback<List<VersionRecord>>() {
             @Override
             public void callback(final List<VersionRecord> versionList) {
                 view.addHistory(versionList);
             }
-        }).getRepositoryHistory(alias,
+        }).getRepositoryHistory(new Space(ouName),
+                                alias,
                                 lastIndex);
     }
 

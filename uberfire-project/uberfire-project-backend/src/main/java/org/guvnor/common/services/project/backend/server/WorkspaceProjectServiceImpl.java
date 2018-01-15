@@ -25,7 +25,6 @@ import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 
-import org.guvnor.common.services.project.context.WorkspaceProjectContext;
 import org.guvnor.common.services.project.events.NewProjectEvent;
 import org.guvnor.common.services.project.model.Module;
 import org.guvnor.common.services.project.model.POM;
@@ -51,7 +50,6 @@ public class WorkspaceProjectServiceImpl
     private RepositoryService repositoryService;
     private Event<NewProjectEvent> newProjectEvent;
     private ModuleService<? extends Module> moduleService;
-    private WorkspaceProjectContext context;
     private SpacesAPI spaces;
 
     public WorkspaceProjectServiceImpl() {
@@ -60,13 +58,11 @@ public class WorkspaceProjectServiceImpl
     @Inject
     public WorkspaceProjectServiceImpl(final OrganizationalUnitService organizationalUnitService,
                                        final RepositoryService repositoryService,
-                                       final WorkspaceProjectContext context,
                                        final SpacesAPI spaces,
                                        final Event<NewProjectEvent> newProjectEvent,
                                        final Instance<ModuleService<? extends Module>> moduleServices) {
         this.organizationalUnitService = organizationalUnitService;
         this.repositoryService = repositoryService;
-        this.context = context;
         this.spaces = spaces;
         this.newProjectEvent = newProjectEvent;
         moduleService = moduleServices.get();
@@ -187,13 +183,6 @@ public class WorkspaceProjectServiceImpl
         }
 
         return null;
-    }
-
-    @Override
-    public WorkspaceProject resolveProject(String name) {
-
-        OrganizationalUnit activeOU = context.getActiveOrganizationalUnit();
-        return resolveProject(activeOU, name);
     }
 
     @Override

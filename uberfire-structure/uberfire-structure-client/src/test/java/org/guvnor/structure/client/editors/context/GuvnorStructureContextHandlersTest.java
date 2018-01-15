@@ -18,6 +18,7 @@ package org.guvnor.structure.client.editors.context;
 
 import java.util.HashMap;
 
+import org.guvnor.common.services.project.client.context.WorkspaceProjectContext;
 import org.guvnor.structure.repositories.Branch;
 import org.guvnor.structure.repositories.NewRepositoryEvent;
 import org.guvnor.structure.repositories.RepositoryRemovedEvent;
@@ -40,11 +41,14 @@ public class GuvnorStructureContextHandlersTest {
     @Mock
     private RepositoryService repositoryService;
 
+    @Mock
+    private WorkspaceProjectContext projContext;
+
     private GuvnorStructureContext context;
 
     @Before
     public void setUp() throws Exception {
-        context = new GuvnorStructureContext(new CallerMock<>(repositoryService));
+        context = new GuvnorStructureContext(new CallerMock<>(repositoryService), projContext);
     }
 
     @Test

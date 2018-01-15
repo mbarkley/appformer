@@ -26,16 +26,20 @@ import org.guvnor.structure.repositories.Repository;
 import org.guvnor.structure.repositories.RepositorySearchService;
 import org.guvnor.structure.repositories.RepositoryService;
 import org.jboss.errai.bus.server.annotations.Service;
+import org.uberfire.spaces.Space;
+import org.uberfire.spaces.SpacesAPI;
 
 @Service
 @ApplicationScoped
 public class RepositorySearchServiceImpl implements RepositorySearchService {
 
     private RepositoryService repositoryService;
+    private SpacesAPI spaces;
 
     @Inject
-    public RepositorySearchServiceImpl(RepositoryService repositoryService) {
+    public RepositorySearchServiceImpl(RepositoryService repositoryService, SpacesAPI spaces) {
         this.repositoryService = repositoryService;
+        this.spaces = spaces;
     }
 
     @Override
@@ -43,12 +47,14 @@ public class RepositorySearchServiceImpl implements RepositorySearchService {
                                                 int maxItems,
                                                 boolean caseSensitive) {
         List<Repository> results = new ArrayList<>();
-        for (Repository repo : repositoryService.getAllRepositories()) {
-            String alias = repo.getAlias();
-            if (caseSensitive ? alias.contains(pattern) : alias.toLowerCase().contains(pattern.toLowerCase())) {
-                results.add(repo);
-                if (maxItems > 0 && results.size() >= maxItems) {
-                    return results;
+        for (Space space : spaces.getUserSpaces()) {
+            for (Repository repo : repositoryService.getAllRepositories(space)) {
+                String alias = repo.getAlias();
+                if (caseSensitive ? alias.contains(pattern) : alias.toLowerCase().contains(pattern.toLowerCase())) {
+                    results.add(repo);
+                    if (maxItems > 0 && results.size() >= maxItems) {
+                        return results;
+                    }
                 }
             }
         }
@@ -58,9 +64,11 @@ public class RepositorySearchServiceImpl implements RepositorySearchService {
     @Override
     public Collection<Repository> searchById(Collection<String> ids) {
         List<Repository> results = new ArrayList<>();
-        for (Repository repo : repositoryService.getAllRepositories()) {
-            if (ids.contains(repo.getIdentifier())) {
-                results.add(repo);
+        for (Space space : spaces.getUserSpaces()) {
+            for (Repository repo : repositoryService.getAllRepositories(space)) {
+                if (ids.contains(repo.getIdentifier())) {
+                    results.add(repo);
+                }
             }
         }
         return results;

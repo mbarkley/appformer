@@ -30,7 +30,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.guvnor.common.services.backend.exceptions.ExceptionUtilities;
-import org.guvnor.common.services.project.context.WorkspaceProjectContext;
 import org.guvnor.structure.backend.backcompat.BackwardCompatibleUtil;
 import org.guvnor.structure.organizationalunit.OrganizationalUnit;
 import org.guvnor.structure.organizationalunit.OrganizationalUnitService;
@@ -110,29 +109,19 @@ public class RepositoryServiceImpl implements RepositoryService {
     private SessionInfo sessionInfo;
 
     @Inject
-    private WorkspaceProjectContext wbProjectContext;
-
-    @Inject
     private SpacesAPI spacesAPI;
 
     @Override
-    public RepositoryInfo getRepositoryInfo(final String alias) {
-        final Repository repo = getRepository(alias);
-        String ouName = null;
-        for (final OrganizationalUnit ou : organizationalUnitService.getAllOrganizationalUnits()) {
-            for (Repository repository : ou.getRepositories()) {
-                if (repository.getAlias().equals(alias)) {
-                    ouName = ou.getName();
-                }
-            }
-        }
+    public RepositoryInfo getRepositoryInfo(final Space space, final String alias) {
+        Repository repo = getRepositoryFromSpace(space, alias);
 
         return new RepositoryInfo(repo.getIdentifier(),
                                   alias,
-                                  ouName,
+                                  repo.getSpace().getName(),
                                   getRepositoryRootPath(repo),
                                   repo.getPublicURIs(),
-                                  getRepositoryHistory(alias,
+                                  getRepositoryHistory(repo.getSpace(),
+                                                       alias,
                                                        0,
                                                        HISTORY_PAGE_SIZE));
     }
@@ -146,18 +135,21 @@ public class RepositoryServiceImpl implements RepositoryService {
     }
 
     @Override
-    public List<VersionRecord> getRepositoryHistory(final String alias,
+    public List<VersionRecord> getRepositoryHistory(final Space space,
+                                                    final String alias,
                                                     final int startIndex) {
-        return getRepositoryHistory(alias,
+        return getRepositoryHistory(space,
+                                    alias,
                                     startIndex,
                                     startIndex + HISTORY_PAGE_SIZE);
     }
 
     @Override
-    public List<VersionRecord> getRepositoryHistory(String alias,
+    public List<VersionRecord> getRepositoryHistory(final Space space,
+                                                    final String alias,
                                                     int startIndex,
                                                     int endIndex) {
-        final Repository repo = getRepository(alias);
+        final Repository repo = getRepositoryFromSpace(space, alias);
 
         //This is a work-around for https://bugzilla.redhat.com/show_bug.cgi?id=1199215
         //org.kie.workbench.common.screens.contributors.backend.dataset.ContributorsManager is trying to
@@ -202,12 +194,6 @@ public class RepositoryServiceImpl implements RepositoryService {
     }
 
     @Override
-    public Repository getRepository(final String alias) {
-        return configuredRepositories.getRepositoryByRepositoryAlias(getCurrentSpace(),
-                                                                     alias);
-    }
-
-    @Override
     public Repository getRepositoryFromSpace(final Space space,
                                              final String alias) {
         return configuredRepositories.getRepositoryByRepositoryAlias(space,
@@ -216,8 +202,8 @@ public class RepositoryServiceImpl implements RepositoryService {
 
     @Override
     public Repository getRepository(final Path root) {
-        return configuredRepositories.getRepositoryByRootPath(getCurrentSpace(),
-                                                              root);
+        Space space = spacesAPI.resolveSpace(root.toURI()).orElseThrow(() -> new IllegalArgumentException("Cannot resolve space from given path: " + root));
+        return configuredRepositories.getRepositoryByRootPath(space, root);
     }
 
     @Override
@@ -237,8 +223,8 @@ public class RepositoryServiceImpl implements RepositoryService {
     }
 
     @Override
-    public Collection<Repository> getAllRepositories() {
-        return configuredRepositories.getAllConfiguredRepositories(getCurrentSpace());
+    public Collection<Repository> getAllRepositories(final Space space) {
+        return configuredRepositories.getAllConfiguredRepositories(space);
     }
 
     @Override
@@ -253,9 +239,9 @@ public class RepositoryServiceImpl implements RepositoryService {
     }
 
     @Override
-    public Collection<Repository> getRepositories() {
+    public Collection<Repository> getRepositories(final Space space) {
         Collection<Repository> result = new ArrayList<>();
-        for (Repository repository : configuredRepositories.getAllConfiguredRepositories(getCurrentSpace())) {
+        for (Repository repository : configuredRepositories.getAllConfiguredRepositories(space)) {
             if (authorizationManager.authorize(repository,
                                                sessionInfo.getIdentity())) {
                 result.add(repository);
@@ -342,11 +328,6 @@ public class RepositoryServiceImpl implements RepositoryService {
         }
     }
 
-    @Override
-    public void removeRepository(final String alias) {
-        removeRepository(getCurrentSpace(), alias);
-    }
-
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public void addGroup(final Repository repository,
@@ -359,7 +340,7 @@ public class RepositoryServiceImpl implements RepositoryService {
 
             configurationService.updateConfiguration(thisRepositoryConfig);
 
-            configuredRepositories.update(getCurrentSpace(),
+            configuredRepositories.update(repository.getSpace(),
                                           repositoryFactory.newRepository(thisRepositoryConfig));
         } else {
             throw new IllegalArgumentException("Repository " + repository.getAlias() + " not found");
@@ -378,7 +359,7 @@ public class RepositoryServiceImpl implements RepositoryService {
 
             configurationService.updateConfiguration(thisRepositoryConfig);
 
-            configuredRepositories.update(getCurrentSpace(),
+            configuredRepositories.update(repository.getSpace(),
                                           repositoryFactory.newRepository(thisRepositoryConfig));
         } else {
             throw new IllegalArgumentException("Repository " + repository.getAlias() + " not found");
@@ -386,8 +367,9 @@ public class RepositoryServiceImpl implements RepositoryService {
     }
 
     @Override
-    public List<VersionRecord> getRepositoryHistoryAll(final String alias) {
-        return getRepositoryHistory(alias,
+    public List<VersionRecord> getRepositoryHistoryAll(final Space space, final String alias) {
+        return getRepositoryHistory(space,
+                                    alias,
                                     0,
                                     -1);
     }
@@ -450,17 +432,6 @@ public class RepositoryServiceImpl implements RepositoryService {
             return configurationFactory.newConfigItem(configuration.getName(),
                                                       configuration.getValue());
         }
-    }
-
-    private Space getCurrentSpace() {
-        OrganizationalUnit activeOrganizationalUnit = wbProjectContext.getActiveOrganizationalUnit();
-        Space space;
-
-        if (activeOrganizationalUnit == null) {
-            throw new NoActiveSpaceInTheContext();
-        }
-        space = spacesAPI.getSpace(activeOrganizationalUnit.getName());
-        return space;
     }
 
     public class NoActiveSpaceInTheContext extends RuntimeException {

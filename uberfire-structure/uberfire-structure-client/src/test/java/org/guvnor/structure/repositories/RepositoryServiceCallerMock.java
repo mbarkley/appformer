@@ -70,26 +70,30 @@ public class RepositoryServiceCallerMock
         }
 
         @Override
-        public RepositoryInfo getRepositoryInfo(String alias) {
-            RepositoryInfo result = repositoryService.getRepositoryInfo(alias);
+        public RepositoryInfo getRepositoryInfo(Space space, String alias) {
+            RepositoryInfo result = repositoryService.getRepositoryInfo(space, alias);
             remoteCallback.callback(result);
             return result;
         }
 
         @Override
-        public List<VersionRecord> getRepositoryHistory(String alias,
+        public List<VersionRecord> getRepositoryHistory(Space space,
+                                                        String alias,
                                                         int startIndex) {
-            List<VersionRecord> result = repositoryService.getRepositoryHistory(alias,
+            List<VersionRecord> result = repositoryService.getRepositoryHistory(space,
+                                                                                alias,
                                                                                 startIndex);
             remoteCallback.callback(result);
             return result;
         }
 
         @Override
-        public List<VersionRecord> getRepositoryHistory(String alias,
+        public List<VersionRecord> getRepositoryHistory(Space space,
+                                                        String alias,
                                                         int startIndex,
                                                         int endIndex) {
-            List<VersionRecord> result = repositoryService.getRepositoryHistory(alias,
+            List<VersionRecord> result = repositoryService.getRepositoryHistory(space,
+                                                                                alias,
                                                                                 startIndex,
                                                                                 endIndex);
             remoteCallback.callback(result);
@@ -97,15 +101,8 @@ public class RepositoryServiceCallerMock
         }
 
         @Override
-        public List<VersionRecord> getRepositoryHistoryAll(String alias) {
-            List<VersionRecord> result = repositoryService.getRepositoryHistoryAll(alias);
-            remoteCallback.callback(result);
-            return result;
-        }
-
-        @Override
-        public Repository getRepository(String alias) {
-            Repository result = repositoryService.getRepository(alias);
+        public List<VersionRecord> getRepositoryHistoryAll(Space space, String alias) {
+            List<VersionRecord> result = repositoryService.getRepositoryHistoryAll(space, alias);
             remoteCallback.callback(result);
             return result;
         }
@@ -134,8 +131,8 @@ public class RepositoryServiceCallerMock
         }
 
         @Override
-        public Collection<Repository> getAllRepositories() {
-            Collection<Repository> result = repositoryService.getAllRepositories();
+        public Collection<Repository> getAllRepositories(Space space) {
+            Collection<Repository> result = repositoryService.getAllRepositories(space);
             remoteCallback.callback(result);
             return result;
         }
@@ -148,8 +145,8 @@ public class RepositoryServiceCallerMock
         }
 
         @Override
-        public Collection<Repository> getRepositories() {
-            Collection<Repository> result = repositoryService.getRepositories();
+        public Collection<Repository> getRepositories(Space space) {
+            Collection<Repository> result = repositoryService.getRepositories(space);
             remoteCallback.callback(result);
             return result;
         }
@@ -193,11 +190,6 @@ public class RepositoryServiceCallerMock
                                 String group) {
             repositoryService.removeGroup(repository,
                                           group);
-        }
-
-        @Override
-        public void removeRepository(String alias) {
-            repositoryService.removeRepository(alias);
         }
 
         @Override

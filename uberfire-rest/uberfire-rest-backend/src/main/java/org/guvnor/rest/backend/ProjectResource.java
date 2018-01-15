@@ -15,10 +15,14 @@
 */
 package org.guvnor.rest.backend;
 
+import static org.guvnor.rest.backend.PermissionConstants.REST_PROJECT_ROLE;
+import static org.guvnor.rest.backend.PermissionConstants.REST_ROLE;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+
 import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -62,13 +66,10 @@ import org.guvnor.rest.client.TestProjectRequest;
 import org.guvnor.rest.client.UpdateOrganizationalUnit;
 import org.guvnor.rest.client.UpdateOrganizationalUnitRequest;
 import org.guvnor.structure.organizationalunit.OrganizationalUnitService;
-import org.guvnor.structure.repositories.RepositoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uberfire.io.IOService;
-
-import static org.guvnor.rest.backend.PermissionConstants.REST_PROJECT_ROLE;
-import static org.guvnor.rest.backend.PermissionConstants.REST_ROLE;
+import org.uberfire.spaces.SpacesAPI;
 
 /**
  * REST services
@@ -88,9 +89,9 @@ public class ProjectResource {
     @Inject
     private OrganizationalUnitService organizationalUnitService;
     @Inject
-    private RepositoryService repositoryService;
-    @Inject
     private WorkspaceProjectService workspaceProjectService;
+    @Inject
+    private SpacesAPI spaces;
     @Inject
     private JobRequestScheduler jobRequestObserver;
     @Inject
@@ -247,9 +248,10 @@ public class ProjectResource {
 
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/projects/{projectName}")
+    @Path("/projects/{spaceName}/{projectName}")
     @RolesAllowed({REST_ROLE, REST_PROJECT_ROLE})
     public Response deleteProject(
+            @PathParam("spaceName") String spaceName,
             @PathParam("projectName") String projectName) {
         logger.debug("-----deleteProject--- , project name: {}",
                      projectName);
@@ -259,6 +261,7 @@ public class ProjectResource {
         jobRequest.setStatus(JobStatus.ACCEPTED);
         jobRequest.setJobId(id);
         jobRequest.setProjectName(projectName);
+        jobRequest.setSpaceName(spaceName);
 
         addAcceptedJobResult(id);
 
@@ -269,13 +272,13 @@ public class ProjectResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/projects/{projectName}")
+    @Path("/projects/{spaceName}/{projectName}")
     @RolesAllowed({REST_ROLE, REST_PROJECT_ROLE})
-    public ProjectResponse getProject(@PathParam("projectName") String projectName) {
+    public ProjectResponse getProject(@PathParam("spaceName") String spaceName, @PathParam("projectName") String projectName) {
         logger.debug("-----getProject---, project name: {}",
                      projectName);
 
-        final WorkspaceProject workspaceProject = workspaceProjectService.resolveProject(projectName);
+        final WorkspaceProject workspaceProject = workspaceProjectService.resolveProject(spaces.getSpace(spaceName), projectName);
 
         final ProjectResponse projectResponse = new ProjectResponse();
         final GAV projectGAV = workspaceProject.getMainModule().getPom().getGav();
@@ -290,9 +293,10 @@ public class ProjectResource {
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/projects/{projectName}/maven/compile")
+    @Path("/projects/{spaceName}/{projectName}/maven/compile")
     @RolesAllowed({REST_ROLE, REST_PROJECT_ROLE})
     public Response compileProject(
+            @PathParam("spaceName") String spaceName,
             @PathParam("projectName") String projectName) {
         logger.debug("-----compileProject--- , project name: {}",
                      projectName);
@@ -302,6 +306,7 @@ public class ProjectResource {
         jobRequest.setStatus(JobStatus.ACCEPTED);
         jobRequest.setJobId(id);
         jobRequest.setProjectName(projectName);
+        jobRequest.setSpaceName(spaceName);
 
         addAcceptedJobResult(id);
 
@@ -337,9 +342,10 @@ public class ProjectResource {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/projects/{projectName}/maven/test")
+    @Path("/projects/{spaceName}/{projectName}/maven/test")
     @RolesAllowed({REST_ROLE, REST_PROJECT_ROLE})
     public Response testProject(
+            @PathParam("spaceName") String spaceName,
             @PathParam("projectName") String projectName) {
         logger.debug("-----testProject--- , project name: {}",
                      projectName);
@@ -349,6 +355,7 @@ public class ProjectResource {
         jobRequest.setStatus(JobStatus.ACCEPTED);
         jobRequest.setJobId(id);
         jobRequest.setProjectName(projectName);
+        jobRequest.setSpaceName(spaceName);
 
         addAcceptedJobResult(id);
 
@@ -359,9 +366,10 @@ public class ProjectResource {
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/projects/{projectName}/maven/deploy")
+    @Path("/projects/{spaceName}/{projectName}/maven/deploy")
     @RolesAllowed({REST_ROLE, REST_PROJECT_ROLE})
     public Response deployProject(
+            @PathParam("spaceName") String spaceName,
             @PathParam("projectName") String projectName) {
         logger.debug("-----deployProject--- , project name: {}",
                      projectName);
@@ -371,6 +379,7 @@ public class ProjectResource {
         jobRequest.setStatus(JobStatus.ACCEPTED);
         jobRequest.setJobId(id);
         jobRequest.setProjectName(projectName);
+        jobRequest.setSpaceName(spaceName);
 
         addAcceptedJobResult(id);
 
@@ -388,14 +397,14 @@ public class ProjectResource {
         final Collection<org.guvnor.structure.organizationalunit.OrganizationalUnit> origOrgUnits
                 = organizationalUnitService.getAllOrganizationalUnits();
 
-        final List<OrganizationalUnit> organizationalUnits = new ArrayList<OrganizationalUnit>();
+        final List<OrganizationalUnit> organizationalUnits = new ArrayList<>();
         for (final org.guvnor.structure.organizationalunit.OrganizationalUnit ou : origOrgUnits) {
             final OrganizationalUnit orgUnit = new OrganizationalUnit();
             orgUnit.setName(ou.getName());
             orgUnit.setOwner(ou.getOwner());
             orgUnit.setDefaultGroupId(ou.getDefaultGroupId());
 
-            final List<String> projectNames = new ArrayList<String>();
+            final List<String> projectNames = new ArrayList<>();
             for (final WorkspaceProject workspaceProject : workspaceProjectService.getAllWorkspaceProjects(ou)) {
                 projectNames.add(workspaceProject.getName());
             }
@@ -510,7 +519,7 @@ public class ProjectResource {
                      organizationalUnitName,
                      projectName);
         checkOrganizationalUnitExistence(organizationalUnitName);
-        checkProjectExistence(projectName);
+        checkProjectExistence(organizationalUnitName, projectName);
 
         String id = newId();
         AddProjectToOrganizationalUnitRequest jobRequest = new AddProjectToOrganizationalUnitRequest();
@@ -536,7 +545,7 @@ public class ProjectResource {
                      organizationalUnitName,
                      projectName);
         checkOrganizationalUnitExistence(organizationalUnitName);
-        checkProjectExistence(projectName);
+        checkProjectExistence(organizationalUnitName, projectName);
 
         String id = newId();
         RemoveProjectFromOrganizationalUnitRequest jobRequest = new RemoveProjectFromOrganizationalUnitRequest();
@@ -588,12 +597,12 @@ public class ProjectResource {
         return origOrgUnit;
     }
 
-    private WorkspaceProject checkProjectExistence(String projectName) {
-        if (projectName == null || projectName.isEmpty()) {
+    private WorkspaceProject checkProjectExistence(String spaceName, String projectName) {
+        if (projectName == null || projectName.isEmpty() || spaceName == null || spaceName.isEmpty()) {
             throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity(projectName).build());
         }
 
-        final WorkspaceProject workspaceProject = workspaceProjectService.resolveProject(projectName);
+        final WorkspaceProject workspaceProject = workspaceProjectService.resolveProject(spaces.getSpace(spaceName), projectName);
 
         if (workspaceProject == null) {
             throw new WebApplicationException(Response.status(Response.Status.NOT_FOUND).entity(projectName).build());

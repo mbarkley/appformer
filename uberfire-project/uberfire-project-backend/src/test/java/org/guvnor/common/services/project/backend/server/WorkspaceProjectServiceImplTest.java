@@ -15,14 +15,21 @@
  */
 package org.guvnor.common.services.project.backend.server;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import javax.enterprise.inject.Instance;
 
-import org.guvnor.common.services.project.context.WorkspaceProjectContext;
 import org.guvnor.common.services.project.model.Module;
 import org.guvnor.common.services.project.model.WorkspaceProject;
 import org.guvnor.common.services.project.service.ModuleService;
@@ -37,15 +44,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.mocks.EventSourceMock;
+import org.uberfire.spaces.Space;
 import org.uberfire.spaces.SpacesAPI;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
 
 @RunWith(MockitoJUnitRunner.class)
 public class WorkspaceProjectServiceImplTest {
@@ -74,10 +77,10 @@ public class WorkspaceProjectServiceImplTest {
     ModuleService moduleService;
 
     @Mock
-    WorkspaceProjectContext context;
-
-    @Mock
     SpacesAPI spaces;
+
+    Space space1;
+    Space space2;
 
     private OrganizationalUnit ou1;
     private OrganizationalUnit ou2;
@@ -86,16 +89,15 @@ public class WorkspaceProjectServiceImplTest {
     @Before
     public void setUp() throws Exception {
 
-        setUpRepositories();
-
         setUpOUs();
+
+        setUpRepositories();
 
         doReturn(moduleService).when(moduleServices).get();
         doReturn(allRepositories).when(repositoryService).getAllRepositoriesFromAllUserSpaces();
 
         workspaceProjectService = new WorkspaceProjectServiceImpl(organizationalUnitService,
                                                                   repositoryService,
-                                                                  context,
                                                                   spaces,
                                                                   new EventSourceMock<>(),
                                                                   moduleServices);
@@ -108,6 +110,8 @@ public class WorkspaceProjectServiceImplTest {
         ou2 = new OrganizationalUnitImpl("ou2",
                                          "owner",
                                          "defaultGroupID");
+        space1 = new Space("ou1");
+        space2 = new Space("ou2");
 
         doReturn(ou1).when(organizationalUnitService).getOrganizationalUnit("ou1");
         doReturn(ou2).when(organizationalUnitService).getOrganizationalUnit("ou2");
@@ -136,7 +140,10 @@ public class WorkspaceProjectServiceImplTest {
         allRepositories.add(repository1);
         allRepositories.add(repository2);
         allRepositories.add(repository3);
-        doReturn(allRepositories).when(repositoryService).getRepositories();
+
+        doReturn(allRepositories).when(repositoryService).getAllRepositoriesFromAllUserSpaces();
+        doReturn(Arrays.asList(repository1, repository2)).when(repositoryService).getRepositories(Mockito.eq(space1));
+        doReturn(Collections.singletonList(repository3)).when(repositoryService).getRepositories(Mockito.eq(space2));
     }
 
     @Test

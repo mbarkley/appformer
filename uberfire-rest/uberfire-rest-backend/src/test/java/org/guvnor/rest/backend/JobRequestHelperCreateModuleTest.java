@@ -44,6 +44,7 @@ import org.uberfire.backend.server.util.Paths;
 import org.uberfire.java.nio.file.FileAlreadyExistsException;
 import org.uberfire.java.nio.file.Path;
 import org.uberfire.java.nio.fs.file.SimpleFileSystemProvider;
+import org.uberfire.spaces.Space;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -72,14 +73,17 @@ public class JobRequestHelperCreateModuleTest {
         final Path root = fileSystemProvider.getPath(URI.create("default://master@myRepository/"));
         final Branch masterBranch = new Branch("master",
                                                Paths.convert(root));
+        final String spaceName = "space";
 
         final Repository repository = mock(Repository.class);
-        when(repositoryService.getRepository("myRepository")).thenReturn(repository);
+        when(repositoryService.getRepositoryFromSpace(eq(new Space(spaceName)), eq("myRepository"))).thenReturn(repository);
         when(repository.getDefaultBranch()).thenReturn(Optional.of(masterBranch));
 
         when(repository.getBranch("master")).thenReturn(Optional.of(masterBranch));
 
-        when(organizationalUnitService.getOrganizationalUnit(any())).thenReturn(mock(OrganizationalUnit.class));
+        OrganizationalUnit ou = mock(OrganizationalUnit.class);
+        when(ou.getName()).thenReturn(spaceName);
+        when(organizationalUnitService.getOrganizationalUnit(any())).thenReturn(ou);
     }
 
     @Test

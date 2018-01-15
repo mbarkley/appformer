@@ -41,6 +41,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.backend.vfs.Path;
+import org.uberfire.spaces.Space;
+import org.uberfire.spaces.SpacesAPI;
 
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
@@ -66,16 +68,21 @@ public class JobRequestHelperTest {
     private WorkspaceProjectService workspaceProjectService;
     @Mock
     private WorkspaceProject workspaceProject;
+    @Mock
+    private SpacesAPI spaces;
+    private Space space = new Space("space");
 
     @Before
     public void setUp() throws Exception {
-        when(workspaceProjectService.resolveProject("project")).thenReturn(workspaceProject);
-        when(repositoryService.getRepository("repositoryAlias")).thenReturn(repository);
+        when(workspaceProjectService.resolveProject(eq(space), eq("project"))).thenReturn(workspaceProject);
+        when(repositoryService.getRepositoryFromSpace(eq(space), eq("repositoryAlias"))).thenReturn(repository);
+        when(spaces.getSpace(eq("space"))).thenReturn(space);
     }
 
     @Test
     public void resourceDoesNotExist() throws Exception {
         final JobResult jobResult = helper.testProject(null,
+                                                       null,
                                                        null);
         assertEquals(JobStatus.RESOURCE_NOT_EXIST,
                      jobResult.getStatus());
@@ -96,6 +103,7 @@ public class JobRequestHelperTest {
         when(repository.getBranch("master")).thenReturn(Optional.of(masterBranch));
 
         final JobResult jobResult = helper.testProject(null,
+                                                       space.getName(),
                                                        "project");
         assertEquals(JobStatus.RESOURCE_NOT_EXIST,
                      jobResult.getStatus());
@@ -131,6 +139,7 @@ public class JobRequestHelperTest {
     private void thenExpectMessageWithStatus(final TestResultMessage message,
                                              final JobStatus status) {
         final JobResult jobResult = helper.testProject(null,
+                                                       space.getName(),
                                                        "project");
 
         verify(testService).runAllTests(eq("JobRequestHelper"),
