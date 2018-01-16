@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.guvnor.structure.repositories.Branch;
 import org.guvnor.structure.repositories.Repository;
+import org.uberfire.backend.server.util.Paths;
 import org.uberfire.backend.vfs.Path;
 
 public class ConfiguredRepositoriesBySpace {
@@ -42,7 +43,7 @@ public class ConfiguredRepositoriesBySpace {
 
         if (repository.getBranches() != null) {
             for (final Branch branch : repository.getBranches()) {
-                repositoriesByBranchRoot.put(branch.getPath(),
+                repositoriesByBranchRoot.put(Paths.convert(Paths.convert(branch.getPath())),
                                              repository);
             }
         }
@@ -57,7 +58,7 @@ public class ConfiguredRepositoriesBySpace {
     }
 
     public Repository get(Path root) {
-        return repositoriesByBranchRoot.get(root);
+        return repositoriesByBranchRoot.get(Paths.convert(Paths.convert(root)));
     }
 
     public boolean containsRepository(String alias) {

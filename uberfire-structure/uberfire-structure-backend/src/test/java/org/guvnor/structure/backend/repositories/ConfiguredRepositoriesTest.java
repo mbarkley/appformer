@@ -31,11 +31,15 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.uberfire.backend.vfs.Path;
+import org.uberfire.backend.vfs.PathFactory;
 import org.uberfire.spaces.Space;
 
 import static org.guvnor.structure.server.config.ConfigType.REPOSITORY;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ConfiguredRepositoriesTest {
@@ -103,9 +107,12 @@ public class ConfiguredRepositoriesTest {
         final HashMap<String, Branch> branchMap = new HashMap<>();
 
         for (String branch : branches) {
+
+            Path path = PathFactory.newPath(alias + ".txt",
+                                            "default://master@myteam/mortgages/" + alias + ".txt");
             branchMap.put(branch,
                           new Branch(branch,
-                                     mock(Path.class)));
+                                     path));
         }
         repository.setBranches(branchMap);
 

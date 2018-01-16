@@ -15,11 +15,15 @@
  */
 package org.uberfire.backend.server.spaces;
 
+import java.util.Optional;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.uberfire.spaces.Space;
 import org.uberfire.spaces.SpacesAPI;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class SpacesAPIImplTest {
 
@@ -39,6 +43,13 @@ public class SpacesAPIImplTest {
                                                  "system").toString());
     }
 
+    @Test
+    public void trimBranchName() throws Exception {
+        Optional<Space> space = spaces.resolveSpace("default://master@myteam/mortgages/");
+
+        assertTrue(space.isPresent());
+        assertEquals("myteam", space.get().getName());
+    }
 
     //TODO eder
 }

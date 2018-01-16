@@ -57,11 +57,21 @@ public class SpacesAPIImpl implements SpacesAPI {
     @Override
     public Optional<Space> resolveSpace(String uri) {
         return Optional
-        .ofNullable(PATH_REGEX.matcher(uri))
-        .filter(matcher -> matcher.matches())
-        .map(matcher -> matcher.group(1)).map(this::getSpace);
+                .ofNullable(PATH_REGEX.matcher(uri))
+                .filter(matcher -> matcher.matches())
+                .map(matcher -> matcher.group(1))
+                .map(name -> trimName(name))
+                .map(this::getSpace);
     }
 
+    private String trimName(final String name) {
+
+        if (name.contains("@")) {
+            return name.substring(name.indexOf("@") + 1);
+        } else {
+            return name;
+        }
+    }
 
     public URI resolveFileSystemURI(Scheme scheme,
                                     Space space,
